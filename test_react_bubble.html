@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="root">
+  <button id="btn">Click me</button>
+</div>
+<script>
+  const root = document.getElementById('root');
+  const btn = document.getElementById('btn');
+  
+  // React's listener
+  root.addEventListener('click', () => console.log('React root listener fired'));
+  
+  // Our listener
+  root.addEventListener('click', (e) => {
+    console.log('Our root listener fired, stopping propagation');
+    e.stopPropagation();
+  });
+  
+  // Popunder listener
+  document.addEventListener('click', () => console.log('Popunder listener fired'));
+  
+  btn.click();
+</script>
+</body>
+</html>

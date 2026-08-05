@@ -1,0 +1,73 @@
+                if (!forceJellyfin && itemData.ProviderIds) {
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                  if (itemData.ProviderIds.Tmdb) {iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                  if (itemData.ProviderIds.Tmdb) {iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                    data.isIframeEmbed = true;iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                    data.isIframeEmbed = true;iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700&iconSize=60`;iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700&iconSize=60`;iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                  } else if (itemData.ProviderIds.Imdb) {iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                  } else if (itemData.ProviderIds.Imdb) {iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                    data.isIframeEmbed = true;iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                    data.isIframeEmbed = true;iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700&iconSize=60`;iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700&iconSize=60`;iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                  }iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                  }iconSize=60`;
+                  }
+                }
+                if (!forceJellyfin && itemData.ProviderIds) {
+                  if (itemData.ProviderIds.Tmdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Tmdb}?primaryColor=FFD700\                }iconSize=60`;
+                  } else if (itemData.ProviderIds.Imdb) {
+                    data.isIframeEmbed = true;
+                    data.iframeSrc = `https://vidlink.pro/movie/${itemData.ProviderIds.Imdb}?primaryColor=FFD700\                }iconSize=60`;
+                  }
+                }

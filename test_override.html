@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  const originalOpen = window.open;
+  window.open = function() {
+    console.log("Blocked window.open");
+    return null;
+  };
+</script>
+<button onclick="window.open('https://google.com')">Test Open</button>
+</body>
+</html>

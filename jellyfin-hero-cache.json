@@ -1,0 +1,187 @@
+[
+  {
+    "id": "f157fcf9cefd5874c274cba9aab0b521",
+    "title": "Baby Driver",
+    "year": 2017,
+    "duration": "113 min",
+    "rating": "7.4",
+    "genre": [
+      "Action",
+      "Crime"
+    ],
+    "description": "After being coerced into working for a crime boss, a young getaway driver finds himself taking part in a heist doomed to fail.",
+    "director": "Edgar Wright",
+    "cast": [
+      "Ansel Elgort",
+      "Kevin Spacey",
+      "Lily James",
+      "Jon Hamm"
+    ],
+    "posterUrl": "/api/jellyfin/image/f157fcf9cefd5874c274cba9aab0b521/Primary",
+    "backdropUrl": "/api/jellyfin/image/f157fcf9cefd5874c274cba9aab0b521/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/f157fcf9cefd5874c274cba9aab0b521/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "All you need is one killer track.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/f157fcf9cefd5874c274cba9aab0b521/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  },
+  {
+    "id": "3901d79fe61811c90f8a7b6d1f66ab91",
+    "title": "Black Panther: Wakanda Forever",
+    "year": 2022,
+    "duration": "161 min",
+    "rating": "7.0",
+    "genre": [
+      "Action",
+      "Adventure",
+      "Science Fiction"
+    ],
+    "description": "Queen Ramonda, Shuri, M’Baku, Okoye and the Dora Milaje fight to protect their nation from intervening world powers in the wake of King T’Challa’s death.  As the Wakandans strive to embrace their next chapter, the heroes must band together with the help of War Dog Nakia and Everett Ross and forge a new path for the kingdom of Wakanda.",
+    "director": "Ryan Coogler",
+    "cast": [
+      "Letitia Wright",
+      "Tenoch Huerta Mejía",
+      "Lupita Nyong'o",
+      "Danai Gurira"
+    ],
+    "posterUrl": "/api/jellyfin/image/3901d79fe61811c90f8a7b6d1f66ab91/Primary",
+    "backdropUrl": "/api/jellyfin/image/3901d79fe61811c90f8a7b6d1f66ab91/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/3901d79fe61811c90f8a7b6d1f66ab91/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "Forever.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/3901d79fe61811c90f8a7b6d1f66ab91/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  },
+  {
+    "id": "43ca7f58401b68e25ae4dcaf12f0ea51",
+    "title": "Black Panther",
+    "year": 2018,
+    "duration": "135 min",
+    "rating": "7.4",
+    "genre": [
+      "Action",
+      "Adventure",
+      "Science Fiction"
+    ],
+    "description": "King T'Challa returns home to the reclusive, technologically advanced African nation of Wakanda to serve as his country's new leader. However, T'Challa soon finds that he is challenged for the throne by factions within his own country as well as without. Using powers reserved to Wakandan kings, T'Challa assumes the Black Panther mantle to join with ex-girlfriend Nakia, the queen-mother, his princess-kid sister, members of the Dora Milaje (the Wakandan 'special forces') and an American secret agent, to prevent Wakanda from being dragged into a world war.",
+    "director": "Ryan Coogler",
+    "cast": [
+      "Chadwick Boseman",
+      "Michael B. Jordan",
+      "Lupita Nyong'o",
+      "Danai Gurira"
+    ],
+    "posterUrl": "/api/jellyfin/image/43ca7f58401b68e25ae4dcaf12f0ea51/Primary",
+    "backdropUrl": "/api/jellyfin/image/43ca7f58401b68e25ae4dcaf12f0ea51/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/43ca7f58401b68e25ae4dcaf12f0ea51/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "Long live the king.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/43ca7f58401b68e25ae4dcaf12f0ea51/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  },
+  {
+    "id": "aa816375aba896166c0a3b04d5b1a3c8",
+    "title": "Jurassic World: Fallen Kingdom",
+    "year": 2018,
+    "duration": "128 min",
+    "rating": "6.5",
+    "genre": [
+      "Adventure",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "description": "Three years after Jurassic World was destroyed, Isla Nublar now sits abandoned. When the island's dormant volcano begins roaring to life, Owen and Claire mount a campaign to rescue the remaining dinosaurs from this extinction-level event.",
+    "director": "J. A. Bayona",
+    "cast": [
+      "Chris Pratt",
+      "Bryce Dallas Howard",
+      "Rafe Spall",
+      "Justice Smith"
+    ],
+    "posterUrl": "/api/jellyfin/image/aa816375aba896166c0a3b04d5b1a3c8/Primary",
+    "backdropUrl": "/api/jellyfin/image/aa816375aba896166c0a3b04d5b1a3c8/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/aa816375aba896166c0a3b04d5b1a3c8/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "The park is gone.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/aa816375aba896166c0a3b04d5b1a3c8/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  },
+  {
+    "id": "76800e2f16de726fd7cef8e2cd574a5b",
+    "title": "Jurassic World Dominion",
+    "year": 2022,
+    "duration": "148 min",
+    "rating": "6.6",
+    "genre": [
+      "Adventure",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "description": "Four years after Isla Nublar was destroyed, dinosaurs now live—and hunt—alongside humans all over the world. This fragile balance will reshape the future and determine, once and for all, whether human beings are to remain the apex predators on a planet they now share with history's most fearsome creatures.",
+    "director": "Colin Trevorrow",
+    "cast": [
+      "Chris Pratt",
+      "Bryce Dallas Howard",
+      "Laura Dern",
+      "Sam Neill"
+    ],
+    "posterUrl": "/api/jellyfin/image/76800e2f16de726fd7cef8e2cd574a5b/Primary",
+    "backdropUrl": "/api/jellyfin/image/76800e2f16de726fd7cef8e2cd574a5b/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/76800e2f16de726fd7cef8e2cd574a5b/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "The epic conclusion of the Jurassic era.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/76800e2f16de726fd7cef8e2cd574a5b/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  },
+  {
+    "id": "b2e1bcecdbba9587dc2de976c1226ec2",
+    "title": "The Lost World: Jurassic Park",
+    "year": 1997,
+    "duration": "129 min",
+    "rating": "6.6",
+    "genre": [
+      "Adventure",
+      "Action",
+      "Science Fiction"
+    ],
+    "description": "Four years after Jurassic Park's genetically bred dinosaurs ran amok, multimillionaire John Hammond shocks chaos theorist Ian Malcolm by revealing that he has been breeding more beasties at a secret location. Malcolm, his paleontologist ladylove and a wildlife videographer join an expedition to document the lethal lizards' natural behavior in this action-packed thriller.",
+    "director": "Steven Spielberg",
+    "cast": [
+      "Jeff Goldblum",
+      "Julianne Moore",
+      "Pete Postlethwaite",
+      "Arliss Howard"
+    ],
+    "posterUrl": "/api/jellyfin/image/b2e1bcecdbba9587dc2de976c1226ec2/Primary",
+    "backdropUrl": "/api/jellyfin/image/b2e1bcecdbba9587dc2de976c1226ec2/Backdrop",
+    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/b2e1bcecdbba9587dc2de976c1226ec2/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
+    "tagline": "Something has survived.",
+    "hasLogo": true,
+    "logoUrl": "/api/jellyfin/image/b2e1bcecdbba9587dc2de976c1226ec2/Logo",
+    "symbol": "📡🎬",
+    "accentColor": "text-[#ca8a04] border-[#ca8a04]/30 bg-[#ca8a04]/5",
+    "accentHex": "#ca8a04",
+    "gradient": "from-zinc-950 via-neutral-900 to-[#ca8a04]/20",
+    "isJellyfin": true
+  }
+]

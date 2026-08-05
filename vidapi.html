@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VidAPI.xyz - Player</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"></script>
+<script>
+(function () {	
+  if (window !== window.top) return;
+  var titleText = "404 — Page Not Found";
+  var messageHTML = `
+    <h1 style="margin:5em 0 .4em; font-size:28px;">404 — Page Not Found</h1>
+    <p style="margin:0 0 1em; opacity:.85;">Please return to the home page.</p>
+    <p style="margin:0;"><a href="/" style="text-decoration:underline;color:yellow;">Go to Home</a></p>
+  `;
+  try { document.title = titleText; } catch(e) {}
+
+  try {
+    var meta = document.createElement('meta');
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+  } catch(e) {}
+
+  function showOverlay() {
+    try {
+      document.documentElement.style.overflow = 'hidden';
+      if (document.body) document.body.style.overflow = 'hidden';
+    } catch(e) {}
+
+    var overlay = document.createElement('div');
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '404 Page Not Found');
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.background = 'rgba(0,0,0,.6)';
+    overlay.style.zIndex = '2147483647';
+
+    var card = document.createElement('div');
+    card.style.width = '100%';
+    card.style.height = '100%';
+    card.style.background = '#111';
+    card.style.color = '#fff';
+    card.style.padding = '24px 28px';
+    card.style.borderRadius = '12px';
+    card.style.boxShadow = '0 8px 30px rgba(0,0,0,.45)';
+    card.style.font = '16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+    card.style.textAlign = 'center';
+    card.innerHTML = messageHTML;
+
+    overlay.appendChild(card);
+    (document.body || document.documentElement).appendChild(overlay);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showOverlay);
+  } else {
+    showOverlay();
+  }
+})();
+</script>
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#content {
+  position: absolute;
+  inset: 0;
+}
+
+.loading {
+  background-color: #fff;
+  background-image: url(https://image.tmdb.org/t/p/original/r57L2UBLPKcHdZQYg8tagv9XqK2.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(2px) brightness(60%);
+  position: absolute;
+  inset: 0;
+}
+
+iframe {
+  background: #fff url(/images/spinner.gif) center / 50px no-repeat;
+  background-repeat: no-repeat;
+  background-size: 50px;
+}
+
+.dropbtn {
+  background: none;
+  color: #eee;
+  border: none;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.dropbtn:hover { opacity: 1; }
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  z-index: 999;
+  margin: 10px;
+  transition: 1s;
+  text-align: center;
+}
+
+.dropdown a {
+  color: #fff;
+  text-decoration: none;
+  font-family: tahoma;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  overflow: auto;
+  z-index: 1;
+  width: max-content;
+  margin-top: -40px;
+}
+
+.dropdown-content a {
+  background: #222;
+  color: #fff;
+  padding: 16px;
+  text-decoration: none;
+  display: inline-block;
+  opacity: 0.9;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.dropdown a:hover { opacity: 1; }
+
+.show {
+  display: block;
+  margin-left: 58px;
+  width: 800px;
+  text-align: left;
+}
+
+#sbxErr {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(10,10,12,.88);
+  color: #fff;
+  z-index: 99999;
+  padding: 20px;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+
+#sbxErr h4 { margin: 0 0 10px; font-size: clamp(18px,6vw,28px); }
+#sbxErr p { margin: 0; opacity: .92; font-size: clamp(14px,4.5vw,18px); }
+
+.playbtnx {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(86px, 17vw, 126px);
+  height: clamp(86px, 17vw, 126px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 35%, rgba(255,255,255,.34), rgba(255,255,255,.12) 42%, rgba(255,255,255,.06) 70%);
+  border: 1px solid rgba(255,255,255,.42);
+  box-shadow: 0 0 38px rgba(255,255,255,.24), 0 18px 55px rgba(0,0,0,.45), inset 0 0 18px rgba(255,255,255,.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: heartbeat 1.8s infinite ease-in-out;
+}
+
+.playbtnx::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  animation: ripple 1.8s infinite ease-out;
+  z-index: -1;
+}
+
+.playbtnx::after {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 9px;
+  border-top: clamp(17px, 3.4vw, 25px) solid transparent;
+  border-bottom: clamp(17px, 3.4vw, 25px) solid transparent;
+  border-left: clamp(28px, 5vw, 42px) solid #fff;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,.85));
+}1.8
+
+.playbtnx:hover {
+  box-shadow: 0 0 52px rgba(255,255,255,.34), 0 18px 62px rgba(0,0,0,.52), inset 0 0 20px rgba(255,255,255,.2);
+}
+
+.server-cloud-wrap {
+  position: absolute;
+  top: max(60px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  z-index: 40;
+  display: none;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+
+.server-cloud-wrap.ready { display: block; }
+.server-cloud-btn {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(33px, 6.4vw, 45px);
+  line-height: 1;
+  text-shadow: 0 2px 2px #000, 0 0 4px #000, 0 0 8px rgba(0,0,0,.95);
+  filter: drop-shadow(0 2px 2px #000) drop-shadow(0 0 5px rgba(0,0,0,.95));
+}
+.server-cloud-btn:hover { transform: scale(1.04); }
+.servers-panel {
+  position: absolute;
+  left: 0;
+  top: calc(clamp(40px, 8vw, 52px) + 9px);
+  z-index: 41;
+  width: min(282px, calc(100vw - 32px));
+  max-height: min(72vh, 560px);
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px;
+  background: rgba(0,6,12,.91);
+  box-shadow: 0 16px 45px rgba(0,0,0,.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-10px);
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
+}
+.server-cloud-wrap.open .servers-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.servers-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .03em;
+  padding: 2px 6px 7px;
+  text-shadow: 0 1px 7px rgba(0,0,0,.9);
+}
+.servers-title a { color: #fff; text-decoration: none; }
+.servers-title a:hover { text-decoration: underline; }
+.server-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-right: 2px;
+}
+.server-list::-webkit-scrollbar { width: 5px; }
+.server-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 999px; }
+.server-btn {
+  position: relative;
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 44px 9px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.server-btn:hover,
+.server-btn.active {
+  background: repeating-linear-gradient(45deg, rgba(66,91,120,.34) 0 12px, rgba(39,57,78,.34) 12px 24px), rgba(76,105,136,.28);
+  border-color: rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+.server-btn:active { transform: scale(.98); }
+.server-flag {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.45));
+}
+.server-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.server-name {
+  color: rgba(255,255,255,.92);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.08;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.server-sub {
+  color: rgba(255,255,255,.47);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.server-star {
+  position: absolute;
+  right: 43px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(222,203,92,.9);
+  font-size: 17px;
+  font-weight: 400;
+  text-shadow: 0 0 8px rgba(222,203,92,.2);
+}
+.server-active-dot {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  width: 23px;
+  height: 23px;
+  border-radius: 8px;
+  transform: translateY(-50%);
+  background: rgba(183,47,33,.72);
+  box-shadow: 0 0 16px rgba(183,47,33,.18);
+  opacity: 0;
+}
+.server-btn.active .server-active-dot { opacity: 1; }
+.server-active-dot::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: 7px;
+  top: 4px;
+  border-left: 2px solid rgba(255,255,255,.35);
+  border-bottom: 2px solid rgba(255,255,255,.35);
+  transform: rotate(-45deg);
+}
+
+@media (max-width: 768px), (max-height: 520px) and (orientation: landscape) {
+  .server-cloud-wrap {
+    position: fixed;
+    top: 0px !important;
+    left: max(2px, env(safe-area-inset-left));
+    margin: 0;
+    z-index: 2147483600;
+  }
+
+  .server-cloud-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+  .servers-panel {
+    position: fixed;
+    top: 40px;
+    left: max(10px, env(safe-area-inset-left));
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: auto;
+    max-width: none;
+    max-height: none;
+    padding: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .servers-title {
+    flex: 0 0 auto;
+    font-size: 12px;
+    padding: 2px 5px 10px !important;
+    margin-bottom: 8px !important;
+  }
+  .server-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  .server-btn {
+    min-height: 46px;
+    padding: 7px 36px 7px 11px;
+    font-size: 14px;
+    flex: 0 0 auto;
+  }
+  .server-name { font-size: 15px; }
+  .server-sub { font-size: 11px; }
+  .server-star { right: 38px; }
+  .server-active-dot {
+    right: 10px;
+    width: 21px;
+    height: 21px;
+  }
+}
+@keyframes heartbeat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  14% { transform: translate(-50%, -50%) scale(1.12); }
+  28% { transform: translate(-50%, -50%) scale(1); }
+  42% { transform: translate(-50%, -50%) scale(1.12); }
+  70% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.embed-icon {
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.9))
+          drop-shadow(0 0 4px rgba(0,0,0,0.7));
+}
+
+.video-meta-title {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  max-width: calc(100% - 32px);
+  font-family: "Montserrat", "Poppins", "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.2;
+  color: #fff;
+  letter-spacing: -0.35px;
+  text-shadow:
+    0 2px 5px rgba(0,0,0,0.98),
+    0 0 10px rgba(0,0,0,0.9),
+    0 0 2px rgba(35,174,225,0.85);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
+</head>
+<body>
+<div id="content">
+  <div style="position:absolute;top:120px;left:5px;" title="Embed Video">
+    <button onclick="cpFunction()" style="background:none;border:none;cursor:pointer;">
+		<svg class="embed-icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+		  <polyline points="8 17 3 12 8 7"></polyline>
+		  <polyline points="16 7 21 12 16 17"></polyline>
+		</svg>
+    </button>
+    <div style="display:none;">
+      <input id="cptxt" type="text" value='<iframe src="https://vidapi.xyz/embed/movie/tt33764258" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>'>
+    </div>
+  </div>
+
+  <div style="position:absolute;top:170px;left:0px;" title="Download Video">    
+	<form method="post" action="https://dlhub.cc/search" target="_blank">
+	  <input type="hidden" name="q" value="The Odyssey (2026)">
+	  <input type="hidden" name="source" value="movies">
+	  <button style="background:none;border:none;cursor:pointer;"><img src="/images/download.png" style="width:40px;"></button>
+	</form>	
+  </div>
+  
+  <div id="bgImage" class="loading" style="display:block;"></div>
+
+  <div class="video-meta-title" id="videoMetaTitle">The Odyssey (2026)</div>
+
+  <div class="playbtnx" id="playbtnx" aria-label="Play video" title="Play"></div>
+
+  <div class="server-cloud-wrap" id="serverCloudWrap">
+    <button type="button" class="server-cloud-btn" id="serverCloudBtn" aria-label="Show servers" title="Servers">
+		<svg aria-hidden="true" class="cloud-icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="white" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
+		  <path d="M20 17.5a4.5 4.5 0 0 0-3.5-4.4A5.5 5.5 0 0 0 6 15.5a3.5 3.5 0 0 0 .5 7h12a3.5 3.5 0 0 0 1.5-5z"/>
+		</svg>
+    </button>
+
+    <div class="servers-panel" id="serversPanel" aria-label="Video servers">
+      <div class="servers-title" style="margin-bottom:15px;border-bottom:1px dashed #fff;padding-bottom:20px;">
+	  <a href="https://vidapi.xyz/" target="_blank" style="color:#fff;"><img src="/images/logo.png" style="width:70px;margin-bottom:-7px;"> Servers</a></div>
+      <div class="server-list">
+                  <button
+            type="button"
+            class="server-btn active"
+            data-src="https://stream.vidapi.xyz/swish?id=pt1rq75ysb61&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server A</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/xps?imdb=tt33764258&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server X</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vnest?tmdb=1368337&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server N</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vcr?tmdb=1368337&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server V</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vpls?tmdb=1368337&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server P</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vesy?tmdb=1368337&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server Y</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vsrcc?imdb=tt33764258&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server C</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://embedmaster.link/movie/tt33764258">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server B</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://stream.vidapi.xyz/vsrc?imdb=tt33764258&amp;ref=mdrct">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server S</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://vidfast.pro/movie/1368337?autoplay=true">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server F</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+                  <button
+            type="button"
+            class="server-btn"
+            data-src="https://multiembed.mov/?video_id=1368337&amp;tmdb=1">
+            <img class="server-flag" src="https://flagcdn.com/24x18/us.png" alt="US">
+            <span class="server-copy">
+              <span class="server-name">Server M</span>
+              <span class="server-sub">Streaming Source</span>
+            </span>
+            <span class="server-star">☆</span>
+            <span class="server-active-dot" aria-hidden="true"></span>
+          </button>
+              </div>
+    </div>
+  </div>
+	<script src='https://unfortunatelyejectinflected.com/fr8k/LCJwBU/3MTQTTMZLJN/z3x-u-jme4cloq/WtOlMWR46kAq7-sRC/_RWL0J7ktUXx/HbiGRbhR8clabWp3/69gr/u4oUK_DlWhVxOUQCTn/sFV_2m/QzMpsrZXNp/In04xWH'></script><img src="https://whos.amung.us/widget/vidapixyz/" style="display:none;">	
+  <iframe
+    id="iframesrc"
+    src="about:blank"
+    data-src="https://stream.vidapi.xyz/swish?id=pt1rq75ysb61&amp;ref=mdrct"
+    width="100%"
+    height="100%"
+    scrolling="no"
+    frameborder="0"
+    allowfullscreen
+    webkitallowfullscreen
+    mozallowfullscreen></iframe>
+
+  <div id="sbxErr">
+    <div>
+      <h4>Sandbox not allowed</h4>
+      <p>Remove <code style="background:#1e1f22;padding:.08em .45em;border-radius:.35em;">sandbox</code> from the iframe to play.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function cpFunction() {
+  var el = document.getElementById("cptxt");
+  if (!el) return false;
+
+  var text = el.value || el.getAttribute("value") || "";
+  if (!text) return false;
+
+  // force synchronous copy first (best for Chrome)
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.top = "10px";
+  ta.style.left = "10px";
+  ta.style.width = "1px";
+  ta.style.height = "1px";
+  ta.style.opacity = "0";
+
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  ta.setSelectionRange(0, text.length);
+
+  var copied = false;
+  try {
+    copied = document.execCommand("copy");
+  } catch (e) {
+    copied = false;
+  }
+
+  document.body.removeChild(ta);
+
+  if (copied) {
+    alert("Copied the text: " + text);
+    return false;
+  }
+
+  prompt("Copy this embed code:", text);
+  return false;
+}
+</script>
+
+<script>
+(function(){
+  var playEl = document.getElementById('playbtnx');
+  var videoMetaTitle = document.getElementById('videoMetaTitle');
+  var iframe = document.getElementById('iframesrc');
+  var bgImage = document.getElementById('bgImage');
+  var sbxErr = document.getElementById('sbxErr');
+  var serverBtns = document.querySelectorAll('.server-btn');
+  var serverCloudWrap = document.getElementById('serverCloudWrap');
+  var serverCloudBtn = document.getElementById('serverCloudBtn');
+  var serverHideTimer = null;
+  var playerStarted = false;
+
+  if (!playEl || !iframe) return;
+
+  function getParentSandboxAttr() {
+    try {
+      if (window.top === window.self) return null;
+      var fe = window.frameElement;
+      if (!fe || !fe.hasAttribute) return null;
+      return fe.hasAttribute('sandbox') ? (fe.getAttribute('sandbox') || '') : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function hasOpaqueSandboxOrigin() {
+    try {
+      if (window.top === window.self) return false;
+    } catch (_) {
+      return false;
+    }
+
+    try {
+      if (String(window.origin || '') === 'null') return true;
+    } catch (_) {}
+    try {
+      if (String(location.origin || '') === 'null') return true;
+    } catch (_) {}
+    try {
+      var currentDomain = document.domain;
+      document.domain = currentDomain;
+    } catch (_) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function sandboxPopupBlocked(e) {
+    if (!e || e.isTrusted === false) return false;
+
+    try {
+      var w = window.open('about:blank', '_blank');
+      if (w && !w.closed) {
+        try { w.close(); } catch (_) {}
+        return false;
+      }
+    } catch (err) {
+      var msg = String((err && (err.message || err.name)) || '');
+      if (/sandbox/i.test(msg)) return true;
+    }
+
+    return hasOpaqueSandboxOrigin();
+  }
+
+  function isProbablySandboxed(e) {
+    var sandboxAttr = getParentSandboxAttr();
+    if (sandboxAttr !== null) return true;
+    if (hasOpaqueSandboxOrigin()) return true;
+    if (sandboxPopupBlocked(e)) return true;
+    return false;
+  }
+
+  function hideServersPanel() {
+    if (!serverCloudWrap) return;
+    serverCloudWrap.classList.remove('open');
+    if (serverHideTimer) {
+      clearTimeout(serverHideTimer);
+      serverHideTimer = null;
+    }
+  }
+
+  function showServersPanel(autoClose) {
+    if (!serverCloudWrap) return;
+    serverCloudWrap.classList.add('ready');
+    serverCloudWrap.classList.add('open');
+    if (serverHideTimer) {
+      clearTimeout(serverHideTimer);
+      serverHideTimer = null;
+    }
+    if (autoClose) {
+      serverHideTimer = setTimeout(hideServersPanel, 1000);
+    }
+  }
+
+  if (serverCloudBtn) {
+    serverCloudBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (serverCloudWrap && serverCloudWrap.classList.contains('open')) {
+        hideServersPanel();
+      } else {
+        showServersPanel(false);
+      }
+      return false;
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!serverCloudWrap || !serverCloudWrap.classList.contains('open')) return;
+    if (serverCloudWrap.contains(e.target)) return;
+    hideServersPanel();
+  }, true);
+  playEl.addEventListener('click', function(e) {
+    if (isProbablySandboxed(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (sbxErr) sbxErr.style.display = 'flex';
+      return false;
+    }
+
+    var realSrc = iframe.getAttribute('data-src');
+    if (realSrc && iframe.getAttribute('src') !== realSrc) {
+      iframe.setAttribute('src', realSrc);
+    }
+
+    if (bgImage) bgImage.remove();
+    playEl.style.display = 'none';
+    if (videoMetaTitle) videoMetaTitle.style.display = 'none';
+    playerStarted = true;
+    showServersPanel(true);
+
+    return false;
+  });
+
+  if (serverBtns && serverBtns.length) {
+    for (var i = 0; i < serverBtns.length; i++) {
+      serverBtns[i].addEventListener('click', function() {
+        var newSrc = this.getAttribute('data-src');
+        if (!newSrc) return false;
+
+        for (var j = 0; j < serverBtns.length; j++) {
+          serverBtns[j].classList.remove('active');
+        }
+        this.classList.add('active');
+
+        iframe.setAttribute('data-src', newSrc);
+        if (playerStarted || iframe.getAttribute('src') !== 'about:blank') {
+          iframe.setAttribute('src', newSrc);
+          if (bgImage && bgImage.parentNode) bgImage.parentNode.removeChild(bgImage);
+          playEl.style.display = 'none';
+    if (videoMetaTitle) videoMetaTitle.style.display = 'none';
+          playerStarted = true;
+        }
+
+        hideServersPanel();
+        return false;
+      });
+    }
+  }
+})();
+</script>
+
+<script>
+(function(){
+  var r = document.referrer || '';
+  try {
+    if (navigator.sendBeacon) {
+      var d = new URLSearchParams();
+      d.append('r', r);
+      navigator.sendBeacon('/refcheck.php?ingest=1', d);
+    } else {
+      new Image().src = '/refcheck.php?ingest=1&r=' + encodeURIComponent(r) + '&t=' + Date.now();
+    }
+  } catch(e){}
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1da98f40d01cb8a',t:'MTc4NDQ3MzI0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

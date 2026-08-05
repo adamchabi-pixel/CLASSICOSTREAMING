@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <link rel="icon" type="image/png" href="/app-icon.png?v=8" />
+    <link rel="apple-touch-icon" href="/app-icon.png?v=8" />
+    <link rel="manifest" href="/manifest.json?v=8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CLASSICO">
+    <title>CLASSICO</title>
+    <meta name="6a97888e-site-verification" content="4aa59da3ec677a8c3af45018a60128b4">
+  <style>
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Pinyon+Script&display=swap');
+          @keyframes illuminate { 0%, 100% { opacity: 0.2; transform: scale3d(0.8, 0.8, 1); } 50% { opacity: 1; transform: scale3d(1.2, 1.2, 1); } }
+          @media (min-width: 640px) {
+             #startup-screen span:first-child { font-size: 2.25rem !important; }
+             #startup-screen > span:nth-child(2) { font-size: 1.5rem !important; margin-top:-4px !important; }
+          }
+          @media (min-width: 768px) {
+             #startup-screen span:first-child { font-size: 3rem !important; }
+             #startup-screen > span:nth-child(2) { font-size: 1.875rem !important; margin-top:-4px !important; }
+          }
+        </style></head>
+  <body class="bg-black text-white">
+    <div id="root">
+      <div id="startup-screen" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background-color:#000;pointer-events:none;user-select:none;">
+        <div style="position:relative;overflow:hidden;display:flex;align-items:center;">
+          <span style="font-family:'Cinzel',serif;font-weight:700;font-size:1.875rem;letter-spacing:0.22em;text-transform:uppercase;line-height:1;background:linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+            CLASSICO
+          </span>
+        </div>
+        <span style="font-family:'Pinyon Script',cursive;display:block;font-size:1.25rem;color:#f4ecd8;line-height:1;margin-top:-2px;user-select:none;text-align:center;transform:translateX(-3px);filter:drop-shadow(0 0 4px rgba(244,236,216,0.2));">
+          The Best
+        </span>
+        <div style="display:flex;gap:8px;margin-top:32px;">
+          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:0s;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-1.0s;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-0.5s;"></div>
+        </div>
+        
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

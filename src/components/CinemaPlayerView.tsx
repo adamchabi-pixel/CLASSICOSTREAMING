@@ -301,7 +301,25 @@ export default function CinemaPlayerView({
     } catch(e) {}
     return 0;
   });
-  const [serverSelected, setServerSelected] = useState(false);
+  const [serverSelected, setServerSelected] = useState(() => {
+    try {
+      const savedStr = safeStorage.getItem("classico_progress");
+      if (savedStr) {
+        const saved = JSON.parse(savedStr) || {};
+        let baseId = movieId;
+        if (movieId && movieId.endsWith('-tv')) {
+            baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+        }
+        if (saved[baseId] && typeof saved[baseId].server_index === 'number') {
+            return true;
+        }
+        if (movieId && saved[movieId] && typeof saved[movieId].server_index === 'number') {
+            return true;
+        }
+      }
+    } catch(e) {}
+    return false;
+  });
   const [availableServers, setAvailableServers] = useState<{name: string, url: string, stars?: number}[]>([]);
   const [playing, setPlaying] = useState(true);
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
@@ -571,6 +589,7 @@ export default function CinemaPlayerView({
 
   const handleClosePlayer = () => {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    window.dispatchEvent(new CustomEvent("classico_progress_updated"));
     onClose();
   };
 
@@ -875,8 +894,11 @@ export default function CinemaPlayerView({
             let iframeUrlPeach = "";
             let iframeUrlVideasy = "";
             let iframeUrlCinemaos = "";
+            let iframeUrlOnlyflix = "";
             let cleanId = finalTmdbId;
             if (cleanId.endsWith('-tv')) cleanId = cleanId.replace('-tv', '');
+            
+            let imdbId = matchedMovie?.imdbId || (matchedMovie?.providerIds?.Imdb) || cleanId;
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             
             if (isTv && season && episode) {
@@ -884,17 +906,22 @@ export default function CinemaPlayerView({
               iframeUrlPeach = `https://peachify.pro/embed/tv/${cleanId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`;
               iframeUrlVideasy = `https://player.videasy.net/tv/${cleanId}/${season}/${episode}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
               iframeUrlCinemaos = `https://cinemaos.live/watch/tv/${cleanId}?season=${season}&episode=${episode}${timeParam}`;
+              iframeUrlOnlyflix = `https://vidapi.xyz/embed/tv/${cleanId}/${season}/${episode}`;
             } else {
               iframeUrlVidrock = `https://vidlink.pro/movie/${cleanId}?dummy=1${timeParam}`;
               iframeUrlPeach = `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${timeParam}`;
               iframeUrlVideasy = `https://player.videasy.net/movie/${cleanId}?color=FF9900&overlay=true${timeParam}`;
               iframeUrlCinemaos = `https://cinemaos.live/watch/movie/${cleanId}?dummy=1${timeParam}`;
+              
+              let onlyflixId = typeof imdbId === 'string' && imdbId.startsWith('tt') ? imdbId : cleanId;
+              iframeUrlOnlyflix = `https://vidapi.xyz/embed/movie/${onlyflixId}`;
             }
             const newServers = [
               { name: "Server 1", url: iframeUrlCinemaos, stars: 3 },
-              { name: "Server 2", url: iframeUrlPeach, stars: 2 },
-              { name: "Server 3", url: iframeUrlVideasy, stars: 2 },
-              { name: "Server 4", url: iframeUrlVidrock, stars: 1 }
+              { name: "Server 2", url: iframeUrlVideasy, stars: 3 },
+              { name: "Server 3", url: iframeUrlOnlyflix, stars: 3 },
+              { name: "Server 4", url: iframeUrlPeach, stars: 2 },
+              { name: "Server 5", url: iframeUrlVidrock, stars: 1 }
             ];
             setAvailableServers(newServers);
             
@@ -976,24 +1003,32 @@ export default function CinemaPlayerView({
                 if (!forceJellyfin && itemData.ProviderIds) {
                   if (itemData.ProviderIds.Tmdb) {
                     data.isIframeEmbed = true;
-                    let u1 = "", u2 = "", u3 = "", u4 = "";
+                    let u1 = "", u2 = "", u3 = "", u4 = "", u5 = "";
                     const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
+                    const tmdbId = itemData.ProviderIds.Tmdb;
+                    const imdbId = itemData.ProviderIds.Imdb || tmdbId;
+                    
                     if (itemData.Type === "Episode" && itemData.ParentIndexNumber && itemData.IndexNumber) {
-                        u1 = `https://peachify.pro/embed/tv/${itemData.ProviderIds.Tmdb}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?accent=FF9900&servers=hide${timeParam}`;
-                        u2 = `https://111movies.net/tv/${itemData.ProviderIds.Tmdb}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?dummy=1${timeParam}`; // Just in case, add ?dummy=1 for timeParam &t=
-                        u3 = `https://player.videasy.net/tv/${itemData.ProviderIds.Tmdb}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
-                        u4 = `https://cinemaos.live/watch/tv/${itemData.ProviderIds.Tmdb}?season=${itemData.ParentIndexNumber}&episode=${itemData.IndexNumber}${timeParam}`;
+                        u1 = `https://peachify.pro/embed/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?accent=FF9900&servers=hide${timeParam}`;
+                        u2 = `https://111movies.net/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?dummy=1${timeParam}`; // Just in case, add ?dummy=1 for timeParam &t=
+                        u3 = `https://player.videasy.net/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
+                        u4 = `https://cinemaos.live/watch/tv/${tmdbId}?season=${itemData.ParentIndexNumber}&episode=${itemData.IndexNumber}${timeParam}`;
+                        u5 = `https://vidapi.xyz/embed/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}`;
                     } else {
-                        u1 = `https://peachify.pro/embed/movie/${itemData.ProviderIds.Tmdb}?accent=FF9900&servers=hide${timeParam}`;
-                        u2 = `https://111movies.net/movie/${itemData.ProviderIds.Tmdb}?dummy=1${timeParam}`;
-                        u3 = `https://player.videasy.net/movie/${itemData.ProviderIds.Tmdb}?color=FF9900&overlay=true${timeParam}`;
-                        u4 = `https://cinemaos.live/watch/movie/${itemData.ProviderIds.Tmdb}?dummy=1${timeParam}`;
+                        u1 = `https://peachify.pro/embed/movie/${tmdbId}?accent=FF9900&servers=hide${timeParam}`;
+                        u2 = `https://111movies.net/movie/${tmdbId}?dummy=1${timeParam}`;
+                        u3 = `https://player.videasy.net/movie/${tmdbId}?color=FF9900&overlay=true${timeParam}`;
+                        u4 = `https://cinemaos.live/watch/movie/${tmdbId}?dummy=1${timeParam}`;
+                        
+                        let onlyflixId = typeof imdbId === 'string' && imdbId.startsWith('tt') ? imdbId : tmdbId;
+                        u5 = `https://vidapi.xyz/embed/movie/${onlyflixId}`;
                     }
                     const srvs = [
-                      { name: "Server 1", url: u3, stars: 3 },
-                      { name: "Server 2", url: u4, stars: 2 },
-                      { name: "Server 3", url: u1, stars: 2 },
-                      { name: "Server 4", url: u2, stars: 1 }
+                      { name: "Server 1", url: u4, stars: 3 },
+                      { name: "Server 2", url: u3, stars: 3 },
+                      { name: "Server 3", url: u5, stars: 3 },
+                      { name: "Server 4", url: u1, stars: 2 },
+                      { name: "Server 5", url: u2, stars: 1 }
                     ];
                     setAvailableServers(srvs);
                     const safeIndex = activeServerIndex >= srvs.length ? 0 : activeServerIndex;
@@ -1140,6 +1175,7 @@ export default function CinemaPlayerView({
             let iframeUrlPeach = "";
             let iframeUrlVideasy = "";
             let iframeUrlCinemaos = "";
+            let iframeUrlOnlyflix = "";
             
             if (isTv) {
               const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {};
@@ -1149,18 +1185,21 @@ export default function CinemaPlayerView({
               iframeUrlPeach = `https://peachify.pro/embed/tv/${cleanId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`;
               iframeUrlVideasy = `https://player.videasy.net/tv/${cleanId}/${season}/${episode}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
               iframeUrlCinemaos = `https://cinemaos.live/watch/tv/${cleanId}?season=${season}&episode=${episode}${timeParam}`;
+              iframeUrlOnlyflix = `https://vidapi.xyz/embed/tv/${cleanId}/${season}/${episode}`;
             } else {
               iframeUrlVidrock = `https://vidlink.pro/movie/${cleanId}?dummy=1${timeParam}`;
               iframeUrlPeach = `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${timeParam}`;
               iframeUrlVideasy = `https://player.videasy.net/movie/${cleanId}?color=FF9900&overlay=true${timeParam}`;
               iframeUrlCinemaos = `https://cinemaos.live/watch/movie/${cleanId}?dummy=1${timeParam}`;
+              iframeUrlOnlyflix = `https://vidapi.xyz/embed/movie/${cleanId}`;
             }
             
             const newServers = [
               { name: "Server 1", url: iframeUrlCinemaos, stars: 3 },
-              { name: "Server 2", url: iframeUrlPeach, stars: 2 },
-              { name: "Server 3", url: iframeUrlVideasy, stars: 2 },
-              { name: "Server 4", url: iframeUrlVidrock, stars: 1 }
+              { name: "Server 2", url: iframeUrlVideasy, stars: 3 },
+              { name: "Server 3", url: iframeUrlOnlyflix, stars: 3 },
+              { name: "Server 4", url: iframeUrlPeach, stars: 2 },
+              { name: "Server 5", url: iframeUrlVidrock, stars: 1 }
             ];
 
             const fallbackData = {

@@ -1253,7 +1253,11 @@ export default function App() {
       }
     };
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    window.addEventListener("classico_progress_updated", loadProgress);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("classico_progress_updated", loadProgress);
+    };
   }, []);
 
   const loadJellyfinLibrary = async () => {};

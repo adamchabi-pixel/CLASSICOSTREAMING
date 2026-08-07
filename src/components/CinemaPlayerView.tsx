@@ -2241,14 +2241,14 @@ export default function CinemaPlayerView({
 
 
       {/* UPPER DECK (GO BACK & SERVERS) */}
-      <div className={`absolute top-0 left-0 right-0 p-4 sm:p-6 pt-[calc(0.5rem+env(safe-area-inset-top))] sm:pt-[calc(1.5rem+env(safe-area-inset-top))] flex items-center justify-between z-[60] pointer-events-none transition-opacity duration-300 ${controlsVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`absolute top-0 left-0 right-0 px-4 sm:px-6 pt-[calc(0.5rem+env(safe-area-inset-top))] pb-3 flex items-center justify-between z-[60] bg-gradient-to-b from-black/95 via-black/70 to-transparent transition-opacity duration-300 ${playbackInfo?.isIframeEmbed ? 'opacity-100' : (controlsVisible ? 'opacity-100' : 'opacity-0 pointer-events-none')}`}>
         
         {/* LEFT: BACK + SERVER */}
-        <div className="flex items-center gap-2 relative z-10 w-1/3">
+        <div className="flex items-center gap-2 relative z-10">
           <button
             onClick={handleClosePlayer}
-            className="pointer-events-auto p-2 sm:p-2 rounded-full bg-black/50 hover:bg-black/80 text-white/90 hover:text-white transition-all cursor-pointer flex items-center justify-center backdrop-blur-md"
-            title="Back"
+            className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white transition-all cursor-pointer flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg"
+            title="Retour"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -2261,27 +2261,27 @@ export default function CinemaPlayerView({
                   e.stopPropagation();
                   setShowServerMenu(!showServerMenu);
                 }}
-                className={`pointer-events-auto px-3 py-1.5 sm:px-4 sm:py-2 rounded-full transition-all cursor-pointer flex items-center justify-center gap-1.5 backdrop-blur-md bg-black/50 hover:bg-black/80 text-white border border-transparent`}
-                title="Change Server"
+                className="pointer-events-auto px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full transition-all cursor-pointer flex items-center justify-center gap-2 backdrop-blur-md bg-black/70 hover:bg-black/90 text-white border border-white/20 shadow-lg"
+                title="Changer de serveur"
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-[10px] sm:text-xs font-medium whitespace-nowrap flex items-center gap-1">
-                  {availableServers[activeServerIndex]?.name || 'Server'}
-                  {availableServers[activeServerIndex]?.stars && <span className="text-amber-500">{'★'.repeat(availableServers[activeServerIndex]?.stars || 0)}</span>}
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-[11px] sm:text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
+                  {availableServers[activeServerIndex]?.name || 'Serveur'}
+                  {availableServers[activeServerIndex]?.stars && <span className="text-amber-400 text-[10px]">{'★'.repeat(availableServers[activeServerIndex]?.stars || 0)}</span>}
                 </span>
-                <ChevronDown className="w-3 h-3 opacity-70" />
+                <ChevronDown className="w-3.5 h-3.5 opacity-80" />
               </button>
               
               {showServerMenu && (
-                <div id="cinema-server-menu" className="absolute top-full left-0 mt-2 min-w-[200px] bg-black/90 border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl pointer-events-auto z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-2 border-b border-white/10 text-xs font-semibold text-white/50 uppercase tracking-wider">
-                    Playback Server
+                <div id="cinema-server-menu" className="absolute top-full left-0 mt-2 min-w-[240px] max-w-[340px] bg-neutral-900/95 border border-white/20 rounded-xl overflow-hidden shadow-2xl backdrop-blur-2xl pointer-events-auto z-[70] animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-3.5 py-2 border-b border-white/10 text-[10px] font-bold text-amber-500 uppercase tracking-wider">
+                    Changer de serveur
                   </div>
-                  <div className="flex flex-col py-1">
+                  <div className="flex flex-col py-1 max-h-[60vh] overflow-y-auto">
                     {availableServers.map((server, idx) => (
                       <button
                         key={idx}
-                                                onClick={(e) => {
+                        onClick={(e) => {
                           e.stopPropagation();
                           setActiveServerIndex(idx);
                           
@@ -2303,11 +2303,13 @@ export default function CinemaPlayerView({
                           setIframeKey(prev => prev + 1);
                           setShowServerMenu(false);
                         }}
-                        className={`px-4 py-3 text-sm flex items-center gap-3 transition-colors ${activeServerIndex === idx ? 'bg-amber-500/10 text-amber-500' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                        className={`px-3.5 py-2.5 text-xs flex items-center justify-between gap-2 transition-colors text-left ${activeServerIndex === idx ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}
                       >
-                        <div className={`w-1.5 h-1.5 rounded-full ${activeServerIndex === idx ? 'bg-amber-500' : 'bg-transparent'}`}></div>
-                        {server.name}
-                        {server.stars && <span className="ml-auto text-amber-500 tracking-widest text-[10px]">{'★'.repeat(server.stars)}</span>}
+                        <div className="flex items-center gap-2">
+                          <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeServerIndex === idx ? 'bg-amber-400' : 'bg-transparent'}`}></div>
+                          <span>{server.name}</span>
+                        </div>
+                        {server.stars && <span className="text-amber-400 tracking-widest text-[10px] shrink-0">{'★'.repeat(server.stars)}</span>}
                       </button>
                     ))}
                   </div>
@@ -2318,11 +2320,10 @@ export default function CinemaPlayerView({
         </div>
         
         {/* CENTER: TITLE (Removed) */}
-        <div className="flex-1 flex justify-center items-center pointer-events-none w-1/3 absolute left-1/2 -translate-x-1/2">
-        </div>
+        <div className="flex-1"></div>
         
-        {/* RIGHT: EMPTY / SPACING FOR AIRPLAY */}
-        <div className="w-1/3 flex justify-end"></div>
+        {/* RIGHT */}
+        <div className="flex justify-end"></div>
       </div>
 
       {/* Loader overlay */}
@@ -2349,7 +2350,7 @@ export default function CinemaPlayerView({
       
       {/* Actual player/iframe */}
       {playbackInfo?.iframeSrc ? (
-        <div className={`absolute inset-0 w-full h-full bg-black z-40 flex items-center justify-center ${adClicks >= 3 ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}>
+        <div className={`absolute inset-0 w-full h-full bg-black z-40 flex items-center justify-center pt-[calc(3.25rem+env(safe-area-inset-top))] pb-[env(safe-area-inset-bottom)] ${adClicks >= 3 ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}>
           <iframe
             key={`${playbackInfo.iframeSrc}-${iframeKey}`}
             src={playbackInfo.iframeSrc}

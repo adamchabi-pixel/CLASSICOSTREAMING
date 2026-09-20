@@ -1,6 +1,6 @@
 {
   "name": "Remix CLASSICO",
-  "description": "Une plateforme de streaming élégante dédiée aux films de légendes et collections cultes.",
+  "description": "An elegant streaming platform dedicated to legendary films and cult collections.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

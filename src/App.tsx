@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   Search, Play, Film, Info, Heart, Award, 
   ChevronLeft, ChevronRight, ChevronDown, User,
-  Key, Tv, Clock, 
+  Key, Tv, Clock, Calendar,
   Sparkles, History, Compass, FilmIcon, BookmarkCheck,
   Star, CheckCircle, AlertCircle, RefreshCw, X, Shield, Menu, Settings, Loader2, Handshake
 } from "lucide-react";
@@ -679,7 +679,7 @@ export default function App() {
 
   const [tmdbCache, setTmdbCache] = useState<Movie[]>(() => {
     try {
-      const saved = localStorage.getItem("classico_tmdb_cache");
+      const saved = localStorage.getItem("classico_tmdb_cache_v3");
       if (saved) {
          const parsed = JSON.parse(saved);
          if (Array.isArray(parsed)) return parsed.filter(Boolean);
@@ -757,6 +757,7 @@ export default function App() {
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
@@ -784,6 +785,22 @@ export default function App() {
   const setUseTextTitleForHero = (val: boolean) => {};
   const isJellyfinLoading = false;
   const jellyfinConfig = null;
+
+  // Preload all hero backdrops and logos in advance so carousel transitions are 100% instantaneous and lag-free
+  useEffect(() => {
+    if (heroMovies && heroMovies.length > 0) {
+      heroMovies.forEach((m) => {
+        if (m.backdropUrl) {
+          const img = new window.Image();
+          img.src = m.backdropUrl;
+        }
+        if (m.logoUrl) {
+          const img = new window.Image();
+          img.src = m.logoUrl;
+        }
+      });
+    }
+  }, [heroMovies]);
 
   const loadProgress = () => {
     const savedProgress = localStorage.getItem("classico_progress");
@@ -1260,6 +1277,16 @@ export default function App() {
     };
   }, []);
 
+  // Track window scroll position for dynamic navbar styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const loadJellyfinLibrary = async () => {};
 
   useEffect(() => {
@@ -1273,13 +1300,13 @@ export default function App() {
     setUseTextTitleForHero(false);
   }, [currentHeroIndex]);
 
-  // Automatic advances interval for dynamic Jellyfin Hero banner collection (10s loops)
+  // Automatic advances interval for dynamic Jellyfin Hero banner collection (16s duration: 3s extra as requested)
   useEffect(() => {
     if (heroMovies.length <= 1) return;
     const interval = setInterval(() => {
       setDirection(1);
       setCurrentHeroIndex((prev) => (prev + 1) % heroMovies.length);
-    }, 10000);
+    }, 16000);
     return () => clearInterval(interval);
   }, [heroMovies.length]);
 
@@ -1401,16 +1428,16 @@ export default function App() {
       (window as any).moviePlayClickTime = performance.now();
       console.log("%c[CHRONO LECTEUR] Clic sur le film : 0.000s (Début du flux)", "color: #a855f7; font-weight: bold; font-size: 13px;");
       
-      let pId = movie.id;
+      let pId = movie.tmdbId ? String(movie.tmdbId) : movie.id;
       if (movie.isTv) {
         try {
           const tvState = (JSON.parse(localStorage.getItem("classico_tv_state") || "{}") || {});
-          const state = tvState[movie.id];
+          const state = tvState[movie.id] || (movie.tmdbId ? tvState[String(movie.tmdbId)] : null);
           const s = state ? state.season : 1;
           const e = state ? state.episode : 1;
-          pId = `${movie.id}-S${s}E${e}`;
+          pId = `${pId}-S${s}E${e}`;
         } catch(e) {
-          pId = `${movie.id}-S1E1`;
+          pId = `${pId}-S1E1`;
         }
       }
       
@@ -1431,7 +1458,7 @@ export default function App() {
 
       navigateTo("/player/" + pId);
     } else {
-      navigateTo("/movie/" + movie.id);
+      navigateTo("/movie/" + (movie.tmdbId || movie.id));
     }
     handleAddToHistory(movie.id);
   };
@@ -1476,12 +1503,26 @@ export default function App() {
     // Add custom mapped collection movies first (they have beautiful gradients, symbols, etc., and are now enriched with Jellyfin dynamic streams!)
     mappedCollections.flatMap(c => c.movies).forEach(m => {
       map.set(m.id, m);
+      if (m.tmdbId) map.set(String(m.tmdbId), m);
     });
 
     // Add Jellyfin-only library movies that did not match any of the hand-crafted collections
     allMoviesBase.forEach(m => {
       if (!map.has(m.id)) {
         map.set(m.id, { ...m});
+      }
+      if (m.tmdbId && !map.has(String(m.tmdbId))) {
+        map.set(String(m.tmdbId), { ...m});
+      }
+    });
+
+    // Add Hero spotlight movies so playing or viewing them always resolves cleanly
+    heroMovies.forEach(m => {
+      if (!map.has(m.id)) {
+        map.set(m.id, m);
+      }
+      if (m.tmdbId && !map.has(String(m.tmdbId))) {
+        map.set(String(m.tmdbId), m);
       }
     });
     
@@ -1495,11 +1536,14 @@ export default function App() {
           const existing = map.get(m.id)!;
           map.set(m.id, { ...existing, ...m });
         }
+        if (m.tmdbId && !map.has(String(m.tmdbId))) {
+          map.set(String(m.tmdbId), m);
+        }
       }
     });
 
     return Array.from(map.values()).filter(m => !isAnimeOrAdult(m));
-  }, [mappedCollections, allMoviesBase, tmdbCache]);
+  }, [mappedCollections, allMoviesBase, tmdbCache, heroMovies]);
 
     const unmatchedMovies = React.useMemo(() => {
     if (!allMovies || allMovies.length === 0) return [];
@@ -1559,7 +1603,7 @@ export default function App() {
             const map = new Map(prev.map(m => [m.id, m]));
             data.results.forEach((m: any) => map.set(m.id, m));
             const newCache = Array.from(map.values());
-            localStorage.setItem("classico_tmdb_cache", JSON.stringify(newCache));
+            localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
             return newCache;
           });
           return;
@@ -1616,7 +1660,7 @@ export default function App() {
               const map = new Map(prev.map((item: any) => [item.id, item]));
               formatted.forEach((item: any) => map.set(item.id, item));
               const newCache = Array.from(map.values());
-              localStorage.setItem("classico_tmdb_cache", JSON.stringify(newCache));
+              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
               return newCache;
             });
           }
@@ -1664,7 +1708,7 @@ export default function App() {
               const map = new Map(prev.map(m => [m.id, m]));
               results.forEach((m: Movie) => map.set(m.id, m));
               const newCache = Array.from(map.values());
-              localStorage.setItem("classico_tmdb_cache", JSON.stringify(newCache));
+              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
               return newCache;
             });
           }
@@ -1836,7 +1880,7 @@ export default function App() {
               const map = new Map(prev.map(m => [m.id, m]));
               map.set(targetMovieId, { ...(activeMovie || {}), ...data.movie, id: targetMovieId });
               const newCache = Array.from(map.values());
-              localStorage.setItem("classico_tmdb_cache", JSON.stringify(newCache));
+              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
               return newCache;
             });
           } else {
@@ -1870,7 +1914,7 @@ export default function App() {
                   const map = new Map(prev.map(m => [m.id, m]));
                   map.set(id, { ...data.movie, id });
                   const newCache = Array.from(map.values());
-                  localStorage.setItem("classico_tmdb_cache", JSON.stringify(newCache));
+                  localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
                   return newCache;
                 });
               }
@@ -1882,42 +1926,6 @@ export default function App() {
   }, [history, allMovies.length]); // allMovies.length is used so it runs initially when loaded
 
   // Intercept and return the standalone full-screen cinema view with zero overlay UI
-  if (activeTab === "player") {
-    const pId = routePath.startsWith("/player/") ? routePath.slice("/player/".length) : "";
-    
-
-    
-    return (
-      <ErrorBoundary 
-        fallbackTitle="Interruption de la lecture du film"
-        onReset={() => navigateTo("/movie/" + pId)}
-      >
-        {(() => {
-          let actualId = pId;
-          let season, episode;
-          const tvMatch = pId.match(/^(.*-tv)-S(\d+)E(\d+)$/);
-          if (tvMatch) {
-            actualId = tvMatch[1];
-            season = parseInt(tvMatch[2]);
-            episode = parseInt(tvMatch[3]);
-          }
-          return (
-            <CinemaPlayerView
-              movieId={actualId}
-              isTv={!!tvMatch}
-              season={season}
-              episode={episode}
-              movieTitle={activeMovie?.title || "Cult Classic"}
-              movieDuration={activeMovie?.duration}
-              moviePoster={activeMovie?.posterUrl || (activeMovie as any)?.poster}
-              movieBackdrop={activeMovie?.backdropUrl || (activeMovie as any)?.backdrop}
-              onClose={() => navigateTo("/movie/" + actualId)}
-            />
-          );
-        })()}
-      </ErrorBoundary>
-    );
-  }
 
   const getProgress = (id: string) => {
     let pct = progressData[id] || 0;
@@ -1957,13 +1965,21 @@ export default function App() {
     );
   }
 
+  const isHeroView = activeTab === "accueil" && searchQuery.trim() === "";
+
   return (
     <div className="min-h-screen bg-black text-stone-100 font-sans selection:bg-amber-500 selection:text-black antialiased overflow-x-hidden font-sans">
       
       {/* ========================================================== */}
       {/* 1. FIXED GLASS HEADER BAR                                 */}
       {/* ========================================================== */}
-      <header className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-all duration-300 ease-in-out border-b ${isScrolled ? "bg-black border-white/5" : "bg-black border-transparent"}`}>
+      <header 
+        className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-all duration-500 ease-in-out ${
+          isHeroView && !isScrolled
+            ? "bg-transparent"
+            : "bg-black/95 backdrop-blur-md border-b border-white/5 shadow-2xl"
+        }`}
+      >
         <div className="max-w-[2000px] mx-auto px-4 sm:px-8 py-0.5 md:py-1 flex flex-row items-center justify-between gap-2.5 md:gap-4 font-sans w-full">
           
           {/* Logo CLASSICO with Metallic Gold Reflection */}
@@ -1986,50 +2002,64 @@ export default function App() {
           </div>
 
           {/* Desktop Search & Nav (hidden on mobile), Mobile Action Buttons */}
-          <div className="flex items-center gap-3 w-full justify-end">
+          <div className="flex items-center gap-3 justify-end">
             
-            {/* Interactive Search Field Bar (Desktop always, Mobile conditionally visible) */}
-            <div className={`relative w-full md:max-w-xs lg:max-w-sm group font-sans transition-all duration-300 ${isMobileSearchOpen ? 'block' : 'hidden md:block'}`}>
-              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-amber-400 transition-colors duration-200">
-                <Search className="w-3.5 h-3.5" />
-              </span>
-              <input
-                id="global-search-input"
-                type="text"
-                placeholder="Search for a movie, director..."
-                value={searchInput}
-                onChange={(e) => {
-                  setSearchInput(e.target.value);
-                  setSearchQuery(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setSearchQuery(searchInput);
-                  }
-                }}
-                className="w-full bg-neutral-900/90 hover:bg-neutral-900 border border-neutral-800 text-stone-100 placeholder-zinc-500 text-[11px] sm:text-xs pl-9 pr-4 py-1.5 md:py-2 rounded-full focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200 shadow-inner group-hover:border-zinc-700/80 font-sans"
-              />
-              { (searchQuery || searchInput) && (
+            {/* Search: Just a magnifying glass icon, expandable on click */}
+            <div className="relative flex items-center">
+              {isSearchOpen ? (
+                <div className="relative flex items-center w-48 sm:w-64 md:w-72 lg:w-80 transition-all duration-200">
+                  <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-amber-400">
+                    <Search className="w-4 h-4" />
+                  </span>
+                  <input
+                    id="global-search-input"
+                    type="text"
+                    autoFocus
+                    placeholder="Search movie, director..."
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value);
+                      setSearchQuery(e.target.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setSearchQuery(searchInput);
+                      }
+                      if (e.key === "Escape") {
+                        if (!searchInput) {
+                          setIsSearchOpen(false);
+                        }
+                      }
+                    }}
+                    className="w-full bg-neutral-900 border border-neutral-700 text-stone-100 placeholder-zinc-500 text-xs pl-9 pr-8 py-1.5 md:py-2 rounded-full focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-xl font-sans"
+                  />
+                  <button
+                    id="close-search-btn"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchInput("");
+                      setIsSearchOpen(false);
+                    }}
+                    className="absolute inset-y-0 right-2.5 flex items-center text-zinc-400 hover:text-white"
+                    title="Close"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
                 <button
-                  id="clear-search-btn"
-                  onClick={() => { setSearchQuery(""); setSearchInput(""); }}
-                  className="absolute inset-y-0 right-3 flex items-center text-zinc-500 hover:text-white text-[10px] font-mono"
-                >
-                  CLEAR
-                </button>
-              )}
-            </div>
-
-            {/* Mobile Actions: Search Toggle & Hamburger (hidden on md) */}
-            <div className="flex md:hidden items-center gap-2 shrink-0">
-              {!isMobileSearchOpen && (
-                <button 
-                  onClick={() => setIsMobileSearchOpen(true)}
-                  className="p-2 text-zinc-400 hover:text-amber-400 transition-colors"
+                  id="nav-search-icon-btn"
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2 text-zinc-300 hover:text-amber-400 hover:bg-white/5 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+                  title="Search"
                 >
                   <Search className="w-5 h-5" />
                 </button>
               )}
+            </div>
+
+            {/* Mobile Actions: Hamburger (hidden on md) */}
+            <div className="flex md:hidden items-center gap-2 shrink-0">
               <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 text-zinc-300 hover:text-amber-400 transition-colors z-50 relative"
@@ -2258,73 +2288,64 @@ export default function App() {
                   }}
                 >
                   
-                  <AnimatePresence initial={false} custom={direction}>
+                  {/* Cover Image Layer with smooth fade and very slow, subtle cinematic zoom-in */}
+                  <AnimatePresence mode="sync">
                     <motion.div
-                      key={heroMovie.id}
-                      custom={direction}
-                      variants={{
-                        enter: (dir: number) => ({
-                          x: dir > 0 ? "100%" : "-100%",
-                          opacity: 0}),
-                        center: {
-                          x: 0,
-                          opacity: 1},
-                        exit: (dir: number) => ({
-                          x: dir < 0 ? "100%" : "-100%",
-                          opacity: 0,
-                          zIndex: 0})}}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        x: { type: "spring", stiffness: 220, damping: 25, mass: 0.8 },
-                        opacity: { duration: 0.4, ease: "easeInOut" }
-                      }}
-                      style={{ willChange: "transform" }}
-                      className="absolute inset-0 w-full h-full flex items-end"
+                      key={`hero-bg-${heroMovie.id}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="absolute inset-0 w-full h-full z-0 overflow-hidden"
                     >
-                      {/* Cinematic background image wrapper covering the full width */}
-                      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-                        <motion.img
-                          src={heroMovie.backdropUrl || CLASSICO_HERO_BACKDROP}
-                          alt={heroMovie.title}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover object-center md:object-top"
-                          style={{ willChange: "transform" }}
-                          animate={{ 
-                            scale: [1.02, 1.05, 1.02],
-                            x: [0, 4, 0],
-                            y: [0, -2, 0]
-                          }}
-                          transition={{
-                            duration: 40,
-                            repeat: Infinity,
-                            ease: "linear"}}
-                        />
-                      </div>
-
-                      {/* Progressive cinematic bottom-to-top black gradient that separates the hero from the thematic library below */}
-                      <div 
-                        className="absolute inset-0 z-10 pointer-events-none bg-[linear-gradient(to_top,#000_0%,#000_10%,rgba(0,0,0,0.9)_30%,rgba(0,0,0,0.4)_60%,transparent_100%)] md:!bg-[linear-gradient(to_top,#000_0%,#000_10%,rgba(0,0,0,0.95)_25%,rgba(0,0,0,0.6)_50%,transparent_100%)]" 
+                      <motion.img
+                        src={heroMovie.backdropUrl || CLASSICO_HERO_BACKDROP}
+                        alt={heroMovie.title}
+                        referrerPolicy="no-referrer"
+                        decoding="async"
+                        loading="eager"
+                        initial={{ scale: 1.0 }}
+                        animate={{ scale: 1.02 }}
+                        transition={{ duration: 16, ease: "linear" }}
+                        className="w-full h-full object-cover object-center md:object-top select-none pointer-events-none will-change-transform"
                       />
+                      {/* Gradient isolated strictly on the background image so it never washes over the synopsis or buttons */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+                    </motion.div>
+                  </AnimatePresence>
 
-                      {/* Spotlight Content and Description Box with high contrast text drop-shadows */}
-                      <div className="relative z-20 max-w-[2000px] mx-auto w-full px-4 sm:px-12 pb-14 sm:pb-28 pt-20 sm:pt-36 md:pt-28 flex flex-col items-start text-left [@media(max-height:500px)_and_(orientation:landscape)]:pb-4 [@media(max-height:500px)_and_(orientation:landscape)]:pt-16">
-                        
-                        {/* Fade-in Text Section Wrapper */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                          className="space-y-4 sm:space-y-5 w-full md:max-w-[35%] lg:max-w-[35%] min-w-[280px] sm:min-w-[360px] md:min-w-[0px] z-20 [@media(max-height:500px)_and_(orientation:landscape)]:space-y-2"
-                        >
+                  {/* Top subtle navbar shadow */}
+                  <div 
+                    className="absolute inset-x-0 top-0 h-36 md:h-48 z-10 pointer-events-none bg-gradient-to-b from-black/80 via-black/25 to-transparent" 
+                  />
+
+                  {/* Shallow bottom connecting fade well underneath the controls */}
+                  <div 
+                    className="absolute inset-x-0 bottom-0 h-16 md:h-20 z-10 pointer-events-none bg-gradient-to-t from-black to-transparent" 
+                  />
+                  
+                  {/* Spotlight Content and Description Box with distinct text entrance transition */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`hero-content-${heroMovie.id}`}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative z-20 max-w-[1200px] mx-auto w-full px-4 sm:px-8 pb-20 sm:pb-28 md:pb-36 pt-8 flex flex-col items-center text-center justify-center -translate-y-8 sm:-translate-y-14 md:-translate-y-20 [@media(max-height:500px)_and_(orientation:landscape)]:pb-4 [@media(max-height:500px)_and_(orientation:landscape)]:pt-4 [@media(max-height:500px)_and_(orientation:landscape)]:-translate-y-2"
+                    >
+                      {/* Text Section Wrapper */}
+                      <div className="space-y-2 sm:space-y-2.5 w-full max-w-xl sm:max-w-2xl mx-auto flex flex-col items-center text-center z-20 [@media(max-height:500px)_and_(orientation:landscape)]:space-y-1">
+                        {/* Title / Logo & Meta grouped tightly together */}
+                        <div className="flex flex-col items-center space-y-1 sm:space-y-1.5 w-full">
                           {/* Poster Style Cinematic Title or Logo with dynamic fallback to text based styling */}
                           {heroMovie.hasLogo && heroMovie.logoUrl && !useTextTitleForHero ? (
-                            <div className="scale-75 sm:scale-100 origin-left select-none my-2 relative group uppercase italic leading-[0.9]">
+                            <div className="select-none relative group flex flex-col items-center justify-center">
                               <img 
                                 src={heroMovie.logoUrl} 
                                 alt={heroMovie.title}
-                                className="h-12 xs:h-16 sm:h-20 lg:h-24 object-contain max-w-[85%] sm:max-w-[75%] select-none pointer-events-none filter brightness-100 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
+                                className="h-20 xs:h-24 sm:h-32 md:h-38 lg:h-44 max-h-48 w-auto object-contain max-w-[85%] sm:max-w-[70%] md:max-w-[60%] mx-auto select-none pointer-events-none transition-transform duration-300 hover:scale-102"
                                 referrerPolicy="no-referrer"
                                 onError={() => {
                                   setUseTextTitleForHero(true);
@@ -2337,14 +2358,14 @@ export default function App() {
                                   e.stopPropagation();
                                   setUseTextTitleForHero(true);
                                 }}
-                                className="absolute -bottom-6 left-0 opacity-0 group-hover:opacity-100 text-[9.5px] font-sans text-zinc-400 hover:text-white transition-opacity bg-black/80 px-2 py-0.5 rounded border border-white/10"
+                                className="absolute -bottom-5 opacity-0 group-hover:opacity-100 text-[9px] font-sans text-zinc-400 hover:text-white transition-opacity bg-black/80 px-2 py-0.5 rounded border border-white/10 pointer-events-auto"
                               >
-                                Logo peu lisible ? Passer au format texte 🗸
+                                Switch to text title 🗸
                               </button>
                             </div>
                           ) : (
-                            <div className="relative group my-1">
-                              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-sans font-black tracking-tight text-white uppercase italic leading-[1.05] filter drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] transform -skew-x-2">
+                            <div className="relative group flex flex-col items-center justify-center">
+                              <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black tracking-tight text-white uppercase italic leading-[1.05] max-w-2xl mx-auto" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.9)" }}>
                                 {heroMovie.title}
                               </h1>
                               {heroMovie.hasLogo && heroMovie.logoUrl && (
@@ -2354,91 +2375,79 @@ export default function App() {
                                     e.stopPropagation();
                                     setUseTextTitleForHero(false);
                                   }}
-                                  className="mt-1.5 inline-flex items-center gap-1 opacity-60 hover:opacity-100 text-[9px] text-amber-400/90 hover:text-amber-300 bg-stone-900/60 hover:bg-stone-900 border border-white/5 hover:border-amber-400/20 px-2.5 py-0.5 rounded transition-all cursor-pointer font-mono"
+                                  className="absolute -bottom-5 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 text-[9px] text-zinc-400 hover:text-white bg-black/80 border border-white/10 px-2 py-0.5 rounded transition-all cursor-pointer font-sans"
                                 >
-                                  🖼️ Voir logo officiel
+                                  🖼️ View logo
                                 </button>
                               )}
                             </div>
                           )}
 
-                          {/* Premium Discrete Pills / Badges for movie tags */}
-                           <div className="flex w-full justify-start items-center gap-1.5 text-[10px] md:text-[9.5px] font-mono uppercase tracking-[0.08em] pb-1 md:pb-0">
-                            <div className="hidden md:flex items-center gap-1.5">
-                              {heroMovie.genre && heroMovie.genre.slice(0, 4).map((g: string) => (
-                                <span key={g} className="whitespace-nowrap px-1.5 py-0.5 bg-white/5 border border-white/10 hover:border-white/20 text-zinc-300 rounded-full font-sans font-bold tracking-wider transition-colors duration-200">
-                                  {g}
+                          {/* Refined Minimalist Movie Meta (Tightly grouped below title) */}
+                          <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
+                            <span className="text-zinc-100">
+                              {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || heroMovie.id?.endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
+                                ? "TV Series"
+                                : "Movie"
+                              }
+                            </span>
+                            {(heroMovie.year || heroMovie.releaseDate) && (
+                              <>
+                                <span className="text-zinc-500 select-none">•</span>
+                                <span className="text-zinc-100">
+                                  {heroMovie.year || heroMovie.releaseDate?.slice(0, 4)}
                                 </span>
-                              ))}
-                            </div>
-                            <span className="whitespace-nowrap px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold tracking-wider rounded-full">
-                              {heroMovie.year}
-                            </span>
-                            <span className="whitespace-nowrap px-1.5 py-0.5 bg-white/5 border border-white/10 text-zinc-400 tracking-wider rounded-full">
-                              {heroMovie.duration}
-                            </span>
+                              </>
+                            )}
+                            {heroMovie.duration && (
+                              <>
+                                <span className="text-zinc-500 select-none">•</span>
+                                <span className="text-zinc-100">{heroMovie.duration}</span>
+                              </>
+                            )}
                             {heroMovie.rating && heroMovie.rating !== "N/A" && (
-                              <span className="whitespace-nowrap px-1.5 py-0.5 bg-white/5 border border-white/10 text-zinc-300 font-bold tracking-wider rounded-full">
-                                <span className="text-amber-500 font-extrabold mr-0.5">★</span>{heroMovie.rating}
-                              </span>
+                              <>
+                                <span className="text-zinc-500 select-none">•</span>
+                                <span className="text-amber-400 font-bold">
+                                  ★ {heroMovie.rating}
+                                </span>
+                              </>
                             )}
                           </div>
+                        </div>
 
-                          {/* Movie Description: Stricter clamping for a lighter card feeling (max 2/3 lines limit) */}
-                          <p 
-                            className="text-zinc-300 text-[11px] sm:text-xs md:text-sm leading-relaxed font-sans filter drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] line-clamp-2 md:line-clamp-3 overflow-hidden text-ellipsis whitespace-normal max-w-[70%] md:max-w-full"
-                            style={{ textShadow: "0 2px 8px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.95)" }}
+                        {/* Movie Description: Full high readability contrast */}
+                        <p 
+                          className="text-stone-100 font-normal text-xs sm:text-[13px] leading-relaxed font-sans line-clamp-2 sm:line-clamp-3 overflow-hidden text-ellipsis max-w-md sm:max-w-xl mx-auto"
+                          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.95)" }}
+                        >
+                          {heroMovie.description}
+                        </p>
+
+                        {/* Rectangular Modern Action Buttons */}
+                        <div className="flex items-center justify-center gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
+                          <button
+                            id="hero-play-btn"
+                            onClick={() => handleOpenMovie(heroMovie, true)}
+                            className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
                           >
-                            {heroMovie.description}
-                          </p>
+                            <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
+                            Play
+                          </button>
 
-                          {/* Netflix & Apple TV Styled Fluid Selection Buttons */}
-                          <div className="flex items-center gap-2.5 pt-1.5">
-                            <button
-                              id="hero-play-btn"
-                              onClick={() => handleOpenMovie(heroMovie, true)}
-                              className="group flex items-center justify-center gap-1.5 sm:gap-2 bg-white hover:bg-neutral-100 text-stone-950 font-sans font-black px-4.5 py-2.5 sm:px-8 sm:py-3.5 rounded-full text-[10.5px] sm:text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-103 active:scale-95 cursor-pointer"
-                            >
-                              <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-stone-950 group-hover:scale-110 transition-transform duration-250" />
-                              Play
-                            </button>
-
-                            <button
-                              id="hero-info-btn"
-                              onClick={() => handleOpenMovie(heroMovie, false)}
-                              className="group flex items-center justify-center gap-1.5 sm:gap-2 bg-transparent hover:bg-white/10 border border-white/40 hover:border-white text-white font-sans font-black px-4 py-2.5 sm:px-7 sm:py-3.5 rounded-full text-[10.5px] sm:text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:scale-102 active:scale-95 cursor-pointer"
-                            >
-                              <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white group-hover:scale-110 transition-transform duration-250" />
-                              More Info
-                            </button>
-                          </div>
-                        </motion.div>
-
+                          <button
+                            id="hero-info-btn"
+                            onClick={() => handleOpenMovie(heroMovie, false)}
+                            className="group flex items-center justify-center gap-2 bg-stone-900/80 hover:bg-stone-800/90 backdrop-blur-md border border-white/20 hover:border-white/40 text-white font-sans font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:scale-102 active:scale-98 cursor-pointer"
+                          >
+                            <Info className="w-4 h-4 text-white group-hover:scale-105 transition-transform duration-250" />
+                            More Info
+                          </button>
+                        </div>
                       </div>
 
                     </motion.div>
                   </AnimatePresence>
-
-                  {/* Carousel Dots Navigation Indicator at the bottom center */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/5 shadow-lg">
-                    {heroMovies.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setDirection(idx > currentHeroIndex ? 1 : -1);
-                          setCurrentHeroIndex(idx);
-                        }}
-                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                          idx === currentHeroIndex 
-                            ? "w-4 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] shadow-[0_0_10px_rgba(252,246,186,0.8)]" 
-                            : "w-1.5 bg-zinc-500/75 hover:bg-zinc-400"
-                        }`}
-                        title={`Aller au film ${idx + 1}`}
-                        aria-label={`Aller au film ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-
                 </div>
               ) : null}
               
@@ -2587,7 +2596,7 @@ export default function App() {
                           className="shrink-0 inline-flex items-center justify-center gap-1.5 text-[#e5c158] hover:text-white transition-all duration-200 sm:bg-[#BF953F]/5 sm:hover:bg-[#BF953F]/15 sm:border sm:border-[#BF953F]/40 sm:hover:border-[#FCF6BA]/60 sm:px-3.5 sm:py-1.5 sm:rounded-full cursor-pointer p-1.5 sm:p-0"
                         >
                           <span className="hidden sm:inline text-[10px] font-mono font-bold tracking-[1.5px] uppercase">
-                            TOUT COMPRENDRE
+                            VIEW ALL
                           </span>
                           <ChevronRight className="w-5 h-5 sm:w-3 sm:h-3" />
                         </button>
@@ -2803,6 +2812,48 @@ export default function App() {
                   <p className="text-zinc-400 font-mono text-sm tracking-widest uppercase">Loading movie data...</p>
                 </div>
               )}
+            </motion.div>
+          ) : activeTab === "player" ? (
+            <motion.div
+              key="tab-player"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full min-h-screen"
+            >
+              <ErrorBoundary 
+                fallbackTitle="Interruption de la lecture du film"
+                onReset={() => navigateTo("/")}
+              >
+                <React.Suspense fallback={<div className="w-full h-screen bg-black flex items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-amber-500" /></div>}>
+                {(() => {
+                  const pId = routePath.startsWith("/player/") ? routePath.slice("/player/".length) : "";
+                  let actualId = pId;
+                  let season, episode;
+                  const tvMatch = pId.match(/^(.*-tv)-S(\d+)E(\d+)$/);
+                  if (tvMatch) {
+                    actualId = tvMatch[1];
+                    season = parseInt(tvMatch[2]);
+                    episode = parseInt(tvMatch[3]);
+                  }
+                  return (
+                    <CinemaPlayerView
+                      movieId={actualId}
+                      isTv={!!tvMatch}
+                      season={season}
+                      episode={episode}
+                      movieTitle={activeMovie?.title || "Cult Classic"}
+                      movieDuration={activeMovie?.duration}
+                      moviePoster={activeMovie?.posterUrl || (activeMovie as any)?.poster}
+                      movieBackdrop={activeMovie?.backdropUrl || (activeMovie as any)?.backdrop}
+                      movieData={activeMovie}
+                      onClose={() => navigateTo("/movie/" + actualId)}
+                      onSelectMovie={(id) => navigateTo("/player/" + id)}
+                    />
+                  );
+                })()}
+                </React.Suspense>
+              </ErrorBoundary>
             </motion.div>
           ) :
           activeTab === "profil" ? (

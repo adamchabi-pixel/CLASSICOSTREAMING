@@ -5,47 +5,48 @@ import { motion, AnimatePresence } from "motion/react";
 const safeStorage = {
   getItem: (key: string) => {
     try {
-      return safeStorage.getItem(key);
+      return window.localStorage.getItem(key);
     } catch(e) {
       return null;
     }
   },
   setItem: (key: string, value: string) => {
     try {
-      safeStorage.setItem(key, value);
+      window.localStorage.setItem(key, value);
     } catch(e) {}
   },
   removeItem: (key: string) => {
     try {
-      safeStorage.removeItem(key);
+      window.localStorage.removeItem(key);
     } catch(e) {}
   }
 };
 const safeSession = {
   getItem: (key: string) => {
     try {
-      return safeSession.getItem(key);
+      return window.sessionStorage.getItem(key);
     } catch(e) {
       return null;
     }
   },
   setItem: (key: string, value: string) => {
     try {
-      safeSession.setItem(key, value);
+      window.sessionStorage.setItem(key, value);
     } catch(e) {}
   },
   removeItem: (key: string) => {
     try {
-      safeSession.removeItem(key);
+      window.sessionStorage.removeItem(key);
     } catch(e) {}
   }
 };
 import { 
   Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Languages, 
-  Maximize2, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown
+  Maximize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film
 } from "lucide-react";
 import EmbedPlayer from "./EmbedPlayer";
 import { allMoviesData } from "../data/all_movies";
+import { heroMoviesData } from "../data/hero_movies";
 
 interface JfSubtitleCue {
   start: number;
@@ -151,7 +152,9 @@ interface CinemaPlayerViewProps {
   movieDuration?: string;
   moviePoster?: string;
   movieBackdrop?: string;
+  movieData?: any;
   onClose: () => void;
+  onSelectMovie?: (movieId: string) => void;
 }
 
 
@@ -209,6 +212,98 @@ const TrackName = ({ track }: { track: any }) => {
   );
 };
 
+const normalizeEmbedUrl = (rawUrl: string): string => {
+  if (!rawUrl) return rawUrl;
+  
+  // Transform full Frembed movie page (e.g. https://frembed.surf/movies/black-panther/284054 or /movies/284054)
+  // into the direct clean embed player: https://frembed.surf/embed/movie/284054
+  const frembedMovieMatch = rawUrl.match(/frembed\.[a-z]+\/movies\/(?:[^\/]+\/)?([0-9]+)/i);
+  if (frembedMovieMatch) {
+    return `https://frembed.surf/embed/movie/${frembedMovieMatch[1]}`;
+  }
+
+  // Transform full Frembed TV series page into direct embed
+  const frembedTvMatch = rawUrl.match(/frembed\.[a-z]+\/series\/(?:[^\/]+\/)?([0-9]+)/i);
+  if (frembedTvMatch) {
+    return `https://frembed.surf/embed/serie/${frembedTvMatch[1]}`;
+  }
+
+  // Ensure cinemaos routes directly to watch player
+  if (rawUrl.includes("cinemaos.live/embed/movie/")) {
+    return rawUrl.replace("cinemaos.live/embed/movie/", "cinemaos.live/watch/movie/");
+  }
+  if (rawUrl.includes("cinemaos.live/movie/")) {
+    return rawUrl.replace("cinemaos.live/movie/", "cinemaos.live/watch/movie/");
+  }
+  if (rawUrl.includes("cinemaos.live/embed/tv/")) {
+    return rawUrl.replace("cinemaos.live/embed/tv/", "cinemaos.live/watch/tv/").replace(/\/(\d+)\/(\d+)$/, "?season=$1&episode=$2");
+  }
+  if (rawUrl.includes("cinemaos.live/tv/")) {
+    const match = rawUrl.match(/cinemaos\.live\/tv\/(\d+)-(\d+)-(\d+)/);
+    if (match) {
+      return `https://cinemaos.live/watch/tv/${match[1]}?season=${match[2]}&episode=${match[3]}`;
+    }
+  }
+
+  // Support old or alternative frembed.pro/api/film.php?id=...
+  if (rawUrl.includes("frembed.pro/api/film.php") || rawUrl.includes("frembed.surf/api/film.php")) {
+    try {
+      const parsed = new URL(rawUrl);
+      const id = parsed.searchParams.get("id");
+      if (id) return `https://frembed.surf/embed/movie/${id}`;
+    } catch (_) {}
+  }
+
+  // Support frembed serie.php
+  if (rawUrl.includes("frembed.pro/api/serie.php") || rawUrl.includes("frembed.surf/api/serie.php")) {
+    try {
+      const parsed = new URL(rawUrl);
+      const id = parsed.searchParams.get("id");
+      const sa = parsed.searchParams.get("sa") || "1";
+      const epi = parsed.searchParams.get("epi") || "1";
+      if (id) return `https://frembed.surf/embed/serie/${id}?id=${id}&sa=${sa}&epi=${epi}`;
+    } catch (_) {}
+  }
+
+  return rawUrl;
+};
+
+const generateServers = (lang, isTv, tmdbId, season, episode, imdbId, timeParam) => {
+  if (lang === "fr") {
+    // Only FrEmbed for French
+    if (isTv && season && episode) {
+      return [ 
+        { name: "Server 1", url: `https://frembed.surf/embed/serie/${tmdbId}?id=${tmdbId}&sa=${season}&epi=${episode}`, stars: 3 }
+      ];
+    } else {
+      return [ 
+        { name: "Server 1", url: `https://frembed.surf/embed/movie/${tmdbId}`, stars: 3 }
+      ];
+    }
+  } else {
+    // English servers:
+    // 1: CineSrc (events & progress tracking)
+    // 2: Peachify (progress tracking)
+    // 3: VidSrc (no 404)
+    // 4: CinemaOS (no 404 direct routes)
+    if (isTv && season && episode) {
+      return [
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${tmdbId}?s=${season}&e=${episode}&color=%23f59e0b&continueprompt=false&autonext=true&back=close${timeParam}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/tv/${tmdbId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidsrc.me/embed/tv/${tmdbId}/${season}/${episode}`, stars: 3 },
+        { name: "Server 4", url: `https://cinemaos.live/watch/tv/${tmdbId}?season=${season}&episode=${episode}`, stars: 3 }
+      ];
+    } else {
+      return [
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${tmdbId}?color=%23f59e0b&continueprompt=false&back=close${timeParam}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/movie/${tmdbId}?accent=FF9900&servers=hide${timeParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidsrc.me/embed/movie/${tmdbId}`, stars: 3 },
+        { name: "Server 4", url: `https://cinemaos.live/watch/movie/${tmdbId}`, stars: 3 }
+      ];
+    }
+  }
+};
+
 export default function CinemaPlayerView({
   isTv,
   season,
@@ -218,10 +313,30 @@ export default function CinemaPlayerView({
   movieDuration,
   moviePoster,
   movieBackdrop,
-  onClose
+  movieData: passedMovieData,
+  onClose,
+  onSelectMovie
 }: CinemaPlayerViewProps) {
   const deviceId = "CinemaAppClient";
   const apiKey = safeStorage.getItem("classico_jellyfin_apikey") || "";
+
+  const [fetchedDetails, setFetchedDetails] = useState<any>(null);
+  const [showAllCast, setShowAllCast] = useState(false);
+  const [detailsTab, setDetailsTab] = useState<"synopsis" | "similar" | "info" | "all">("synopsis");
+
+  useEffect(() => {
+    if (movieId) {
+      const cleanId = String(movieId);
+      fetch(`/api/movie/${cleanId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.success && data.movie) {
+            setFetchedDetails(data.movie);
+          }
+        })
+        .catch(err => console.error("Error fetching cinema movie details:", err));
+    }
+  }, [movieId]);
 
   const [playbackInfo, setPlaybackInfo] = useState<{
     id: string;
@@ -271,54 +386,13 @@ export default function CinemaPlayerView({
   const [videoError, setVideoError] = useState<string | null>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
   
-  
+  const matchedMovie = useMemo(() => allMoviesData.find(m => m.id === movieId), [movieId]);
+
   const [isCurtainOpen, setIsCurtainOpen] = useState(false);
   const [forceJellyfin, setForceJellyfin] = useState(false);
-    const [activeServerIndex, setActiveServerIndex] = useState(() => {
-    try {
-      // Check for per-movie/show server preference
-      const savedStr = safeStorage.getItem("classico_progress");
-      if (savedStr) {
-        const saved = JSON.parse(savedStr) || {};
-        let baseId = movieId;
-        if (movieId && movieId.endsWith('-tv')) {
-            baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
-        }
-        if (saved[baseId] && typeof saved[baseId].server_index === 'number') {
-            return saved[baseId].server_index;
-        }
-        if (movieId && saved[movieId] && typeof saved[movieId].server_index === 'number') {
-            return saved[movieId].server_index;
-        }
-      }
-      
-      const globalServer = safeStorage.getItem("classico_global_server_index");
-      if (globalServer !== null) {
-          const parsed = parseInt(globalServer, 10);
-          return isNaN(parsed) ? 0 : parsed;
-      }
-    } catch(e) {}
-    return 0;
-  });
-  const [serverSelected, setServerSelected] = useState(() => {
-    try {
-      const savedStr = safeStorage.getItem("classico_progress");
-      if (savedStr) {
-        const saved = JSON.parse(savedStr) || {};
-        let baseId = movieId;
-        if (movieId && movieId.endsWith('-tv')) {
-            baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
-        }
-        if (saved[baseId] && typeof saved[baseId].server_index === 'number') {
-            return true;
-        }
-        if (movieId && saved[movieId] && typeof saved[movieId].server_index === 'number') {
-            return true;
-        }
-      }
-    } catch(e) {}
-    return false;
-  });
+    const [activeServerIndex, setActiveServerIndex] = useState(0);
+  const [serverSelected, setServerSelected] = useState(true);
+  const [language, setLanguage] = useState<"en" | "fr">("en");
   const [availableServers, setAvailableServers] = useState<{name: string, url: string, stars?: number}[]>([]);
   const [playing, setPlaying] = useState(true);
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
@@ -360,7 +434,7 @@ export default function CinemaPlayerView({
   // Mobile player initialization && on-screen logs states
   const [isInitialized, setIsInitialized] = useState(true);
   const [playerLogs, setPlayerLogs] = useState<string[]>([]);
-  const [adClicks, setAdClicks] = useState(0);
+  const [adClicks, setAdClicks] = useState(3);
 
   const addLog = (msg: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -372,6 +446,29 @@ export default function CinemaPlayerView({
   const lastLoadedSourceRef = useRef<string | null>(null);
   const loadedUrlRef = useRef<string | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [measuredPlayerHeight, setMeasuredPlayerHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height || entry.target.clientHeight;
+        if (height > 50) {
+          setMeasuredPlayerHeight(Math.round(height));
+        }
+      }
+    });
+
+    ro.observe(el);
+    if (el.clientHeight > 50) {
+      setMeasuredPlayerHeight(Math.round(el.clientHeight));
+    }
+
+    return () => ro.disconnect();
+  }, []);
+
   const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null);
   const firstFrameLoggedRef = useRef<boolean>(false);
   
@@ -389,7 +486,8 @@ export default function CinemaPlayerView({
     playbackAttempts: number;
     isLowQuality: boolean;
     activeServerIndex: number;
-  }>({ movieId: null, forceTranscode: false, playbackAttempts: 0, isLowQuality: false, activeServerIndex: 0 });
+    language?: string;
+  }>({ movieId: null, forceTranscode: false, playbackAttempts: 0, isLowQuality: false, activeServerIndex: 0, language: "en" });
 
   const isResettingRef = useRef<boolean>(false);
 
@@ -838,7 +936,7 @@ export default function CinemaPlayerView({
   useEffect(() => {
     const lastOpts = lastFetchedParamsRef.current;
     if (
-      playbackInfo &&       lastOpts.movieId === movieId &&       lastOpts.forceTranscode === forceTranscode &&       lastOpts.playbackAttempts === playbackAttempts &&       lastOpts.isLowQuality === isLowQuality && lastOpts.activeServerIndex === activeServerIndex
+      playbackInfo &&       lastOpts.movieId === movieId &&       lastOpts.forceTranscode === forceTranscode &&       lastOpts.playbackAttempts === playbackAttempts &&       lastOpts.isLowQuality === isLowQuality && lastOpts.activeServerIndex === activeServerIndex && lastOpts.language === language
     ) {
       return;
     }
@@ -849,7 +947,7 @@ export default function CinemaPlayerView({
       if (!movieId || movieId === "undefined") {
         setIsLoading(false);
         setIsStreamLoading(false);
-        setVideoError("Aucun ID de film valide n'a été fourni au lecteur cinéma.");
+        setVideoError("No valid movie ID was provided to the cinema player.");
         return;
       }
       setIsLoading(true);
@@ -874,12 +972,10 @@ export default function CinemaPlayerView({
         if (!data) {
           const isNumeric = /^\d+$/.test(movieId);
           
-          // Look up the movie in allMoviesData to get its tmdbId or imdbId
-          let actualTmdbId = movieId;
-          const matchedMovie = allMoviesData.find(m => m.id === movieId);
-          if (matchedMovie) {
-            actualTmdbId = matchedMovie.tmdbId || (matchedMovie.providerIds?.Tmdb) || movieId;
-          }
+          // Look up the movie in passedMovieData, fetchedDetails, heroMoviesData, or allMoviesData to get its tmdbId or imdbId
+          const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === String(movieId));
+          const matchedMovie = passedMovieData || fetchedDetails || heroMatch || allMoviesData.find(m => m.id === movieId || String(m.tmdbId) === String(movieId));
+          let actualTmdbId = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || (matchedMovie?.providerIds?.Tmdb) || movieId;
           
           if (!forceJellyfin) {
             // ALWAYS use videasy now, even for jellyfin uuids, by using the looked up tmdbId
@@ -888,40 +984,15 @@ export default function CinemaPlayerView({
             if (finalTmdbId.startsWith('tt') && matchedMovie?.tmdbId) {
                 finalTmdbId = String(matchedMovie.tmdbId);
             }
-            
-            let iframeUrlVidrock = "";
-            let iframeUrlPeach = "";
-            let iframeUrlVideasy = "";
-            let iframeUrlCinemaos = "";
-            let iframeUrlOnlyflix = "";
+
             let cleanId = finalTmdbId;
             if (cleanId.endsWith('-tv')) cleanId = cleanId.replace('-tv', '');
-            
             let imdbId = matchedMovie?.imdbId || (matchedMovie?.providerIds?.Imdb) || cleanId;
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
-            
-            if (isTv && season && episode) {
-              iframeUrlVidrock = `https://vidlink.pro/tv/${cleanId}/${season}/${episode}?dummy=1${timeParam}`;
-              iframeUrlPeach = `https://peachify.pro/embed/tv/${cleanId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`;
-              iframeUrlVideasy = `https://player.videasy.net/tv/${cleanId}/${season}/${episode}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
-              iframeUrlCinemaos = `https://cinemaos.live/watch/tv/${cleanId}?season=${season}&episode=${episode}${timeParam}`;
-              iframeUrlOnlyflix = `https://vidapi.xyz/embed/tv/${cleanId}/${season}/${episode}`;
-            } else {
-              iframeUrlVidrock = `https://vidlink.pro/movie/${cleanId}?dummy=1${timeParam}`;
-              iframeUrlPeach = `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${timeParam}`;
-              iframeUrlVideasy = `https://player.videasy.net/movie/${cleanId}?color=FF9900&overlay=true${timeParam}`;
-              iframeUrlCinemaos = `https://cinemaos.live/watch/movie/${cleanId}?dummy=1${timeParam}`;
-              
-              let onlyflixId = typeof imdbId === 'string' && imdbId.startsWith('tt') ? imdbId : cleanId;
-              iframeUrlOnlyflix = `https://vidapi.xyz/embed/movie/${onlyflixId}`;
-            }
-            const newServers = [
-              { name: "Server 1 (no popup ads during the movie)", url: iframeUrlCinemaos, stars: 3 },
-              { name: "Server 2 (no popup ads during the movie)", url: iframeUrlVideasy, stars: 3 },
-              { name: "Server 3 (popup ads during the movie)", url: iframeUrlOnlyflix, stars: 3 },
-              { name: "Server 4", url: iframeUrlPeach, stars: 2 },
-              { name: "Server 5", url: iframeUrlVidrock, stars: 1 }
-            ];
+            const tvState = isTv ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
+            const targetSeason = season || tvState.season || 1;
+            const targetEpisode = episode || tvState.episode || 1;
+            const newServers = generateServers(language, isTv, cleanId, targetSeason, targetEpisode, imdbId, timeParam);
             setAvailableServers(newServers);
             
             const safeActiveIndex = activeServerIndex >= newServers.length ? 0 : activeServerIndex;
@@ -931,7 +1002,7 @@ export default function CinemaPlayerView({
               streamUrl: newServers[safeActiveIndex].url,
               duration: 0,
               container: "iframe",
-              title: "Film (Embed)",
+              title: movieTitle || matchedMovie?.title || "Film (Embed)",
               isDirect: true,
               isIframeEmbed: true,
               iframeSrc: newServers[safeActiveIndex].url,
@@ -942,7 +1013,7 @@ export default function CinemaPlayerView({
             setIsLoading(false);
             setIsStreamLoading(false);
             setIsIframeLoading(false);
-            lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex };
+            lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex, language };
             return;
           }
           
@@ -1002,33 +1073,11 @@ export default function CinemaPlayerView({
                 if (!forceJellyfin && itemData.ProviderIds) {
                   if (itemData.ProviderIds.Tmdb) {
                     data.isIframeEmbed = true;
-                    let u1 = "", u2 = "", u3 = "", u4 = "", u5 = "";
-                    const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
+
                     const tmdbId = itemData.ProviderIds.Tmdb;
                     const imdbId = itemData.ProviderIds.Imdb || tmdbId;
-                    
-                    if (itemData.Type === "Episode" && itemData.ParentIndexNumber && itemData.IndexNumber) {
-                        u1 = `https://peachify.pro/embed/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?accent=FF9900&servers=hide${timeParam}`;
-                        u2 = `https://111movies.net/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?dummy=1${timeParam}`; // Just in case, add ?dummy=1 for timeParam &t=
-                        u3 = `https://player.videasy.net/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
-                        u4 = `https://cinemaos.live/watch/tv/${tmdbId}?season=${itemData.ParentIndexNumber}&episode=${itemData.IndexNumber}${timeParam}`;
-                        u5 = `https://vidapi.xyz/embed/tv/${tmdbId}/${itemData.ParentIndexNumber}/${itemData.IndexNumber}`;
-                    } else {
-                        u1 = `https://peachify.pro/embed/movie/${tmdbId}?accent=FF9900&servers=hide${timeParam}`;
-                        u2 = `https://111movies.net/movie/${tmdbId}?dummy=1${timeParam}`;
-                        u3 = `https://player.videasy.net/movie/${tmdbId}?color=FF9900&overlay=true${timeParam}`;
-                        u4 = `https://cinemaos.live/watch/movie/${tmdbId}?dummy=1${timeParam}`;
-                        
-                        let onlyflixId = typeof imdbId === 'string' && imdbId.startsWith('tt') ? imdbId : tmdbId;
-                        u5 = `https://vidapi.xyz/embed/movie/${onlyflixId}`;
-                    }
-                    const srvs = [
-                      { name: "Server 1 (no popup ads during the movie)", url: u4, stars: 3 },
-                      { name: "Server 2 (no popup ads during the movie)", url: u3, stars: 3 },
-                      { name: "Server 3 (popup ads during the movie)", url: u5, stars: 3 },
-                      { name: "Server 4", url: u1, stars: 2 },
-                      { name: "Server 5", url: u2, stars: 1 }
-                    ];
+                    const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
+                    const srvs = generateServers(language, itemData.Type === "Episode", tmdbId, itemData.ParentIndexNumber, itemData.IndexNumber, imdbId, timeParam);
                     setAvailableServers(srvs);
                     const safeIndex = activeServerIndex >= srvs.length ? 0 : activeServerIndex;
                     data.iframeSrc = srvs[safeIndex].url;
@@ -1107,7 +1156,7 @@ export default function CinemaPlayerView({
           setPlaybackInfo(data);
           setIsLoading(false);
           lastFetchedMovieIdRef.current = movieId;
-          lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex };
+          lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex, language };
           // Initialisation immédiate et stable avec la métadonnée Jellyfin
           if (data && data?.duration || 0 && data?.duration || 0 > 0) {
             setDuration(data?.duration || 0);
@@ -1167,39 +1216,16 @@ export default function CinemaPlayerView({
             }, 1500 * nextAttempt);
           } else {
             const isTv = movieId.includes("-tv");
-            const cleanId = movieId.replace("-tv", "");
+            const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === String(movieId));
+            const matchedMovie = passedMovieData || fetchedDetails || heroMatch || allMoviesData.find(m => m.id === movieId || String(m.tmdbId) === String(movieId));
+            const resolvedTmdb = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || movieId.replace("-tv", "");
+            const cleanId = String(resolvedTmdb).replace("-tv", "");
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             
-            let iframeUrlVidrock = "";
-            let iframeUrlPeach = "";
-            let iframeUrlVideasy = "";
-            let iframeUrlCinemaos = "";
-            let iframeUrlOnlyflix = "";
-            
-            if (isTv) {
-              const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {};
-              const season = tvState.season || 1;
-              const episode = tvState.episode || 1;
-              iframeUrlVidrock = `https://vidlink.pro/tv/${cleanId}/${season}/${episode}?dummy=1${timeParam}`;
-              iframeUrlPeach = `https://peachify.pro/embed/tv/${cleanId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`;
-              iframeUrlVideasy = `https://player.videasy.net/tv/${cleanId}/${season}/${episode}?color=FF9900&nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&overlay=true${timeParam}`;
-              iframeUrlCinemaos = `https://cinemaos.live/watch/tv/${cleanId}?season=${season}&episode=${episode}${timeParam}`;
-              iframeUrlOnlyflix = `https://vidapi.xyz/embed/tv/${cleanId}/${season}/${episode}`;
-            } else {
-              iframeUrlVidrock = `https://vidlink.pro/movie/${cleanId}?dummy=1${timeParam}`;
-              iframeUrlPeach = `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${timeParam}`;
-              iframeUrlVideasy = `https://player.videasy.net/movie/${cleanId}?color=FF9900&overlay=true${timeParam}`;
-              iframeUrlCinemaos = `https://cinemaos.live/watch/movie/${cleanId}?dummy=1${timeParam}`;
-              iframeUrlOnlyflix = `https://vidapi.xyz/embed/movie/${cleanId}`;
-            }
-            
-            const newServers = [
-              { name: "Server 1 (no popup ads during the movie)", url: iframeUrlCinemaos, stars: 3 },
-              { name: "Server 2 (no popup ads during the movie)", url: iframeUrlVideasy, stars: 3 },
-              { name: "Server 3 (popup ads during the movie)", url: iframeUrlOnlyflix, stars: 3 },
-              { name: "Server 4", url: iframeUrlPeach, stars: 2 },
-              { name: "Server 5", url: iframeUrlVidrock, stars: 1 }
-            ];
+            const tvState = isTv ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
+            const targetSeason = season || tvState.season || 1;
+            const targetEpisode = episode || tvState.episode || 1;
+            const newServers = generateServers(language, isTv, cleanId, targetSeason, targetEpisode, cleanId, timeParam);
 
             const fallbackData = {
               id: movieId,
@@ -1217,7 +1243,7 @@ export default function CinemaPlayerView({
               audios: []
             };
             setPlaybackInfo(fallbackData as any);
-            lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex };
+            lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex, language };
             setVideoError(null);
           }
         }
@@ -1234,7 +1260,7 @@ export default function CinemaPlayerView({
     return () => {
       active = false;
     };
-  }, [movieId, forceTranscode, playbackAttempts, isLowQuality, forceJellyfin, activeServerIndex]);
+  }, [movieId, forceTranscode, playbackAttempts, isLowQuality, forceJellyfin, activeServerIndex, language]);
 
   // Handle Audio && non-text Subtitle Track changes by reloading stream
   useEffect(() => {
@@ -1953,87 +1979,169 @@ export default function CinemaPlayerView({
     if (!playbackInfo?.isIframeEmbed) return;
     
     const handleMessage = (event: MessageEvent) => {
-      // 1. Peachify loading screen logic
-      if (event.origin === 'https://peachify.pro') {
-        if (event.data?.type === 'PLAYER_EVENT' && event.data.data?.event === 'play') {
-          setIsIframeLoading(false);
+      let parsedData: any = event.data;
+      if (typeof parsedData === 'string') {
+        try {
+          parsedData = JSON.parse(parsedData);
+        } catch (_) {
+          // not a JSON string
+        }
+      }
+      if (!parsedData || typeof parsedData !== 'object') return;
+
+      // 1. CineSrc events
+      if (event.origin === 'https://cinesrc.st' || (typeof parsedData.type === 'string' && parsedData.type.startsWith('cinesrc:'))) {
+        switch (parsedData.type) {
+          case 'cinesrc:ready':
+          case 'cinesrc:play':
+            setIsIframeLoading(false);
+            setPlaying(true);
+            break;
+          case 'cinesrc:pause':
+            setPlaying(false);
+            break;
+          case 'cinesrc:loadedmetadata':
+            if (parsedData.duration && Number(parsedData.duration) > 0) {
+              setDuration(Number(parsedData.duration));
+            }
+            break;
+          case 'cinesrc:close':
+            onClose?.();
+            break;
+          case 'cinesrc:nextepisode':
+            if (parsedData.season && parsedData.episode) {
+              const pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+              if (pTmdbId) {
+                try {
+                  const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {};
+                  tvState[pTmdbId] = { season: parsedData.season, episode: parsedData.episode };
+                  safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+                } catch (e) {}
+              }
+            }
+            break;
         }
       }
 
-      // 2. Existing progress tracking logic
-      if (event.data && event.data.data) {
-        let currentTime = undefined;
-        let durationValue = undefined;
-        let pSeason = season;
-        let pEpisode = episode;
-        let pIsTv = isTv;
-        let pTmdbId = movieId ? movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+      // 2. Peachify loading / play screen logic
+      if (event.origin === 'https://peachify.pro' || (parsedData.type === 'PLAYER_EVENT' && parsedData.data?.event === 'play')) {
+        setIsIframeLoading(false);
+      }
 
-        if (event.data.type === 'PLAYER_EVENT' && event.data.data && event.data.data.currentTime !== undefined) {
-            currentTime = event.data.data.currentTime;
-            durationValue = event.data.data.duration || duration || 0;
-            if (event.data.data.mediaType === 'tv') pIsTv = true;
-            if (event.data.data.tmdbId || event.data.data.id) pTmdbId = event.data.data.tmdbId || event.data.data.id;
-            if (event.data.data.season) pSeason = event.data.data.season;
-            if (event.data.data.episode) pEpisode = event.data.data.episode;
-        } else if (event.data.type === 'MEDIA_DATA' && event.data.data && event.data.data.watched !== undefined) {
-            currentTime = event.data.data.watched;
-            durationValue = event.data.data.duration || duration || 0;
-            if (event.data.data.mediaType === 'tv') pIsTv = true;
-            if (event.data.data.tmdbId || event.data.data.id) pTmdbId = event.data.data.tmdbId || event.data.data.id;
-            if (event.data.data.season) pSeason = event.data.data.season;
-            if (event.data.data.episode) pEpisode = event.data.data.episode;
+      // 3. Unified progress tracking logic (Peachify, CineSrc, and others)
+      let currentTime: number | undefined = undefined;
+      let durationValue: number | undefined = undefined;
+      let pSeason = season;
+      let pEpisode = episode;
+      let pIsTv = isTv;
+      let pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+
+      // CineSrc time update events
+      if (parsedData.type === 'cinesrc:timeupdate' || parsedData.type === 'cinesrc:seeking' || parsedData.type === 'cinesrc:seeked') {
+        if (parsedData.currentTime !== undefined) {
+          currentTime = Number(parsedData.currentTime);
+          durationValue = parsedData.duration ? Number(parsedData.duration) : (duration || 0);
         }
-        
-        if (currentTime !== undefined) {
-          try {
-            savedRestoreTimeRef.current = currentTime;
-            const saved = (JSON.parse(safeStorage.getItem("classico_progress") || "{}") || {});
-            if (pIsTv && pSeason && pEpisode && pTmdbId) {
-                if (!saved[pTmdbId] || saved[pTmdbId].type !== "tv") {
-                   saved[pTmdbId] = {
-                       id: pTmdbId,
-                       type: "tv",
-                       last_season_watched: pSeason,
-                       last_episode_watched: pEpisode,
-                       show_progress: {}
-                   };
-                }
-                saved[pTmdbId].last_season_watched = pSeason;
-                saved[pTmdbId].last_episode_watched = pEpisode;
-                saved[pTmdbId].server_index = activeServerIndex;
-                if (!saved[pTmdbId].show_progress) saved[pTmdbId].show_progress = {};
-                saved[pTmdbId].show_progress[`s${pSeason}e${pEpisode}`] = {
-                    season: pSeason,
-                    episode: pEpisode,
-                    progress: { watched: currentTime, duration: durationValue }
-                };
-            } else if (movieId) {
-                saved[movieId] = { 
-                  currentTime: currentTime, 
-                  timestamp: Date.now(),
-                  duration: durationValue,
-                  server_index: activeServerIndex
-                };
-            }
-            safeStorage.setItem("classico_progress", JSON.stringify(saved));
-            
-            // Also maintain legacy classico_tv_state for App.tsx and MovieDetailView.tsx compatibility
-            if (pIsTv && pSeason && pEpisode && pTmdbId) {
-                try {
-                    const tvState = (JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {});
-                    tvState[pTmdbId] = { season: pSeason, episode: pEpisode };
-                    safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
-                } catch(e) {}
-            }
-          } catch(e) {}
+      }
+
+      // Peachify & standard PLAYER_EVENT
+      if (parsedData.type === 'PLAYER_EVENT') {
+        const payload = parsedData.data || parsedData;
+        if (payload.currentTime !== undefined) {
+          currentTime = Number(payload.currentTime);
+          durationValue = payload.duration ? Number(payload.duration) : (duration || 0);
+          if (payload.mediaType === 'tv') pIsTv = true;
+          if (payload.tmdbId || payload.id) pTmdbId = String(payload.tmdbId || payload.id);
+          if (payload.season) pSeason = payload.season;
+          if (payload.episode) pEpisode = payload.episode;
         }
+      }
+
+      // MEDIA_DATA event
+      if (parsedData.type === 'MEDIA_DATA' && parsedData.data) {
+        if (parsedData.data.watched !== undefined || parsedData.data.currentTime !== undefined) {
+          currentTime = Number(parsedData.data.watched ?? parsedData.data.currentTime);
+          durationValue = parsedData.data.duration ? Number(parsedData.data.duration) : (duration || 0);
+          if (parsedData.data.mediaType === 'tv') pIsTv = true;
+          if (parsedData.data.tmdbId || parsedData.data.id) pTmdbId = String(parsedData.data.tmdbId || parsedData.data.id);
+          if (parsedData.data.season) pSeason = parsedData.data.season;
+          if (parsedData.data.episode) pEpisode = parsedData.data.episode;
+        }
+      }
+
+      // Generic timeupdate event
+      if (parsedData.event === 'timeupdate' || parsedData.type === 'timeupdate' || parsedData.type === 'peachify:timeupdate' || parsedData.event === 'progress' || parsedData.type === 'progress') {
+        const time = parsedData.currentTime ?? parsedData.data?.currentTime ?? parsedData.watched ?? parsedData.data?.watched ?? parsedData.time ?? parsedData.data?.time ?? parsedData.seconds ?? parsedData.data?.seconds;
+        if (time !== undefined) {
+          currentTime = Number(time);
+          const dur = parsedData.duration ?? parsedData.data?.duration ?? parsedData.totalDuration ?? parsedData.data?.totalDuration;
+          if (dur) durationValue = Number(dur);
+        }
+      }
+
+      // Fallback: any message with currentTime / duration fields or data.currentTime
+      if (currentTime === undefined) {
+        const rawTime = parsedData.currentTime ?? parsedData.data?.currentTime ?? parsedData.watched ?? parsedData.data?.watched;
+        if (rawTime !== undefined) {
+          currentTime = Number(rawTime);
+          const dur = parsedData.duration ?? parsedData.data?.duration;
+          if (dur) durationValue = Number(dur);
+        }
+      }
+
+      if (currentTime !== undefined && !isNaN(currentTime) && currentTime >= 0) {
+        try {
+          savedRestoreTimeRef.current = currentTime;
+          setProgress(currentTime);
+          if (durationValue && durationValue > 0) {
+            setDuration(durationValue);
+          }
+
+          const saved = (JSON.parse(safeStorage.getItem("classico_progress") || "{}") || {});
+          if (pIsTv && pSeason && pEpisode && pTmdbId) {
+            if (!saved[pTmdbId] || saved[pTmdbId].type !== "tv") {
+              saved[pTmdbId] = {
+                id: pTmdbId,
+                type: "tv",
+                last_season_watched: pSeason,
+                last_episode_watched: pEpisode,
+                show_progress: {}
+              };
+            }
+            saved[pTmdbId].last_season_watched = pSeason;
+            saved[pTmdbId].last_episode_watched = pEpisode;
+            saved[pTmdbId].server_index = activeServerIndex;
+            if (!saved[pTmdbId].show_progress) saved[pTmdbId].show_progress = {};
+            saved[pTmdbId].show_progress[`s${pSeason}e${pEpisode}`] = {
+              season: pSeason,
+              episode: pEpisode,
+              progress: { watched: currentTime, duration: durationValue || duration || 0 }
+            };
+          } else if (movieId) {
+            saved[movieId] = { 
+              currentTime: currentTime, 
+              timestamp: Date.now(),
+              duration: durationValue || duration || 0,
+              server_index: activeServerIndex
+            };
+          }
+          safeStorage.setItem("classico_progress", JSON.stringify(saved));
+          
+          // Also maintain legacy classico_tv_state for App.tsx and MovieDetailView.tsx compatibility
+          if (pIsTv && pSeason && pEpisode && pTmdbId) {
+            try {
+              const tvState = (JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {});
+              tvState[pTmdbId] = { season: pSeason, episode: pEpisode };
+              safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+            } catch(e) {}
+          }
+        } catch(e) {}
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [playbackInfo, movieId, activeServerIndex]);
+  }, [playbackInfo, movieId, activeServerIndex, isTv, season, episode, onClose, duration]);
 
   // Format second timestamps to MM:SS
   const formatTime = (secs: number) => {
@@ -2077,6 +2185,35 @@ export default function CinemaPlayerView({
     }
   };
 
+  // Find TMDB data for extra details
+  const localMovieData = allMoviesData.find(m => m.id === movieId) || matchedMovie;
+  const movieData = fetchedDetails || passedMovieData || localMovieData;
+  const cast = movieData?.cast || [];
+  const castDetails = (movieData as any)?.castDetails || [];
+  const logo = movieData?.logoUrl;
+  const hasLogo = !!logo;
+  const currentTitle = movieData?.title || movieTitle;
+  const effectiveBackdrop = movieData?.backdropUrl || movieBackdrop;
+  const effectivePoster = movieData?.posterUrl || moviePoster;
+
+  const similarMovies = useMemo(() => {
+    if ((movieData as any)?.similar && (movieData as any).similar.length > 0) {
+      return (movieData as any).similar;
+    }
+    const genres: string[] = movieData?.genre || [];
+    return allMoviesData
+      .filter(m => m.id !== movieId && m.genre?.some((g: string) => genres.includes(g)))
+      .slice(0, 8)
+      .map((m: any) => ({
+        id: m.id,
+        title: m.title,
+        posterUrl: m.posterUrl || m.poster,
+        backdropUrl: m.backdropUrl || m.backdrop,
+        year: m.year,
+        voteAverage: m.voteAverage || m.rating
+      }));
+  }, [movieData, movieId]);
+
   if (videoError) {
     return (
       <div className="absolute inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-6 text-center">
@@ -2093,119 +2230,62 @@ export default function CinemaPlayerView({
     );
   }
 
-
-
-  if (!serverSelected && playbackInfo?.isIframeEmbed !== false) {
-    if (availableServers.length === 0) {
-      if (!isLoading && isMetadataLoaded) {
-          // If we finished loading and still have no servers, just bypass to avoid hanging
-          // BUT do not return null, instead pretend server is selected so we show player & ads
-          setServerSelected(true);
-          return (
-            <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center">
-              <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
-            </div>
-          );
-      }
-      return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center">
-          <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
-        </div>
-      );
-    }
+  if (availableServers.length === 0 && !isMetadataLoaded) {
     return (
-      <div className="fixed inset-0 z-50 bg-neutral-900 flex flex-col justify-center items-center select-none cursor-default bg-cover bg-center" style={{ backgroundImage: `url(${movieBackdrop || ''})`}}>
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-0" />
-        
-        {/* UPPER DECK (GO BACK) */}
-        <div className="absolute top-0 left-0 right-0 p-6 pt-[calc(1.5rem+env(safe-area-inset-top))] flex items-center justify-between z-[60] pointer-events-none">
-          <div className="flex items-center gap-2"></div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleClosePlayer}
-              className="pointer-events-auto p-2 rounded-full bg-black/50 hover:bg-black/80 text-white transition-all cursor-pointer backdrop-blur-md"
-              title="Close"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-
-        <div className="z-10 w-full max-w-md bg-neutral-900/90 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-6 backdrop-blur-md relative pointer-events-auto mx-4">
-          <div className="flex flex-col gap-2 text-center">
-            <h2 className="text-2xl font-bold text-white tracking-tight">Server Selection</h2>
-            <p className="text-sm text-neutral-400">Choose a streaming server to launch the video.</p>
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mt-2 flex items-start gap-3">
-              <div className="text-amber-500 mt-0.5">⚠️</div>
-              <p className="text-xs text-amber-500/90 text-left leading-relaxed">
-                For the best experience, we strongly recommend using an <strong>adblocker</strong> (like uBlock Origin or Brave Browser) to avoid unwanted popups.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {availableServers.map((server, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setActiveServerIndex(idx);
-                  
-                  let targetUrl = server.url.replace(/&t=\d+/, "");
-                  if (savedRestoreTimeRef.current > 0) {
-                      targetUrl += `&t=${Math.floor(savedRestoreTimeRef.current)}`;
-                  }
-                  
-                  if (playbackInfo) {
-                    setPlaybackInfo({
-                      ...playbackInfo,
-                      iframeSrc: targetUrl,
-                      streamUrl: targetUrl
-                    });
-                  }
-                  setServerSelected(true);
-                  safeStorage.setItem("classico_global_server_index", String(idx));
-                  setIsIframeLoading(true);
-                  setIframeKey(prev => prev + 1);
-                }}
-                className={`w-full p-4 rounded-xl flex items-center justify-between transition-all group border ${idx === 0 ? 'bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30' : 'bg-white/5 hover:bg-white/10 border-white/5'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-amber-500/20 text-amber-500' : 'bg-white/10 text-white'}`}>
-                    <Play className="w-4 h-4 ml-0.5" fill="currentColor" />
-                  </div>
-                  <span className={`font-medium ${idx === 0 ? 'text-amber-500' : 'text-white group-hover:text-amber-500'}`}>
-                    {server.name}
-                    {server.stars && <span className="ml-2 text-amber-500">{'★'.repeat(server.stars)}</span>}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-green-500' : 'bg-neutral-500'}`}></div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-
-        </div>
+      <div className="w-full min-h-[calc(100vh-64px)] bg-black flex flex-col justify-center items-center">
+        <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
       </div>
     );
   }
 
+  const handleSelectSimilar = (simId: string | number) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (onSelectMovie) {
+      onSelectMovie(String(simId));
+    } else {
+      window.location.hash = `/player/${simId}`;
+    }
+  };
+
+  const isCineSrc = (language === "en" && activeServerIndex === 0) || (playbackInfo?.iframeSrc ? playbackInfo.iframeSrc.includes("cinesrc.st") : false);
+  const isCinemaOS = (language === "en" && activeServerIndex === 3) || (playbackInfo?.iframeSrc ? playbackInfo.iframeSrc.includes("cinemaos.live") : false);
+
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center select-none overflow-hidden cursor-default">
-      {/* AdGate Overlay (Shows after server is selected, hiding iframe until 3 clicks) */}
-      {adClicks < 3 && (
-        <div className="absolute inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6 text-center pointer-events-auto overflow-y-auto">
-          <div className="max-w-md w-full bg-zinc-900/90 border border-zinc-700/50 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
-            <h2 className="text-2xl font-bold text-amber-500 mb-4 font-forum tracking-wide">Support Classico</h2>
-            <p className="text-zinc-300 text-sm mb-6 leading-relaxed">
+    <div className="w-full min-h-[calc(100vh-64px)] bg-[#0a0a0a] text-stone-100 flex flex-col select-none relative animate-in fade-in duration-300">
+      
+      {/* Background Backdrop with Gradient */}
+      {effectiveBackdrop && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img src={effectiveBackdrop} alt="" className="w-full h-[60vh] object-cover opacity-[0.15] mask-image-gradient" style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)', maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)' }} />
+        </div>
+      )}
+      
+      {/* Background Ambience */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div 
+          className="absolute top-0 left-0 right-0 h-[100vh] bg-cover bg-top opacity-30"
+          style={{ 
+            backgroundImage: `url(${effectiveBackdrop || effectivePoster || ''})`,
+            maskImage: 'linear-gradient(to bottom, black 0%, transparent 90%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 90%)'
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/80 to-[#0a0a0a]"></div>
+      </div>
+
+      {/* AdGate Overlay disabled to ensure immediate playback */}
+      {false && serverSelected && adClicks < 3 && (
+        <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center pointer-events-auto">
+          <div className="max-w-md w-full bg-neutral-900 border border-amber-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
+            <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Support Classico</h2>
+            <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
               Classico is free and will stay that way, but our servers cost a lot to maintain. The only way we can compensate is by including three ads per movie.
               <br /><br />
               <strong className="text-white">Please disable your ad-blocker to support us.</strong> Thank you immensely!
             </p>
             <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 w-full mb-6">
-              <p className="text-rose-400 text-xs font-mono uppercase tracking-wider">
-                Don't click anything on the ads, just click on the X or change the tab.
+              <p className="text-rose-400 text-[11px] font-mono uppercase tracking-wider">
+                Don't click anything on the ads, just close the new tab.
               </p>
             </div>
             
@@ -2213,13 +2293,10 @@ export default function CinemaPlayerView({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                try {
-                  window.open("https://omg10.com/4/11192957", "_blank");
-                } catch(err) {}
-                const newVal = adClicks + 1;
-                setAdClicks(newVal);
+                try { window.open("https://omg10.com/4/11192957", "_blank"); } catch(err) {}
+                setAdClicks(prev => prev + 1);
               }}
-              className="allow-popunder w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4 cursor-pointer block text-center"
+              className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4"
             >
               <span>Click Ad</span>
             </button>
@@ -2229,156 +2306,534 @@ export default function CinemaPlayerView({
               <span className="text-amber-500 font-bold font-mono bg-amber-500/10 px-2 py-0.5 rounded">{adClicks}/3</span>
             </div>
           </div>
-          
           <button
-            onClick={handleClosePlayer}
-            className="absolute top-6 left-6 p-3 rounded-full bg-black/50 hover:bg-black/80 text-white/90 hover:text-white transition-all backdrop-blur-md cursor-pointer"
+            onClick={() => setServerSelected(false)}
+            className="absolute top-6 left-6 p-3 rounded-full bg-neutral-800/80 hover:bg-neutral-700 text-white transition-all cursor-pointer border border-white/10"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
         </div>
       )}
 
-
-      {/* UPPER DECK (GO BACK & SERVERS) */}
-      <div className={`absolute top-0 left-0 right-0 px-4 sm:px-6 pt-[calc(0.5rem+env(safe-area-inset-top))] pb-3 flex items-center justify-between z-[60] bg-gradient-to-b from-black/95 via-black/70 to-transparent transition-opacity duration-300 ${playbackInfo?.isIframeEmbed ? 'opacity-100' : (controlsVisible ? 'opacity-100' : 'opacity-0 pointer-events-none')}`}>
+      {/* Main Layout Area */}
+      <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-16">
         
-        {/* LEFT: BACK + SERVER */}
-        <div className="flex items-center gap-2 relative z-10">
+        {/* Top Bar with Back Button */}
+        <div className="flex items-center gap-4 mb-4">
           <button
             onClick={handleClosePlayer}
-            className="pointer-events-auto p-2 sm:p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white transition-all cursor-pointer flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg"
-            title="Retour"
+            className="flex items-center gap-2 text-zinc-500 hover:text-amber-500 transition-colors font-sans text-sm uppercase tracking-wider"
+            title="Back"
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ArrowLeft className="w-4 h-4" /> Back
           </button>
+        </div>
+
+        {/* Title & Meta Above Player & Sidebars */}
+        <div className="w-full flex flex-col items-center text-center gap-3.5 mb-8">
+          {hasLogo ? (
+            <div className="flex items-center justify-center py-1">
+              <img 
+                src={logo} 
+                alt={currentTitle} 
+                className="h-16 sm:h-20 md:h-24 max-h-28 w-auto max-w-[85%] sm:max-w-[70%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)] filter transition-transform duration-300 hover:scale-[1.02]" 
+              />
+            </div>
+          ) : (
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold text-white tracking-wider uppercase drop-shadow-lg text-balance leading-tight max-w-2xl">
+              {currentTitle}
+            </h1>
+          )}
           
-          {availableServers && availableServers.length > 1 && (
-            <div className="relative">
-              <button
-                id="cinema-server-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowServerMenu(!showServerMenu);
-                }}
-                className="pointer-events-auto px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full transition-all cursor-pointer flex items-center justify-center gap-2 backdrop-blur-md bg-black/70 hover:bg-black/90 text-white border border-white/20 shadow-lg"
-                title="Changer de serveur"
-              >
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-[11px] sm:text-xs font-semibold whitespace-nowrap flex items-center gap-1.5">
-                  {availableServers[activeServerIndex]?.name || 'Serveur'}
-                  {availableServers[activeServerIndex]?.stars && <span className="text-amber-400 text-[10px]">{'★'.repeat(availableServers[activeServerIndex]?.stars || 0)}</span>}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 opacity-80" />
-              </button>
-              
-              {showServerMenu && (
-                <div id="cinema-server-menu" className="absolute top-full left-0 mt-2 min-w-[240px] max-w-[340px] bg-neutral-900/95 border border-white/20 rounded-xl overflow-hidden shadow-2xl backdrop-blur-2xl pointer-events-auto z-[70] animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-3.5 py-2 border-b border-white/10 text-[10px] font-bold text-amber-500 uppercase tracking-wider">
-                    Changer de serveur
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs uppercase tracking-widest font-sans text-zinc-400">
+            {movieData?.voteAverage && (
+              <div className="flex items-center gap-1.5 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                <span className="text-amber-400 text-xs">★</span> 
+                <span className="text-amber-300 font-semibold">{movieData.voteAverage.toFixed(1)}</span>
+              </div>
+            )}
+            {movieData?.year && <span className="text-zinc-300 font-medium">{movieData.year}</span>}
+            {movieData?.duration && <span className="text-zinc-400">{movieData.duration}{String(movieData.duration).includes('m') ? '' : 'm'}</span>}
+            {movieData?.director && <span className="text-zinc-400">DIR. <strong className="text-zinc-300 font-normal">{movieData.director}</strong></span>}
+            {movieData?.genre && movieData.genre.length > 0 && (
+              <span className="text-zinc-500 hidden sm:inline">• {movieData.genre.slice(0, 2).join(", ")}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col xl:flex-row gap-8 lg:gap-10 justify-center items-start">
+          
+          {/* Left Column: Cast */}
+          <div 
+            style={measuredPlayerHeight ? { height: `${measuredPlayerHeight}px` } : undefined}
+            className="w-full xl:w-[250px] shrink-0 order-3 xl:order-1 bg-[#101010]/85 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex flex-col gap-2 relative xl:self-start overflow-hidden max-h-[472px] xl:max-h-none"
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
+              <h3 className="text-zinc-200 font-sans text-xs uppercase tracking-wider flex items-center gap-1.5 font-semibold">
+                <Users className="w-3.5 h-3.5 text-amber-400" />
+                Main Cast
+              </h3>
+              <span className="text-[10px] font-sans font-medium text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                {castDetails.length > 0 ? castDetails.length : cast.length} actors
+              </span>
+            </div>
+            <div className="flex-1 min-h-0 flex flex-col gap-1 overflow-y-auto scrollbar-hide pr-0.5">
+              {castDetails.length > 0 ? (
+                (showAllCast ? castDetails : castDetails.slice(0, 7)).map((actor: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] border border-transparent hover:border-white/5 transition-all group">
+                    <div className="w-8 h-8 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-amber-400/40 transition-colors shadow-sm">
+                      {actor.imageUrl ? (
+                        <img src={actor.imageUrl} alt={actor.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      ) : (
+                        <span className="text-xs font-sans font-medium text-zinc-400">{actor.name.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-sans text-zinc-200 group-hover:text-white font-medium truncate">{actor.name}</span>
+                      {actor.role && (
+                        <span className="text-[10px] font-sans text-zinc-400 truncate">{actor.role}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-col py-1 max-h-[60vh] overflow-y-auto">
-                    {availableServers.map((server, idx) => (
-                      <button
-                        key={idx}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveServerIndex(idx);
-                          
-                          let targetUrl = server.url.replace(/&t=\d+/, "");
-                          if (savedRestoreTimeRef.current > 0) {
-                              targetUrl += `&t=${Math.floor(savedRestoreTimeRef.current)}`;
-                          }
-                          
+                ))
+              ) : (
+                (showAllCast ? cast : cast.slice(0, 7)).map((actor: string, i: number) => (
+                  <div key={i} className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] border border-transparent hover:border-white/5 transition-all group">
+                    <div className="w-8 h-8 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-amber-400/40 transition-colors shadow-sm">
+                      <span className="text-xs font-sans font-medium text-zinc-400">{actor.charAt(0)}</span>
+                    </div>
+                    <span className="text-xs font-sans text-zinc-200 group-hover:text-white font-medium truncate">{actor}</span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* See more toggle */}
+            {(castDetails.length > 7 || cast.length > 7) && (
+              <button
+                type="button"
+                onClick={() => setShowAllCast(!showAllCast)}
+                className="w-full mt-auto py-1.5 px-2.5 text-[11px] font-sans font-medium text-amber-400/90 hover:text-amber-300 hover:bg-white/[0.05] rounded-lg transition-all text-center border border-white/5 flex items-center justify-center gap-1 cursor-pointer shrink-0"
+              >
+                <span>{showAllCast ? "Show less" : "See more"}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAllCast ? 'rotate-180' : ''}`} />
+              </button>
+            )}
+          </div>
+
+          {/* Center Column: Player, Synopsis & Details */}
+          <div className="w-full xl:max-w-[840px] flex-1 order-1 xl:order-2 flex flex-col items-center">
+            
+            {/* Player Container */}
+            <div className="w-full flex flex-col gap-6">
+              <div ref={viewportRef} className="w-full aspect-video bg-[#050505] rounded-xl overflow-hidden shadow-2xl border border-white/5 relative group">
+                {!serverSelected ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent">
+                    <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mb-4 border border-white/5">
+                      <Play className="w-6 h-6 text-zinc-600 ml-1" />
+                    </div>
+                    <p className="text-zinc-500 font-sans text-sm">Select a source.</p>
+                  </div>
+                ) : (isLoading || isStreamLoading || (playbackInfo?.isIframeEmbed && isIframeLoading)) ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-[45]">
+                    <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
+                    <p className="text-amber-500/50 font-mono tracking-widest uppercase text-[10px]">Connecting...</p>
+                  </div>
+                ) : null}
+
+                {serverSelected && (playbackInfo?.iframeSrc || (!isLoading && !isStreamLoading && !playbackInfo?.isIframeEmbed)) ? (
+                  <div className="absolute inset-0 w-full h-full z-40 opacity-100 pointer-events-auto overflow-hidden bg-black">
+                    {playbackInfo?.iframeSrc ? (
+                      <iframe
+                        key={`${playbackInfo.iframeSrc}-${iframeKey}`}
+                        src={normalizeEmbedUrl(playbackInfo.iframeSrc)}
+                        allowFullScreen={true}
+                        scrolling="no"
+                        sandbox={isCineSrc ? "allow-scripts allow-same-origin allow-forms" : undefined}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                        onLoad={() => setIsIframeLoading(false)}
+                        className={`border-0 absolute transition-all duration-300 ${
+                          isCinemaOS 
+                            ? "w-full -top-16 sm:-top-18 h-[calc(100%+120px)] left-0" 
+                            : "w-full h-full inset-0"
+                        }`}
+                        style={{ overflow: 'hidden' }}
+                        // @ts-ignore
+                        webkitallowfullscreen="true"
+                        // @ts-ignore
+                        mozallowfullscreen="true"
+                      ></iframe>
+                    ) : (
+                      <video
+                        ref={videoRef}
+                        className="w-full h-full object-contain absolute inset-0 bg-black"
+                        playsInline
+                        controls
+                        autoPlay
+                        crossOrigin="anonymous"
+                      />
+                    )}
+                  </div>
+                ) : null}
+              </div>
+              
+              {/* Rich Details Section Below Player (Scroll view) */}
+              <div className="w-full mt-4 flex flex-col gap-6 text-left">
+                
+                {/* Tabs Header Navigation */}
+                <div className="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto scrollbar-hide">
+                  <button
+                    type="button"
+                    onClick={() => setDetailsTab("synopsis")}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                      detailsTab === "synopsis"
+                        ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
+                    }`}
+                  >
+                    <span>Overview & Details</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDetailsTab("similar")}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                      detailsTab === "similar"
+                        ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
+                    }`}
+                  >
+                    <Film className="w-3.5 h-3.5" />
+                    <span>More Like This</span>
+                    {similarMovies.length > 0 && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${detailsTab === "similar" ? "bg-amber-400/20 text-amber-200" : "bg-white/10 text-zinc-400"}`}>
+                        {similarMovies.length}
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDetailsTab("all")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${
+                      detailsTab === "all"
+                        ? "bg-white/10 text-white border border-white/15"
+                        : "text-zinc-500 hover:text-zinc-300 border border-transparent"
+                    }`}
+                  >
+                    <span>View All</span>
+                  </button>
+                </div>
+
+                {/* TAB 1: Synopsis & Vertical Details Card Side by Side */}
+                {(detailsTab === "synopsis" || detailsTab === "all") && (
+                  <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch pt-1">
+                    
+                    {/* Left block: Story & Synopsis */}
+                    <div className="flex-1 bg-[#101010]/60 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-white/10 flex flex-col justify-between gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                          <h3 className="text-zinc-200 font-cinzel text-xs uppercase tracking-[2px] font-bold flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(212,175,55,0.6)]"></span>
+                            Story & Synopsis
+                          </h3>
+                          {movieData?.tagline && (
+                            <span className="text-xs text-amber-300/80 italic hidden sm:inline max-w-xs truncate font-sans">
+                              "{movieData.tagline}"
+                            </span>
+                          )}
+                        </div>
+                        
+                        <p className="text-zinc-300 text-sm sm:text-base leading-relaxed font-sans font-normal">
+                          {movieData?.description || "No synopsis available for this title."}
+                        </p>
+                      </div>
+
+                      {/* Genre pills under synopsis */}
+                      {movieData?.genre && movieData.genre.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                          {movieData.genre.map((g: string, i: number) => (
+                            <span key={i} className="text-xs px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-300 border border-white/5 font-sans font-medium">
+                              {g}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right block: Vertical Box for Specifications & Details */}
+                    <div className="w-full lg:w-[260px] shrink-0 bg-[#101010]/85 backdrop-blur-md rounded-xl p-4 border border-white/10 shadow-lg flex flex-col gap-3.5">
+                      <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                        <h3 className="text-zinc-200 font-cinzel text-xs uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                          <Film className="w-3.5 h-3.5 text-amber-400" />
+                          Details
+                        </h3>
+                        <span className="text-[10px] font-sans font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                          4K UHD
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col gap-2.5 text-left font-sans">
+                        {/* Director */}
+                        <div className="flex items-center justify-between py-1 border-b border-white/5">
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Director</span>
+                          <span className="text-xs font-sans font-semibold text-zinc-200 truncate max-w-[140px]" title={movieData?.director || "Not specified"}>
+                            {movieData?.director || "Not specified"}
+                          </span>
+                        </div>
+
+                        {/* Release Date */}
+                        <div className="flex items-center justify-between py-1 border-b border-white/5">
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Release</span>
+                          <span className="text-xs font-sans font-medium text-zinc-200">
+                            {movieData?.releaseDate || movieData?.year || "Not specified"}
+                          </span>
+                        </div>
+
+                        {/* Runtime */}
+                        <div className="flex items-center justify-between py-1 border-b border-white/5">
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Runtime</span>
+                          <span className="text-xs font-sans font-medium text-zinc-200">
+                            {movieData?.duration ? `${movieData.duration}${String(movieData.duration).includes('m') ? '' : ' min'}` : "Standard"}
+                          </span>
+                        </div>
+
+                        {/* TMDB Rating */}
+                        <div className="flex items-center justify-between py-1 border-b border-white/5">
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Rating</span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-amber-400 text-xs">★</span>
+                            <span className="text-xs font-semibold text-amber-300">
+                              {movieData?.voteAverage ? Number(movieData.voteAverage).toFixed(1) : (movieData?.rating || "8.2")}/10
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Audio / Quality */}
+                        <div className="flex flex-col gap-1.5 pt-1">
+                          <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-medium">Formats & Audio</span>
+                          <div className="flex flex-wrap gap-1">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">HDR10</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">DOLBY 5.1</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">EN / FR SUB</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* TAB 2: More Like This (Horizontal Smooth Scrolling Carousel matching MovieDetailView) */}
+                {(detailsTab === "similar" || detailsTab === "all" || detailsTab === "synopsis") && (
+                  <div className="w-full space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <h3 className="text-zinc-100 font-cinzel text-sm sm:text-base uppercase tracking-[2px] font-bold flex items-center gap-2">
+                          <Film className="w-4 h-4 text-amber-400" />
+                          More Like This
+                        </h3>
+                        <span className="text-[10px] font-sans font-semibold text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                          {similarMovies.length} titles
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          type="button"
+                          onClick={() => { 
+                            const el = document.getElementById('cinema-similar-scroll'); 
+                            if (el) el.scrollBy({ left: -280, behavior: 'smooth' }); 
+                          }} 
+                          className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 hover:text-amber-400 transition-colors cursor-pointer text-white"
+                          title="Previous"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => { 
+                            const el = document.getElementById('cinema-similar-scroll'); 
+                            if (el) el.scrollBy({ left: 280, behavior: 'smooth' }); 
+                          }} 
+                          className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 hover:text-amber-400 transition-colors cursor-pointer text-white"
+                          title="Next"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {similarMovies.length > 0 ? (
+                      <div 
+                        id="cinema-similar-scroll"
+                        className="flex overflow-x-auto gap-3 sm:gap-4 pb-3 no-scrollbar scroll-smooth w-full"
+                      >
+                        {similarMovies.map((sim: any) => (
+                          <button
+                            key={sim.id}
+                            type="button"
+                            onClick={() => handleSelectSimilar(sim.id)}
+                            className="shrink-0 w-32 sm:w-36 group cursor-pointer text-left flex flex-col"
+                          >
+                            <div className="aspect-[2/3] w-full rounded-xl overflow-hidden bg-zinc-900 relative border border-white/10 group-hover:border-amber-400/40 transition-all duration-300 shadow-lg">
+                              {sim.posterUrl ? (
+                                <img 
+                                  src={sim.posterUrl} 
+                                  alt={sim.title} 
+                                  referrerPolicy="no-referrer"
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                  <Film className="w-8 h-8" />
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
+                                <span className="flex items-center gap-1.5 text-xs font-sans font-medium text-amber-400">
+                                  <Play className="w-3.5 h-3.5 fill-amber-400" /> Watch
+                                </span>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex flex-col min-w-0">
+                              <h4 className="text-xs font-sans font-semibold text-zinc-200 group-hover:text-amber-400 transition-colors truncate">
+                                {sim.title}
+                              </h4>
+                              <div className="flex items-center justify-between text-[10px] font-sans text-zinc-400 mt-0.5">
+                                <span>{sim.year || 'N/A'}</span>
+                                {sim.voteAverage > 0 && (
+                                  <span className="flex items-center gap-0.5 text-amber-400 font-medium">
+                                    ★ {Number(sim.voteAverage).toFixed(1)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-zinc-500 font-sans text-xs">
+                        No similar titles available.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Server Selection Sidebar */}
+          <div 
+            style={measuredPlayerHeight ? { height: `${measuredPlayerHeight}px` } : undefined}
+            className="w-full xl:w-[250px] shrink-0 order-2 xl:order-3 bg-[#101010]/85 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex flex-col gap-2 relative overflow-hidden xl:self-start max-h-[472px] xl:max-h-none"
+          >
+            
+            <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
+              <h3 className="text-zinc-200 font-sans text-xs uppercase tracking-wider flex items-center gap-1.5 font-semibold">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse"></div>
+                Sources
+              </h3>
+              <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-lg border border-white/10">
+                <button 
+                  onClick={() => { setLanguage("en"); setActiveServerIndex(0); }} 
+                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
+                  title="English"
+                >
+                  <img src="https://flagcdn.com/w40/gb.png" alt="EN" className="w-full h-full object-cover rounded-sm" />
+                </button>
+                <button 
+                  onClick={() => { setLanguage("fr"); setActiveServerIndex(0); }} 
+                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
+                  title="French"
+                >
+                  <img src="https://flagcdn.com/w40/fr.png" alt="FR" className="w-full h-full object-cover rounded-sm" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 min-h-0 flex flex-col gap-1.5 overflow-y-auto pr-0.5 scrollbar-hide">
+              {availableServers && availableServers.length > 0 ? (
+                availableServers.map((server, idx) => {
+                  let serverName = server.name.split(' (')[0];
+                  const isActive = serverSelected && activeServerIndex === idx;
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => {
+                        setActiveServerIndex(idx);
+                        const isProxyStream = server.url.startsWith("/api/stream-proxy") || server.url.startsWith("/api/extract-stream-view");
+                        let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "");
+                        if (!isProxyStream && savedRestoreTimeRef.current > 0) {
+                          const sep = targetUrl.includes("?") ? "&" : "?";
+                          targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
+                        }
+                        
+                        if (isProxyStream) {
+                          setServerSelected(true);
+                          setIsLoading(true);
+                          const searchParams = new URLSearchParams(server.url.split("?")[1]);
+                          fetch(`/api/extract-stream?${searchParams.toString()}`)
+                            .then(res => res.json())
+                            .then(data => {
+                              setIsLoading(false);
+                              if (data.success && data.extractedUrl) {
+                                setPlaybackInfo({
+                                  ...playbackInfo!,
+                                  isIframeEmbed: false,
+                                  iframeSrc: "",
+                                  streamUrl: data.extractedUrl
+                                });
+                              } else {
+                                alert(data.error || "Impossible d'extraire le flux brut pour ce film.");
+                              }
+                            })
+                            .catch(() => {
+                              setIsLoading(false);
+                              alert("Erreur lors de la tentative d'extraction du flux.");
+                            });
+                        } else {
+                          const cleanUrl = normalizeEmbedUrl(targetUrl);
                           if (playbackInfo) {
                             setPlaybackInfo({
                               ...playbackInfo,
-                              iframeSrc: targetUrl,
-                              streamUrl: targetUrl
+                              isIframeEmbed: true,
+                              iframeSrc: cleanUrl,
+                              streamUrl: cleanUrl
                             });
                           }
                           safeStorage.setItem("classico_global_server_index", String(idx));
                           setServerSelected(true);
                           setIsIframeLoading(true);
                           setIframeKey(prev => prev + 1);
-                          setShowServerMenu(false);
-                        }}
-                        className={`px-3.5 py-2.5 text-xs flex items-center justify-between gap-2 transition-colors text-left ${activeServerIndex === idx ? 'bg-amber-500/20 text-amber-400 font-bold' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeServerIndex === idx ? 'bg-amber-400' : 'bg-transparent'}`}></div>
-                          <span>{server.name}</span>
-                        </div>
-                        {server.stars && <span className="text-amber-400 tracking-widest text-[10px] shrink-0">{'★'.repeat(server.stars)}</span>}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        
-        {/* CENTER: TITLE (Removed) */}
-        <div className="flex-1"></div>
-        
-        {/* RIGHT */}
-        <div className="flex justify-end"></div>
-      </div>
+                        }
+                      }}
+                      className={`relative w-full flex items-center justify-between py-2 px-2.5 rounded-lg border transition-all duration-200 group overflow-hidden ${
+                        isActive 
+                          ? 'bg-amber-500/15 border-amber-500/30 text-white shadow-sm' 
+                          : 'bg-white/[0.02] border-white/5 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Play className={`w-3 h-3 transition-colors ${isActive ? 'text-amber-400 fill-amber-400' : 'text-zinc-500 group-hover:text-amber-400/80'}`} />
+                        <span className={`text-xs font-sans transition-colors ${isActive ? 'text-amber-200 font-medium' : 'text-zinc-400 group-hover:text-zinc-200'}`}>Server {idx + 1}</span>
+                      </div>
+                      <span className={`text-[9px] tracking-wide font-sans transition-colors px-1.5 py-0.5 rounded font-medium ${isActive ? 'text-amber-400 bg-amber-400/10' : 'text-zinc-400 bg-white/5'}`}>
+                        HD
+                      </span>
 
-      {/* Loader overlay */}
-      <div 
-        className={`absolute inset-0 z-[60] bg-black flex flex-col items-center justify-center gap-4 text-amber-500 transition-opacity duration-1000 ease-in-out ${(adClicks >= 3 && (isLoading || isStreamLoading || (playbackInfo?.isIframeEmbed && isIframeLoading))) ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-      >
-        <button
-          onClick={() => {
-            setIsLoading(false);
-            setIsStreamLoading(false);
-            setIsIframeLoading(false);
-            setServerSelected(false);
-            setShowServerMenu(true);
-          }}
-          className="absolute top-6 left-6 p-3 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-white transition-all cursor-pointer z-[70] border border-white/10"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <Loader2 className={`w-10 h-10 ${(isLoading || isStreamLoading || (playbackInfo?.isIframeEmbed && isIframeLoading)) ? 'animate-spin' : ''}`} />
-        <div className="text-sm font-mono tracking-widest text-amber-500/80 uppercase">
-          Connecting to server...
+                      {/* Golden indicator line like the navbar active tab */}
+                      {isActive && (
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+                      )}
+                    </button>
+                  )
+                })
+              ) : null}
+            </div>
+          </div>
+
         </div>
       </div>
-      
-      {/* Actual player/iframe */}
-      {playbackInfo?.iframeSrc ? (
-        <div className={`absolute inset-0 w-full h-full bg-black z-40 flex items-center justify-center pt-[calc(3.25rem+env(safe-area-inset-top))] pb-[env(safe-area-inset-bottom)] ${adClicks >= 3 ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}>
-          <iframe
-            key={`${playbackInfo.iframeSrc}-${iframeKey}`}
-            src={playbackInfo.iframeSrc}
-            referrerPolicy="no-referrer"
-            allowFullScreen={true}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-            onLoad={() => {
-              setIsIframeLoading(false);
-            }}
-            className="w-full h-full border-0"
-            // @ts-ignore
-            webkitallowfullscreen="true"
-            // @ts-ignore
-            mozallowfullscreen="true"
-          ></iframe>
-        </div>
-      ) : !isLoading && !isStreamLoading ? (
-        <div className={`absolute inset-0 w-full h-full bg-black z-40 flex items-center justify-center ${adClicks >= 3 ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`} ref={viewportRef}>
-          <video
-            ref={videoRef}
-            className="w-full h-full object-contain"
-            playsInline
-            controls
-            autoPlay
-            crossOrigin="anonymous"
-          />
-        </div>
-      ) : null}
     </div>
   );
 }

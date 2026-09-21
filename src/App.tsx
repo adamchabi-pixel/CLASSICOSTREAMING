@@ -689,35 +689,45 @@ export default function App() {
       return [];
     }
   });
+
+  const getCanonicalMovieKey = React.useCallback((m: any): string => {
+    if (!m) return "";
+    const isTv = Boolean(m.isTv || (m as any).media_type === "tv" || String(m.id || "").endsWith("-tv"));
+    const type = isTv ? "tv" : "movie";
+    const tmdb = m.tmdbId || (m as any).providerIds?.Tmdb;
+    if (tmdb) return `${type}_tmdb_${tmdb}`;
+    const cleanId = String(m.id || "").replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+    if (/^\d+$/.test(cleanId)) {
+      return `${type}_tmdb_${cleanId}`;
+    }
+    const cleanTitle = (m.title || (m as any).name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+    return `${type}_title_${cleanTitle}_${m.year || ""}`;
+  }, []);
+
   const allMoviesBase = React.useMemo(() => {
     const combined = (asyncData ? [...asyncData.imported, ...asyncData.all] : []).filter(m => m && !isAnimeOrAdult(m as unknown as Movie));
-    const groups = new Map();
-    
-    const cleanTitle = (t: string) => t ? t.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+    const groups = new Map<string, any[]>();
     
     combined.forEach(m => {
-      let key = null;
-      if (m.tmdbId) key = `tmdb_${m.tmdbId}`;
-      else if ((m as any).providerIds && (m as any).providerIds.Tmdb) key = `tmdb_${(m as any).providerIds.Tmdb}`;
-      else if (m.id && /^\d+$/.test(m.id)) key = `tmdb_${m.id}`; // Assuming numeric IDs are TMDB
-      else key = `title_${cleanTitle(m.title)}`;
-      
+      const key = getCanonicalMovieKey(m);
+      if (!key) return;
       if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(m);
+      groups.get(key)!.push(m);
     });
     
     const finalMovies: Movie[] = [];
     
     groups.forEach(group => {
-      // Prioritize Jellyfin object as the base so we keep the streamUrl and Jellyfin ID
-      let baseMovie = group.find((m: Movie) => false) || group[0];
-      let merged = { ...baseMovie };
+      let baseMovie = group.find((m: any) => !!m.streamUrl) || group[0];
+      const isTv = group.some((m: any) => Boolean(m.isTv || (m as any).media_type === "tv" || String(m.id || "").endsWith("-tv")));
+      let merged: any = { ...baseMovie, isTv };
       
-      group.forEach((m: Movie) => {
+      group.forEach((m: any) => {
         if (m === baseMovie) return;
         merged = {
           ...m,
-          ...merged, // Base overrides m for top-level fields (like id, streamUrl, title)
+          ...merged,
+          isTv,
           hasLogo: merged.hasLogo || m.hasLogo,
           logoUrl: merged.logoUrl || m.logoUrl,
           castDetails: (merged.castDetails && merged.castDetails.length > 0) ? merged.castDetails : m.castDetails,
@@ -733,11 +743,14 @@ export default function App() {
         };
       });
       
-      finalMovies.push(merged);
+      if (isTv && !String(merged.id || "").endsWith("-tv")) {
+        merged.id = `${merged.id}-tv`;
+      }
+      finalMovies.push(merged as Movie);
     });
     
     return finalMovies;
-  }, [asyncData]);
+  }, [asyncData, getCanonicalMovieKey]);
   
   
   const initialPath = window.location.pathname;
@@ -808,7 +821,17 @@ export default function App() {
       try {
         const parsed = JSON.parse(savedProgress) || {};
         const newProgressData: Record<string, number> = {};
-        Object.keys(parsed || {}).forEach(k => {
+        let needsResave = false;
+
+        Object.keys(parsed || {}).forEach(rawK => {
+           let k = rawK;
+           if (k.includes("-tv-tv")) {
+             k = k.replace(/(-tv)+$/g, "-tv");
+             parsed[k] = parsed[rawK];
+             delete parsed[rawK];
+             needsResave = true;
+           }
+
            let pct = 0;
            if (typeof parsed[k] === 'number') pct = parsed[k];
            else if (parsed[k] && parsed[k].type === "tv" && parsed[k].show_progress) {
@@ -827,14 +850,15 @@ export default function App() {
              pct = parsed[k].currentTime / parsed[k].duration;
            }
            
+           const baseClean = k.replace(/(-tv)+$/g, "");
            if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
-           if (!k.endsWith("-tv")) {
-               if (pct > (newProgressData[k + "-tv"] || 0) || !newProgressData[k + "-tv"]) newProgressData[k + "-tv"] = pct;
-           }
-           if (k.endsWith("-tv")) {
-               if (pct > (newProgressData[k.replace("-tv", "")] || 0) || !newProgressData[k.replace("-tv", "")]) newProgressData[k.replace("-tv", "")] = pct;
-           }
+           if (pct > (newProgressData[`${baseClean}-tv`] || 0) || !newProgressData[`${baseClean}-tv`]) newProgressData[`${baseClean}-tv`] = pct;
+           if (pct > (newProgressData[baseClean] || 0) || !newProgressData[baseClean]) newProgressData[baseClean] = pct;
         });
+
+        if (needsResave) {
+          localStorage.setItem("classico_progress", JSON.stringify(parsed));
+        }
         setProgressData(newProgressData);
       } catch (e) {
         console.error(e);
@@ -1347,50 +1371,28 @@ export default function App() {
     const savedHistory = localStorage.getItem("classico_history");
     if (savedHistory) {
       try {
-        const h = JSON.parse(savedHistory); if (Array.isArray(h)) setHistory(h);
+        const h = JSON.parse(savedHistory);
+        if (Array.isArray(h)) {
+          const cleanedHistory: string[] = [];
+          const seenHistoryKeys = new Set<string>();
+          h.forEach(id => {
+            if (typeof id !== 'string') return;
+            const cleanId = id.replace(/(-tv)+$/g, "-tv");
+            const canonicalId = cleanId.replace(/-tv$/, "");
+            if (seenHistoryKeys.has(canonicalId)) return;
+            seenHistoryKeys.add(canonicalId);
+            cleanedHistory.push(cleanId);
+          });
+          setHistory(cleanedHistory);
+          localStorage.setItem("classico_history", JSON.stringify(cleanedHistory));
+        }
       } catch (e) {
         console.error(e);
       }
     }
     
     // Progress persistence
-    const savedProgress = localStorage.getItem("classico_progress");
-    if (savedProgress) {
-      try {
-        const parsed = JSON.parse(savedProgress) || {};
-        const newProgressData: Record<string, number> = {};
-        Object.keys(parsed || {}).forEach(k => {
-           let pct = 0;
-           if (typeof parsed[k] === 'number') pct = parsed[k];
-           else if (parsed[k] && parsed[k].type === "tv" && parsed[k].show_progress) {
-             const s = parsed[k].last_season_watched || 1;
-             const e = parsed[k].last_episode_watched || 1;
-             const epProg = parsed[k].show_progress[`s${s}e${e}`];
-             if (epProg && epProg.progress) {
-                 const duration = epProg.progress.duration || 0;
-                 pct = duration > 0 ? (epProg.progress.watched / duration) : (epProg.progress.watched > 0 ? 0.5 : 0);
-             }
-           }
-           else if (parsed[k] && parsed[k].currentTime !== undefined) {
-             const duration = parsed[k].duration || 0;
-             pct = duration > 0 ? (parsed[k].currentTime / duration) : (parsed[k].currentTime > 0 ? 0.5 : 0);
-           } else if (parsed[k] && parsed[k].duration) {
-             pct = parsed[k].currentTime / parsed[k].duration;
-           }
-           
-           if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
-           if (!k.endsWith("-tv")) {
-               if (pct > (newProgressData[k + "-tv"] || 0) || !newProgressData[k + "-tv"]) newProgressData[k + "-tv"] = pct;
-           }
-           if (k.endsWith("-tv")) {
-               if (pct > (newProgressData[k.replace("-tv", "")] || 0) || !newProgressData[k.replace("-tv", "")]) newProgressData[k.replace("-tv", "")] = pct;
-           }
-        });
-        setProgressData(newProgressData);
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    loadProgress();
 
     // Check Jellyfin server configuration status
     
@@ -1405,8 +1407,29 @@ export default function App() {
     localStorage.setItem("classico_watchlist", JSON.stringify(updated));
   };
 
-  const handleAddToHistory = (movieID: string) => {
-    const updated = [movieID, ...history.filter(id => id !== movieID)].slice(0, 15);
+  const handleAddToHistory = (movieOrId: Movie | string) => {
+    let targetMovie: Movie | undefined;
+    let targetId = "";
+    if (typeof movieOrId === 'string') {
+      targetId = movieOrId;
+      targetMovie = allMovies.find(m => m.id === movieOrId || String(m.tmdbId) === movieOrId.replace(/-tv$/, ""));
+    } else {
+      targetMovie = movieOrId;
+      targetId = movieOrId.id;
+    }
+
+    const targetKey = targetMovie ? getCanonicalMovieKey(targetMovie) : targetId;
+
+    const filtered = history.filter(existingId => {
+      if (existingId === targetId) return false;
+      const existingMovie = allMovies.find(m => m.id === existingId || String(m.tmdbId) === existingId.replace(/-tv$/, ""));
+      if (existingMovie && targetMovie) {
+        return getCanonicalMovieKey(existingMovie) !== targetKey;
+      }
+      return true;
+    });
+
+    const updated = [targetId, ...filtered].slice(0, 20);
     setHistory(updated);
     localStorage.setItem("classico_history", JSON.stringify(updated));
   };
@@ -1423,21 +1446,26 @@ export default function App() {
   const handleOpenMovie = (movie: Movie, immediatePlay = false) => {
     setSearchQuery(""); setSearchInput("");
     setIsMobileSearchOpen(false);
+
+    const isTv = Boolean(movie.isTv || (movie as any).media_type === "tv" || movie.id?.endsWith("-tv"));
+    const rawTmdb = movie.tmdbId || (movie as any).providerIds?.Tmdb || movie.id.replace(/-tv$/, "");
+    const baseId = isTv ? (String(rawTmdb).endsWith("-tv") ? String(rawTmdb) : `${rawTmdb}-tv`) : String(rawTmdb).replace(/-tv$/, "");
+
     if (immediatePlay) {
       // Enregistrer le temps du clic initial
       (window as any).moviePlayClickTime = performance.now();
       console.log("%c[CHRONO LECTEUR] Clic sur le film : 0.000s (Début du flux)", "color: #a855f7; font-weight: bold; font-size: 13px;");
       
-      let pId = movie.tmdbId ? String(movie.tmdbId) : movie.id;
-      if (movie.isTv) {
+      let pId = baseId;
+      if (isTv) {
         try {
           const tvState = (JSON.parse(localStorage.getItem("classico_tv_state") || "{}") || {});
-          const state = tvState[movie.id] || (movie.tmdbId ? tvState[String(movie.tmdbId)] : null);
+          const state = tvState[movie.id] || tvState[baseId] || (movie.tmdbId ? tvState[String(movie.tmdbId)] : null);
           const s = state ? state.season : 1;
           const e = state ? state.episode : 1;
-          pId = `${pId}-S${s}E${e}`;
+          pId = `${baseId}-S${s}E${e}`;
         } catch(e) {
-          pId = `${pId}-S1E1`;
+          pId = `${baseId}-S1E1`;
         }
       }
       
@@ -1458,9 +1486,9 @@ export default function App() {
 
       navigateTo("/player/" + pId);
     } else {
-      navigateTo("/movie/" + (movie.tmdbId || movie.id));
+      navigateTo("/movie/" + baseId);
     }
-    handleAddToHistory(movie.id);
+    handleAddToHistory(movie);
   };
 
   // Carousel smooth scrolling helper
@@ -1497,53 +1525,60 @@ export default function App() {
 
 
   const allMovies = React.useMemo(() => {
+    const canonicalMap = new Map<string, Movie>();
 
-    const map = new Map<string, Movie>();
-    
-    // Add custom mapped collection movies first (they have beautiful gradients, symbols, etc., and are now enriched with Jellyfin dynamic streams!)
-    mappedCollections.flatMap(c => c.movies).forEach(m => {
-      map.set(m.id, m);
-      if (m.tmdbId) map.set(String(m.tmdbId), m);
-    });
+    const mergeMovie = (movie: Movie) => {
+      if (!movie || isAnimeOrAdult(movie)) return;
+      const key = getCanonicalMovieKey(movie);
+      if (!key) return;
 
-    // Add Jellyfin-only library movies that did not match any of the hand-crafted collections
-    allMoviesBase.forEach(m => {
-      if (!map.has(m.id)) {
-        map.set(m.id, { ...m});
-      }
-      if (m.tmdbId && !map.has(String(m.tmdbId))) {
-        map.set(String(m.tmdbId), { ...m});
-      }
-    });
+      const isTv = Boolean(movie.isTv || (movie as any).media_type === "tv" || String(movie.id || "").endsWith("-tv"));
+      const existing = canonicalMap.get(key);
 
-    // Add Hero spotlight movies so playing or viewing them always resolves cleanly
-    heroMovies.forEach(m => {
-      if (!map.has(m.id)) {
-        map.set(m.id, m);
+      if (!existing) {
+        canonicalMap.set(key, {
+          ...movie,
+          isTv,
+          id: isTv && !String(movie.id || "").endsWith("-tv") ? `${movie.id}-tv` : movie.id
+        });
+      } else {
+        const keepId = existing.streamUrl ? existing.id : (movie.streamUrl ? movie.id : existing.id);
+        canonicalMap.set(key, {
+          ...movie,
+          ...existing,
+          id: isTv && !String(keepId || "").endsWith("-tv") ? `${keepId}-tv` : keepId,
+          isTv,
+          streamUrl: existing.streamUrl || movie.streamUrl,
+          tmdbId: existing.tmdbId || movie.tmdbId,
+          imdbId: existing.imdbId || movie.imdbId,
+          hasLogo: existing.hasLogo || movie.hasLogo,
+          logoUrl: existing.logoUrl || movie.logoUrl,
+          backdropUrl: existing.backdropUrl || movie.backdropUrl,
+          posterUrl: existing.posterUrl || movie.posterUrl,
+          castDetails: (existing.castDetails && existing.castDetails.length > 0) ? existing.castDetails : movie.castDetails,
+          similar: (existing.similar && existing.similar.length > 0) ? existing.similar : movie.similar,
+          seasons: (existing.seasons && existing.seasons.length > 0) ? existing.seasons : movie.seasons,
+          tagline: existing.tagline || movie.tagline,
+          rating: (existing.rating && existing.rating !== "N/A") ? existing.rating : movie.rating,
+          description: existing.description || movie.description,
+        });
       }
-      if (m.tmdbId && !map.has(String(m.tmdbId))) {
-        map.set(String(m.tmdbId), m);
-      }
-    });
-    
-    // Add TMDB cache movies
-    tmdbCache.forEach(m => {
-      if (true) {
-        if (!map.has(m.id)) {
-          map.set(m.id, m);
-        } else {
-          // Merge in missing details (like seasons)
-          const existing = map.get(m.id)!;
-          map.set(m.id, { ...existing, ...m });
-        }
-        if (m.tmdbId && !map.has(String(m.tmdbId))) {
-          map.set(String(m.tmdbId), m);
-        }
-      }
-    });
+    };
 
-    return Array.from(map.values()).filter(m => !isAnimeOrAdult(m));
-  }, [mappedCollections, allMoviesBase, tmdbCache, heroMovies]);
+    // 1. Hand-crafted curated collection movies
+    mappedCollections.flatMap(c => c.movies).forEach(mergeMovie);
+
+    // 2. allMoviesBase (Jellyfin and imported movies)
+    allMoviesBase.forEach(mergeMovie);
+
+    // 3. Hero movies
+    heroMovies.forEach(mergeMovie);
+
+    // 4. TMDB Cache
+    tmdbCache.forEach(mergeMovie);
+
+    return Array.from(canonicalMap.values()).filter(m => !isAnimeOrAdult(m));
+  }, [mappedCollections, allMoviesBase, tmdbCache, heroMovies, getCanonicalMovieKey]);
 
     const unmatchedMovies = React.useMemo(() => {
     if (!allMovies || allMovies.length === 0) return [];
@@ -1855,24 +1890,56 @@ export default function App() {
     } else if (routePath.startsWith("/player/")) {
       targetId = routePath.slice("/player/".length);
     }
-    const tvMatch = targetId.match(/^(.*-tv)-S\d+E\d+$/);
-    if (tvMatch) {
-      targetId = tvMatch[1];
-    }
+    targetId = targetId.replace(/-S\d+E\d+$/, "");
     return targetId;
   }, [routePath]);
 
+  const findMovieById = React.useCallback((idOrQuery: string): Movie | undefined => {
+    if (!idOrQuery) return undefined;
+    const clean = idOrQuery.replace(/-S\d+E\d+$/, "");
+    const cleanWithoutTv = clean.replace(/(-tv)+$/g, "");
+    const isTvSearch = idOrQuery.endsWith("-tv") || idOrQuery.includes("-S") || clean.endsWith("-tv");
+
+    // 1. Strict match on isTv
+    let match = allMovies.find(m => {
+      const isTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      if (isTvSearch !== isTv) return false;
+      return m.id === idOrQuery || m.id === clean || m.id === `${cleanWithoutTv}-tv` || String(m.tmdbId) === clean || String(m.tmdbId) === cleanWithoutTv;
+    });
+    if (match) return match;
+
+    // 2. Jellyfin providerIds with isTv check
+    match = allMovies.find(m => {
+      const isTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      if (isTvSearch !== isTv) return false;
+      const jfTmdb = (m as any).providerIds?.Tmdb;
+      return jfTmdb && (String(jfTmdb) === clean || String(jfTmdb) === cleanWithoutTv);
+    });
+    if (match) return match;
+
+    // 3. Fallback: exact id match
+    match = allMovies.find(m => m.id === idOrQuery || m.id === clean || m.id === `${cleanWithoutTv}-tv`);
+    if (match) return match;
+
+    // 4. Fallback: tmdbId match
+    match = allMovies.find(m => String(m.tmdbId) === clean || String(m.tmdbId) === cleanWithoutTv);
+    if (match) return match;
+
+    return undefined;
+  }, [allMovies]);
+
   const activeMovie = React.useMemo(() => {
     if (!targetMovieId) return null;
-    return allMovies.find(m => m.id === targetMovieId) || null;
-  }, [targetMovieId, allMovies]);
+    return findMovieById(targetMovieId) || null;
+  }, [targetMovieId, findMovieById]);
 
   // Fetch missing movie data if navigated directly
   useEffect(() => {
     if (targetMovieId && (!activeMovie || !activeMovie.director || activeMovie.tagline === undefined || !activeMovie.castDetails || (activeMovie.isTv && !activeMovie.seasons))) {
       setMovieLoadError(null);
       const tmdbId = activeMovie?.tmdbId || activeMovie?.providerIds?.Tmdb;
-      fetch(`/api/movie/${tmdbId ? (activeMovie?.isTv ? tmdbId + "-tv" : tmdbId) : targetMovieId}`)
+      const fetchId = tmdbId ? (activeMovie?.isTv ? `${tmdbId}-tv` : String(tmdbId)) : targetMovieId;
+      fetch(`/api/movie/${fetchId}`)
         .then(res => res.json())
         .then(data => {
           if (data.success && data.movie) {
@@ -1904,7 +1971,6 @@ export default function App() {
       const missingIds = history.filter(id => !allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", "")));
       if (missingIds.length > 0) {
         missingIds.forEach(id => {
-          const tmdbId = String(id).replace("-tv", "");
           fetch(`/api/movie/${id}`)
             .then(res => res.json())
             .then(data => {
@@ -1930,13 +1996,76 @@ export default function App() {
   const getProgress = (id: string) => {
     let pct = progressData[id] || 0;
     if (pct === 0) {
-      const m = allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", ""));
-      if (m && m.tmdbId && progressData[m.tmdbId]) {
-         pct = progressData[m.tmdbId];
+      const m = findMovieById(id);
+      if (m) {
+        if (m.id && progressData[m.id]) pct = progressData[m.id];
+        else if (m.tmdbId && progressData[String(m.tmdbId)]) pct = progressData[String(m.tmdbId)];
+        else if (m.tmdbId && progressData[`${m.tmdbId}-tv`]) pct = progressData[`${m.tmdbId}-tv`];
       }
     }
     return pct;
   };
+
+  const resumeMovies = React.useMemo(() => {
+    const rawIds = [...history, ...Object.keys(progressData)];
+    const seenKeys = new Set<string>();
+    const seenTitles = new Set<string>();
+    const seenTmdb = new Set<string>();
+    const list: Movie[] = [];
+
+    rawIds.forEach(id => {
+      const m = findMovieById(id);
+      if (!m) return;
+      const key = getCanonicalMovieKey(m);
+      const cleanTitle = (m.title || (m as any).name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+      const tmdb = m.tmdbId ? String(m.tmdbId) : "";
+
+      if (seenKeys.has(key)) return;
+      if (m.id && seenKeys.has(m.id)) return;
+      if (tmdb && seenTmdb.has(tmdb)) return;
+      if (cleanTitle && seenTitles.has(cleanTitle)) return;
+      
+      const p = getProgress(m.id);
+      if (p <= 0) return;
+      if (!m.isTv && p >= 0.95) return;
+
+      seenKeys.add(key);
+      if (m.id) seenKeys.add(m.id);
+      if (tmdb) seenTmdb.add(tmdb);
+      if (cleanTitle) seenTitles.add(cleanTitle);
+      list.push(m);
+    });
+
+    return list;
+  }, [history, progressData, findMovieById, getCanonicalMovieKey, getProgress]);
+
+  const recentlyViewedMovies = React.useMemo(() => {
+    const seenKeys = new Set<string>();
+    const seenTitles = new Set<string>();
+    const seenTmdb = new Set<string>();
+    const list: Movie[] = [];
+
+    history.forEach(id => {
+      const m = findMovieById(id);
+      if (!m) return;
+      const key = getCanonicalMovieKey(m);
+      const cleanTitle = (m.title || (m as any).name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+      const tmdb = m.tmdbId ? String(m.tmdbId) : "";
+
+      if (seenKeys.has(key)) return;
+      if (m.id && seenKeys.has(m.id)) return;
+      if (tmdb && seenTmdb.has(tmdb)) return;
+      if (cleanTitle && seenTitles.has(cleanTitle)) return;
+
+      seenKeys.add(key);
+      if (m.id) seenKeys.add(m.id);
+      if (tmdb) seenTmdb.add(tmdb);
+      if (cleanTitle) seenTitles.add(cleanTitle);
+      list.push(m);
+    });
+
+    return list;
+  }, [history, findMovieById, getCanonicalMovieKey]);
 
   if (!asyncData) {
     if (typeof window !== 'undefined' && sessionStorage.getItem('returning_from_ad') === 'true') {
@@ -2299,7 +2428,7 @@ export default function App() {
                       className="absolute inset-0 w-full h-full z-0 overflow-hidden"
                     >
                       <motion.img
-                        src={heroMovie.backdropUrl || CLASSICO_HERO_BACKDROP}
+                        src={(heroMovie.backdropUrl && heroMovie.backdropUrl.trim()) || CLASSICO_HERO_BACKDROP}
                         alt={heroMovie.title}
                         referrerPolicy="no-referrer"
                         decoding="async"
@@ -2340,10 +2469,10 @@ export default function App() {
                         {/* Title / Logo & Meta grouped tightly together */}
                         <div className="flex flex-col items-center space-y-1 sm:space-y-1.5 w-full">
                           {/* Poster Style Cinematic Title or Logo with dynamic fallback to text based styling */}
-                          {heroMovie.hasLogo && heroMovie.logoUrl && !useTextTitleForHero ? (
+                          {heroMovie.hasLogo && heroMovie.logoUrl && heroMovie.logoUrl.trim() && !useTextTitleForHero ? (
                             <div className="select-none relative group flex flex-col items-center justify-center">
                               <img 
-                                src={heroMovie.logoUrl} 
+                                src={heroMovie.logoUrl.trim()} 
                                 alt={heroMovie.title}
                                 className="h-20 xs:h-24 sm:h-32 md:h-38 lg:h-44 max-h-48 w-auto object-contain max-w-[85%] sm:max-w-[70%] md:max-w-[60%] mx-auto select-none pointer-events-none transition-transform duration-300 hover:scale-102"
                                 referrerPolicy="no-referrer"
@@ -2456,7 +2585,7 @@ export default function App() {
               <div className="max-w-[2000px] mx-auto px-4 sm:px-8 space-y-12 pb-16">
                 
                 {/* Reprendre la lecture Section */}
-                {(history.filter(id => getProgress(id) > 0 && getProgress(id) < 0.95).map(id => allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", ""))).filter(m => !!m).length > 0) && (
+                {resumeMovies.length > 0 && (
                   <div className="space-y-4 text-left pt-6 sm:pt-8">
                     <div className="flex flex-row items-center sm:items-end justify-between gap-2 sm:gap-3 border-b border-zinc-900 pb-2 sm:pb-3">
                       <div className="space-y-0.5 max-w-[80%]">
@@ -2499,25 +2628,16 @@ export default function App() {
                         }}
                         className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
                       >
-                        {Array.from(new Set([...history, ...Object.keys(progressData).map(k => k.replace("-tv", ""))]))
-                          .map(id => allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", "")))
-                          .filter((m, idx, self) => !!m && self.findIndex(t => t?.id === m?.id) === idx)
-                          .filter(m => {
-                              const p = getProgress(m.id);
-                              if (p <= 0) return false;
-                              if (m.isTv) return true;
-                              return p < 0.95;
-                          })
-                          .map((movie, idx) => (
-                            <LazyVirtualCard key={`resume-${movie.id}-${idx}`} priority={idx < 6}>
-                              <MovieCard
-                                movie={movie}
-                                onSelect={(m) => handleOpenMovie(m, false)}
-                                onPlay={(m) => handleOpenMovie(m, true)}
-                                progressPercent={getProgress(movie.id)}
-                              />
-                            </LazyVirtualCard>
-                          ))}
+                        {resumeMovies.map((movie, idx) => (
+                          <LazyVirtualCard key={`resume-${movie.id}-${idx}`} priority={idx < 6}>
+                            <MovieCard
+                              movie={movie}
+                              onSelect={(m) => handleOpenMovie(m, true)}
+                              onPlay={(m) => handleOpenMovie(m, true)}
+                              progressPercent={getProgress(movie.id)}
+                            />
+                          </LazyVirtualCard>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -2830,7 +2950,7 @@ export default function App() {
                   const pId = routePath.startsWith("/player/") ? routePath.slice("/player/".length) : "";
                   let actualId = pId;
                   let season, episode;
-                  const tvMatch = pId.match(/^(.*-tv)-S(\d+)E(\d+)$/);
+                  const tvMatch = pId.match(/^(.*?)-S(\d+)E(\d+)$/);
                   if (tvMatch) {
                     actualId = tvMatch[1];
                     season = parseInt(tvMatch[2]);
@@ -2839,7 +2959,7 @@ export default function App() {
                   return (
                     <CinemaPlayerView
                       movieId={actualId}
-                      isTv={!!tvMatch}
+                      isTv={!!tvMatch || !!(activeMovie as any)?.isTv || actualId.endsWith("-tv")}
                       season={season}
                       episode={episode}
                       movieTitle={activeMovie?.title || "Cult Classic"}
@@ -2886,25 +3006,20 @@ export default function App() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-display font-bold uppercase tracking-wider text-white flex items-center gap-2 border-b border-zinc-800/80 pb-2">
                       <History className="w-4 h-4 text-zinc-400" />
-                      Recently Viewed ({history.length})
+                      Recently Viewed ({recentlyViewedMovies.length})
                     </h3>
 
-                    {history.length > 0 ? (
+                    {recentlyViewedMovies.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-8 justify-items-center">
-                        {history
-                          .filter(id => typeof id === 'string')
-                          .map(id => allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", "")))
-                          .filter((m): m is Movie => !!m)
-                          .map((movie, idx) => (
-                            <LazyVirtualCard key={`${movie.id}-history-${idx}`} priority={idx < 8}>
-                              <MovieCard
-                                movie={movie}
-                                onSelect={(m) => handleOpenMovie(m, false)}
-                                onPlay={(m) => handleOpenMovie(m, true)}
-                              />
-                            </LazyVirtualCard>
-                          ))
-                        }
+                        {recentlyViewedMovies.map((movie, idx) => (
+                          <LazyVirtualCard key={`${movie.id}-history-${idx}`} priority={idx < 8}>
+                            <MovieCard
+                              movie={movie}
+                              onSelect={(m) => handleOpenMovie(m, false)}
+                              onPlay={(m) => handleOpenMovie(m, true)}
+                            />
+                          </LazyVirtualCard>
+                        ))}
                       </div>
                     ) : (
                       <p className="text-xs text-zinc-500 font-mono italic">No recent watch history available.</p>

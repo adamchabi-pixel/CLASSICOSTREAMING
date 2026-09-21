@@ -616,6 +616,8 @@ export const COLLECTIONS: Collection[] = [
     movies: [
       {
         id: "godfather-1",
+        tmdbId: "238",
+        imdbId: "tt0068646",
         title: "The Godfather",
         year: 1972,
         duration: "175 min",
@@ -632,6 +634,8 @@ export const COLLECTIONS: Collection[] = [
       },
       {
         id: "bronx-tale",
+        tmdbId: "1607",
+        imdbId: "tt0106489",
         title: "A Bronx Tale",
         originalTitle: "A Bronx Tale",
         year: 1993,
@@ -643,6 +647,8 @@ export const COLLECTIONS: Collection[] = [
       },
       {
         id: "goodfellas",
+        tmdbId: "769",
+        imdbId: "tt0099685",
         title: "Goodfellas",
         year: 1990,
         duration: "145 min",
@@ -659,6 +665,8 @@ export const COLLECTIONS: Collection[] = [
       },
       {
         id: "scarface",
+        tmdbId: "111",
+        imdbId: "tt0086250",
         title: "Scarface",
         year: 1983,
         duration: "170 min",
@@ -675,6 +683,8 @@ export const COLLECTIONS: Collection[] = [
       },
     {
         id: "godfather-2",
+        tmdbId: "240",
+        imdbId: "tt0071562",
         title: "The Godfather Part II",
         year: 1974,
         duration: "202 min",
@@ -691,6 +701,8 @@ export const COLLECTIONS: Collection[] = [
       },
       {
         id: "godfather-3",
+        tmdbId: "242",
+        imdbId: "tt0099674",
         title: "The Godfather Part III",
         year: 1990,
         duration: "162 min",

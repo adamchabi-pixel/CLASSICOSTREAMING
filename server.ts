@@ -201,9 +201,17 @@ app.get("/api/search", async (req, res) => {
 app.get("/api/movie/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const isTv = id.endsWith('-tv');
-    let actualId = isTv ? id.replace('-tv', '') : id;
+    let isTv = id.endsWith('-tv') || req.query.type === 'tv' || req.query.isTv === 'true';
+    let actualId = id.replace(/(-tv)+$/g, '');
     
+    // Look up if this id belongs to a known series in local data
+    if (!isTv) {
+      const match = importedMoviesData.find(m => m.id === id || m.id === `${id}-tv`) || allMoviesData.find(m => m.id === id || m.id === `${id}-tv`);
+      if (match && match.isTv) {
+        isTv = true;
+      }
+    }
+
     // Look up tmdbId if the id is a jellyfin hash
     if (actualId.length > 20) {
       let match = importedMoviesData.find(m => m.id === actualId);
@@ -212,6 +220,7 @@ app.get("/api/movie/:id", async (req, res) => {
       }
       if (match && (match.tmdbId || (match.providerIds && match.providerIds.Tmdb))) {
         actualId = match.tmdbId || match.providerIds.Tmdb;
+        if (match.isTv) isTv = true;
       }
     }
 
@@ -256,7 +265,7 @@ app.get("/api/movie/:id", async (req, res) => {
     const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
 
     const movieData = {
-      id: id,
+      id: isTv ? (id.endsWith('-tv') ? id : `${id}-tv`) : id,
       trailerUrl: trailerUrl,
       tmdbId: String(m.id),
       imdbId: m.imdb_id || String(m.id),
@@ -325,7 +334,14 @@ app.get("/api/movie/:id", async (req, res) => {
 app.get("/api/tv/:id/season/:season_number", async (req, res) => {
   try {
     const { id, season_number } = req.params;
-    const cleanId = id.replace("-tv", "");
+    let cleanId = id.replace("-tv", "");
+    if (cleanId.length > 20 || isNaN(Number(cleanId))) {
+      let match = importedMoviesData.find(m => m.id === cleanId || m.id === id);
+      if (!match) match = allMoviesData.find(m => m.id === cleanId || m.id === id);
+      if (match && (match.tmdbId || match.providerIds?.Tmdb)) {
+        cleanId = String(match.tmdbId || match.providerIds.Tmdb);
+      }
+    }
     const url = `https://api.tmdb.org/3/tv/${cleanId}/season/${season_number}?language=en-US`;
     const response = await fetch(url, {
       headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
@@ -333,7 +349,7 @@ app.get("/api/tv/:id/season/:season_number", async (req, res) => {
     if (!response.ok) throw new Error("TMDB fetch failed");
     const seasonData = await response.json();
     
-    const episodes = seasonData.episodes.map((ep: any) => ({
+    const episodes = (seasonData.episodes || []).map((ep: any) => ({
       id: ep.id,
       episode_number: ep.episode_number,
       name: ep.name,

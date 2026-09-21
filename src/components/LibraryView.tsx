@@ -153,7 +153,13 @@ export default function LibraryView({ onSelect, onPlay, getProgress, type = 'mov
                        genre: []
                    } as unknown as Movie;
                });
-               setMovies(mapped);
+               const seenIds = new Set<string>();
+               const uniqueMapped = mapped.filter((m: any) => {
+                 if (seenIds.has(m.id)) return false;
+                 seenIds.add(m.id);
+                 return true;
+               });
+               setMovies(uniqueMapped);
                if (mapped.length === 0 && data.results.length > 0) {
                    setErrorMsg("All results were filtered out.");
                }

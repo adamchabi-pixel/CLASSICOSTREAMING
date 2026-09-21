@@ -13,7 +13,9 @@ const EmbedPlayer: React.FC<EmbedPlayerProps> = ({ embedUrl }) => {
     setError(true);
   };
 
-  if (error) {
+  const cleanUrl = embedUrl && embedUrl.trim() ? embedUrl.trim() : null;
+
+  if (error || !cleanUrl) {
     return (
       <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-white z-40 p-4 text-center">
         <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
@@ -28,7 +30,7 @@ const EmbedPlayer: React.FC<EmbedPlayerProps> = ({ embedUrl }) => {
   return (
     <div className="absolute inset-0 w-full h-full z-40 bg-black">
       <iframe
-        src={embedUrl}
+        src={cleanUrl}
         width="100%"
         height="100%"
         frameBorder="0"

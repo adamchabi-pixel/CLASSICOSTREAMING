@@ -180,22 +180,26 @@ export default function MovieModal({
           
           {/* Top Hero Section */}
           <div className="relative w-full h-64 sm:h-96 md:h-[400px]">
-            <img referrerPolicy="no-referrer"
-              src={displayMovie.backdropUrl || displayMovie.posterUrl}
-              alt={displayMovie.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            {((displayMovie.backdropUrl && displayMovie.backdropUrl.trim()) || (displayMovie.posterUrl && displayMovie.posterUrl.trim())) ? (
+              <img referrerPolicy="no-referrer"
+                src={(displayMovie.backdropUrl && displayMovie.backdropUrl.trim()) || (displayMovie.posterUrl && displayMovie.posterUrl.trim()) || ""}
+                alt={displayMovie.title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 w-full h-full bg-stone-900" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
             
             {/* Title & Play Button Overlay */}
             <div className="absolute inset-x-0 bottom-0 px-6 pb-4 sm:px-10 sm:pb-6 pt-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div className="space-y-3">
-                {displayMovie.hasLogo && displayMovie.logoUrl ? (
+                {displayMovie.hasLogo && displayMovie.logoUrl && displayMovie.logoUrl.trim() ? (
                   <motion.img referrerPolicy="no-referrer"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    src={displayMovie.logoUrl}
+                    src={displayMovie.logoUrl.trim()}
                     alt={displayMovie.title}
                     className="max-w-[200px] sm:max-w-[300px] max-h-[100px] object-contain drop-shadow-2xl"
                   />
@@ -283,8 +287,8 @@ export default function MovieModal({
                       {displayMovie.castDetails && displayMovie.castDetails.length > 0 ? displayMovie.castDetails.map((actor, idx) => (
                         <div key={idx} className="bg-neutral-900/60 border border-zinc-800/40 rounded-lg overflow-hidden text-center hover:bg-neutral-900 transition-colors duration-200">
                           <div className="aspect-[2/3] bg-zinc-800 w-full relative">
-                            {actor.imageUrl ? (
-                              <img src={actor.imageUrl} referrerPolicy="no-referrer" alt={actor.name} className="w-full h-full object-cover" />
+                            {actor.imageUrl && actor.imageUrl.trim() ? (
+                              <img src={actor.imageUrl.trim()} referrerPolicy="no-referrer" alt={actor.name} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-zinc-600">
                                 <User className="w-8 h-8" />
@@ -378,8 +382,8 @@ export default function MovieModal({
                         className="shrink-0 w-28 sm:w-32 group cursor-pointer text-left"
                       >
                         <div className="aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 relative border border-zinc-800/50 group-hover:border-zinc-500/50 transition-colors">
-                          {sim.posterUrl ? (
-                            <img src={sim.posterUrl} referrerPolicy="no-referrer" alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          {sim.posterUrl && sim.posterUrl.trim() ? (
+                            <img src={sim.posterUrl.trim()} referrerPolicy="no-referrer" alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-zinc-600 bg-zinc-900">
                               <Film className="w-8 h-8" />

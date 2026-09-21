@@ -25,8 +25,10 @@ export default function MovieDetailView({
   const [isSeasonDropdownOpen, setIsSeasonDropdownOpen] = React.useState(false);
     
   React.useEffect(() => {
-    console.log("Fetching TMDB data for movie ID:", movie.id, "TMDB ID:", movie.tmdbId, "ProviderIds:", movie.providerIds);
-    fetch(`/api/movie/${movie.providerIds?.Tmdb ? (movie.isTv ? movie.providerIds.Tmdb + "-tv" : movie.providerIds.Tmdb) : (movie.tmdbId ? (movie.isTv ? movie.tmdbId + "-tv" : movie.tmdbId) : movie.id)}`)
+    const isTv = Boolean(movie.isTv || movie.id?.endsWith("-tv"));
+    const rawTmdb = movie.providerIds?.Tmdb || movie.tmdbId || movie.id.replace(/-tv$/, "");
+    const fetchId = isTv ? `${rawTmdb}-tv` : rawTmdb;
+    fetch(`/api/movie/${fetchId}`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.movie) {
@@ -34,7 +36,7 @@ export default function MovieDetailView({
         }
       })
       .catch(console.error);
-  }, [movie.id]);
+  }, [movie.id, movie.isTv]);
   const [lastWatched, setLastWatched] = React.useState<{season: number, episode: number} | null>(null);
 
   React.useEffect(() => {
@@ -53,7 +55,8 @@ export default function MovieDetailView({
 
   React.useEffect(() => {
     if (fullMovie.isTv && selectedSeason) {
-      fetch(`/api/tv/${fullMovie.id}/season/${selectedSeason}`)
+      const cleanTvId = String(fullMovie.tmdbId || fullMovie.id).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      fetch(`/api/tv/${cleanTvId}/season/${selectedSeason}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -69,13 +72,19 @@ export default function MovieDetailView({
   }, [fullMovie.seasons]);
   
   const handlePlayEpisode = (seasonNum: number, episodeNum: number) => {
+    const isTv = Boolean(fullMovie.isTv || movie.isTv || fullMovie.id?.endsWith("-tv"));
+    let baseId = fullMovie.id.replace(/-S\d+E\d+$/, "");
+    if (isTv && !baseId.endsWith("-tv")) {
+      baseId = `${baseId}-tv`;
+    }
     try {
       const tvState = JSON.parse(localStorage.getItem("classico_tv_state") || "{}");
       tvState[movie.id] = { season: seasonNum, episode: episodeNum };
+      tvState[baseId] = { season: seasonNum, episode: episodeNum };
       localStorage.setItem("classico_tv_state", JSON.stringify(tvState));
       setLastWatched({ season: seasonNum, episode: episodeNum });
     } catch (e) {}
-    onPlay(fullMovie.id + "-S" + seasonNum + "E" + episodeNum);
+    onPlay(`${baseId}-S${seasonNum}E${episodeNum}`);
   };
   
   const [watchedEpisodes, setWatchedEpisodes] = React.useState<Record<string, boolean>>({});
@@ -128,8 +137,8 @@ export default function MovieDetailView({
 
 
   // Safe backdrop selection
-  const backdrop = fullMovie.backdropUrl || "/src/assets/images/classico_hero_backdrop_1781395618793.jpg";
-  const poster = fullMovie.posterUrl || "";
+  const backdrop = (fullMovie.backdropUrl && fullMovie.backdropUrl.trim()) || "/src/assets/images/classico_hero_backdrop_1781395618793.jpg";
+  const poster = fullMovie.posterUrl && fullMovie.posterUrl.trim() ? fullMovie.posterUrl.trim() : null;
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 font-sans antialiased pb-20">
@@ -149,19 +158,23 @@ export default function MovieDetailView({
         
         {/* Blurry panoramic backdrop with absolute dark mask */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={backdrop}
-            alt={fullMovie.title}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover pointer-events-none"
-          />
+          {backdrop ? (
+            <img
+              src={backdrop}
+              alt={fullMovie.title}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover pointer-events-none"
+            />
+          ) : null}
           <div className="absolute inset-0 z-10 pointer-events-none bg-[linear-gradient(to_top,#0c0a09_0%,#0c0a09_10%,rgba(12,10,9,0.9)_30%,rgba(12,10,9,0.4)_60%,transparent_100%)] md:!bg-[linear-gradient(to_top,#0c0a09_0%,#0c0a09_10%,rgba(12,10,9,0.95)_25%,rgba(12,10,9,0.6)_50%,transparent_100%)] [@media(max-height:500px)_and_(orientation:landscape)]:bg-stone-950/80" />
         </div>
 
         {/* Hero Content Area */}
         <div className="relative z-10 max-w-[2000px] mx-auto w-full px-4 sm:px-8 pb-8 sm:pb-12 [@media(max-height:500px)_and_(orientation:landscape)]:pb-2 flex flex-col [@media(max-height:500px)_and_(orientation:landscape)]:flex-row items-start [@media(max-height:500px)_and_(orientation:landscape)]:items-center gap-4 sm:gap-6 [@media(max-height:500px)_and_(orientation:landscape)]:gap-6 text-left [@media(max-height:500px)_and_(orientation:landscape)]:h-auto ">
           
-          <img src={poster} referrerPolicy="no-referrer" alt={fullMovie.title} className="hidden [@media(max-height:500px)_and_(orientation:landscape)]:block h-[80vh] max-h-[280px] w-auto object-contain rounded-lg shadow-2xl shrink-0" />
+          {poster ? (
+            <img src={poster} referrerPolicy="no-referrer" alt={fullMovie.title} className="hidden [@media(max-height:500px)_and_(orientation:landscape)]:block h-[80vh] max-h-[280px] w-auto object-contain rounded-lg shadow-2xl shrink-0" />
+          ) : null}
 
           {/* Core Text & CTAs Details Box */}
           <div className="flex flex-col items-start max-w-3xl space-y-3.5 [@media(max-height:500px)_and_(orientation:landscape)]:space-y-2 [@media(max-height:500px)_and_(orientation:landscape)]:h-[80vh] [@media(max-height:500px)_and_(orientation:landscape)]:max-h-[280px] [@media(max-height:500px)_and_(orientation:landscape)]:overflow-y-auto [@media(max-height:500px)_and_(orientation:landscape)]:pr-2 no-scrollbar">
@@ -174,8 +187,8 @@ export default function MovieDetailView({
               </span>
             </div>
 
-            {fullMovie.hasLogo && fullMovie.logoUrl ? (
-              <img src={fullMovie.logoUrl} referrerPolicy="no-referrer" alt={fullMovie.title} className="max-w-[200px] sm:max-w-[300px] max-h-[100px] object-contain drop-shadow-2xl" />
+            {fullMovie.hasLogo && fullMovie.logoUrl && fullMovie.logoUrl.trim() ? (
+              <img src={fullMovie.logoUrl.trim()} referrerPolicy="no-referrer" alt={fullMovie.title} className="max-w-[200px] sm:max-w-[300px] max-h-[100px] object-contain drop-shadow-2xl" />
             ) : (
               <h1 className="text-4xl sm:text-5xl md:text-6xl [@media(max-height:500px)_and_(orientation:landscape)]:text-3xl font-forum font-bold tracking-wider text-white uppercase drop-shadow-xl leading-tight">
                 {fullMovie.title}
@@ -301,15 +314,23 @@ export default function MovieDetailView({
           </div>
           <div className="flex flex-col gap-4 relative z-10">
             {episodes.length > 0 ? (
-              episodes.map((ep, i) => (
-                <button
+              episodes.map((ep) => (
+                <div
                   key={ep.episode_number}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handlePlayEpisode(selectedSeason, ep.episode_number)}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-zinc-900/30 hover:bg-zinc-800/80 rounded-xl p-3 transition-colors text-left border border-transparent hover:border-zinc-700/50"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handlePlayEpisode(selectedSeason, ep.episode_number);
+                    }
+                  }}
+                  className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-zinc-900/30 hover:bg-zinc-800/80 rounded-xl p-3 transition-colors text-left border border-transparent hover:border-zinc-700/50 cursor-pointer"
                 >
                   <div className="relative shrink-0 w-full sm:w-40 aspect-video rounded-lg overflow-hidden bg-zinc-800">
-                    {ep.stillUrl ? (
-                      <img src={ep.stillUrl} referrerPolicy="no-referrer" alt={ep.name} className="w-full h-full object-cover" />
+                    {ep.stillUrl && ep.stillUrl.trim() ? (
+                      <img src={ep.stillUrl.trim()} referrerPolicy="no-referrer" alt={ep.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-zinc-600">
                         <Film className="w-6 h-6" />
@@ -345,15 +366,16 @@ export default function MovieDetailView({
                   </div>
                     <div className="shrink-0 pl-2">
                       <button 
+                        type="button"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDownloadUrlToConfirm(getEpisodeDownloadUrl(selectedSeason, ep.episode_number)); }}
-                        className="p-2 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all flex items-center justify-center border border-amber-500/20 hover:scale-110"
+                        className="p-2 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all flex items-center justify-center border border-amber-500/20 hover:scale-110 cursor-pointer"
                         title="Télécharger"
                       >
                         <Download className="w-4 h-4" />
                       </button>
                     </div>
 
-                </button>
+                </div>
               ))
             ) : (
               <div className="flex justify-center py-8">
@@ -371,8 +393,8 @@ export default function MovieDetailView({
             {fullMovie.castDetails && fullMovie.castDetails.length > 0 ? fullMovie.castDetails.map((actor, idx) => (
               <div key={idx} className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden flex flex-col">
                 <div className="aspect-[2/3] bg-zinc-800 w-full relative">
-                  {actor.imageUrl ? (
-                    <img src={actor.imageUrl} referrerPolicy="no-referrer" alt={actor.name} className="w-full h-full object-cover" />
+                  {actor.imageUrl && actor.imageUrl.trim() ? (
+                    <img src={actor.imageUrl.trim()} referrerPolicy="no-referrer" alt={actor.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-zinc-600">
                       <User className="w-10 h-10" />
@@ -425,8 +447,8 @@ export default function MovieDetailView({
                 className="shrink-0 w-32 sm:w-40 group cursor-pointer text-left"
               >
                 <div className="aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 relative border border-zinc-800/50 group-hover:border-zinc-500/50 transition-colors">
-                  {sim.posterUrl ? (
-                    <img src={sim.posterUrl} referrerPolicy="no-referrer" alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {sim.posterUrl && sim.posterUrl.trim() ? (
+                    <img src={sim.posterUrl.trim()} referrerPolicy="no-referrer" alt={sim.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Film className="w-8 h-8 text-zinc-700" />
@@ -451,9 +473,9 @@ export default function MovieDetailView({
             >
               <X className="w-5 h-5" />
             </button>
-            {fullMovie.trailerUrl ? (
+            {fullMovie.trailerUrl && fullMovie.trailerUrl.trim() ? (
               <iframe 
-                src={fullMovie.trailerUrl.includes('youtube.com/watch?v=') ? fullMovie.trailerUrl.replace('watch?v=', 'embed/') : fullMovie.trailerUrl}
+                src={fullMovie.trailerUrl.trim().includes('youtube.com/watch?v=') ? fullMovie.trailerUrl.trim().replace('watch?v=', 'embed/') : fullMovie.trailerUrl.trim()}
                 className="w-full h-full"
                 allow="autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen

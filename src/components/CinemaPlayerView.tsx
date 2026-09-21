@@ -42,10 +42,11 @@ const safeSession = {
 };
 import { 
   Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Languages, 
-  Maximize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film
+  Maximize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film, Tv, Server
 } from "lucide-react";
 import EmbedPlayer from "./EmbedPlayer";
 import { allMoviesData } from "../data/all_movies";
+import { importedMoviesData } from "../data/imported_movies";
 import { heroMoviesData } from "../data/hero_movies";
 
 interface JfSubtitleCue {
@@ -202,8 +203,8 @@ const TrackName = ({ track }: { track: any }) => {
   
   return (
     <span className="flex items-center gap-1.5 truncate">
-      {flagCode ? (
-        <img src={`https://flagcdn.com/w20/${flagCode}.png`} alt="" className="w-4 h-[11px] object-cover rounded-[1px] opacity-90" />
+      {flagCode && flagCode.trim() ? (
+        <img src={`https://flagcdn.com/w20/${flagCode.trim()}.png`} alt="" className="w-4 h-[11px] object-cover rounded-[1px] opacity-90" />
       ) : (
         <span className="text-[11px] leading-none opacity-80">🏳️</span>
       )}
@@ -322,11 +323,70 @@ export default function CinemaPlayerView({
 
   const [fetchedDetails, setFetchedDetails] = useState<any>(null);
   const [showAllCast, setShowAllCast] = useState(false);
-  const [detailsTab, setDetailsTab] = useState<"synopsis" | "similar" | "info" | "all">("synopsis");
+  const [detailsTab, setDetailsTab] = useState<"episodes" | "synopsis" | "similar" | "info" | "all">("synopsis");
+
+  const isSeries = Boolean(
+    isTv ||
+    movieId.includes("-tv") ||
+    (movieId.includes("-S") && movieId.includes("E")) ||
+    (passedMovieData as any)?.isTv ||
+    (passedMovieData as any)?.genre?.includes("TV Series") ||
+    (fetchedDetails as any)?.isTv ||
+    (fetchedDetails?.seasons && fetchedDetails.seasons.length > 0) ||
+    (passedMovieData?.seasons && passedMovieData.seasons.length > 0) ||
+    season !== undefined
+  );
+
+  const [currentSeason, setCurrentSeason] = useState<number>(() => {
+    if (season) return season;
+    try {
+      const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
+      if (tvState[movieId]?.season) return tvState[movieId].season;
+    } catch(e) {}
+    return 1;
+  });
+
+  const [currentEpisode, setCurrentEpisode] = useState<number>(() => {
+    if (episode) return episode;
+    try {
+      const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
+      if (tvState[movieId]?.episode) return tvState[movieId].episode;
+    } catch(e) {}
+    return 1;
+  });
+
+  const seasonsList = useMemo(() => {
+    const s = fetchedDetails?.seasons || passedMovieData?.seasons;
+    if (Array.isArray(s) && s.length > 0) {
+      return s.filter((item: any) => item.season_number > 0);
+    }
+    return [];
+  }, [fetchedDetails?.seasons, passedMovieData?.seasons]);
+
+  const [episodesList, setEpisodesList] = useState<any[]>([]);
+  const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
+  const [isSeasonDropdownOpen, setIsSeasonDropdownOpen] = useState(false);
+  const [isMobileServerModalOpen, setIsMobileServerModalOpen] = useState(false);
+  const [isSeasonModalOpen, setIsSeasonModalOpen] = useState(false);
+  const [isEpisodeModalOpen, setIsEpisodeModalOpen] = useState(false);
+
+  const displaySeasons = useMemo(() => {
+    if (seasonsList.length > 0) return seasonsList;
+    const num = (fetchedDetails as any)?.number_of_seasons || (passedMovieData as any)?.number_of_seasons || Math.max(currentSeason, 1);
+    const count = Math.max(num, 3);
+    return Array.from({ length: count }, (_, i) => ({
+      season_number: i + 1,
+      name: `Saison ${i + 1}`,
+      episode_count: undefined
+    }));
+  }, [seasonsList, fetchedDetails, passedMovieData, currentSeason]);
 
   useEffect(() => {
     if (movieId) {
-      const cleanId = String(movieId);
+      let cleanId = String(movieId).replace(/-S\d+E\d+$/, "");
+      if ((isTv || isSeries || cleanId.endsWith("-tv")) && !cleanId.endsWith("-tv")) {
+        cleanId = `${cleanId}-tv`;
+      }
       fetch(`/api/movie/${cleanId}`)
         .then(res => res.json())
         .then(data => {
@@ -336,7 +396,48 @@ export default function CinemaPlayerView({
         })
         .catch(err => console.error("Error fetching cinema movie details:", err));
     }
-  }, [movieId]);
+  }, [movieId, isTv, isSeries]);
+
+  useEffect(() => {
+    setDetailsTab("synopsis");
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [movieId, isSeries]);
+
+  useEffect(() => {
+    if (!isSeries) return;
+    const tmdbCandidate = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const cleanId = String(tmdbCandidate).replace("-tv", "");
+    
+    setIsLoadingEpisodes(true);
+    fetch(`/api/tv/${cleanId}/season/${currentSeason}`)
+      .then(res => res.json())
+      .then(data => {
+        setIsLoadingEpisodes(false);
+        if (data.success && Array.isArray(data.episodes) && data.episodes.length > 0) {
+          setEpisodesList(data.episodes);
+        } else {
+          const seasonObj = seasonsList.find((s: any) => s.season_number === currentSeason);
+          const count = seasonObj?.episode_count || 10;
+          setEpisodesList(Array.from({ length: count }, (_, i) => ({
+            id: i + 1,
+            episode_number: i + 1,
+            name: `Épisode ${i + 1}`,
+            overview: "",
+            stillUrl: ""
+          })));
+        }
+      })
+      .catch(() => {
+        setIsLoadingEpisodes(false);
+        setEpisodesList(Array.from({ length: 10 }, (_, i) => ({
+          id: i + 1,
+          episode_number: i + 1,
+          name: `Épisode ${i + 1}`,
+          overview: "",
+          stillUrl: ""
+        })));
+      });
+  }, [isSeries, movieId, currentSeason, fetchedDetails?.tmdbId, seasonsList]);
 
   const [playbackInfo, setPlaybackInfo] = useState<{
     id: string;
@@ -386,7 +487,17 @@ export default function CinemaPlayerView({
   const [videoError, setVideoError] = useState<string | null>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
   
-  const matchedMovie = useMemo(() => allMoviesData.find(m => m.id === movieId), [movieId]);
+  const matchedMovie = useMemo(() => {
+    if (passedMovieData) return passedMovieData;
+    if (fetchedDetails) return fetchedDetails;
+    const cleanId = String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const combined = [...importedMoviesData, ...allMoviesData];
+    return combined.find((m: any) => {
+      const mIsTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      if (isSeries !== mIsTv) return false;
+      return m.id === movieId || m.id === cleanId || String(m.tmdbId) === cleanId;
+    }) || combined.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanId);
+  }, [movieId, passedMovieData, fetchedDetails, isSeries]);
 
   const [isCurtainOpen, setIsCurtainOpen] = useState(false);
   const [forceJellyfin, setForceJellyfin] = useState(false);
@@ -434,7 +545,150 @@ export default function CinemaPlayerView({
   // Mobile player initialization && on-screen logs states
   const [isInitialized, setIsInitialized] = useState(true);
   const [playerLogs, setPlayerLogs] = useState<string[]>([]);
-  const [adClicks, setAdClicks] = useState(3);
+  const [adClicks, setAdClicks] = useState<number>(0);
+
+  useEffect(() => {
+    // Re-enforce adwall on movie open and clear any stored click tokens
+    setAdClicks(0);
+    try {
+      localStorage.removeItem("classico_ad_clicks_" + movieId);
+      sessionStorage.removeItem("classico_ad_clicks_" + movieId);
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith("classico_ad_clicks")) {
+          sessionStorage.removeItem(key);
+        }
+      }
+    } catch(e) {}
+  }, [movieId]);
+
+  const handleAdClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try { window.open("https://omg10.com/4/11192957", "_blank"); } catch(err) {}
+    setAdClicks(prev => prev + 1);
+  };
+
+  const handleSelectServer = (idx: number, customServers?: {name: string, url: string, stars?: number}[]) => {
+    setActiveServerIndex(idx);
+    const serversList = customServers || availableServers;
+    const server = serversList[idx];
+    if (!server) return;
+    const isProxyStream = server.url.startsWith("/api/stream-proxy") || server.url.startsWith("/api/extract-stream-view");
+    let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "");
+    if (!isProxyStream && savedRestoreTimeRef.current > 0) {
+      const sep = targetUrl.includes("?") ? "&" : "?";
+      targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
+    }
+    
+    if (isProxyStream) {
+      setServerSelected(true);
+      setIsLoading(true);
+      const searchParams = new URLSearchParams(server.url.split("?")[1]);
+      fetch(`/api/extract-stream?${searchParams.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+          setIsLoading(false);
+          if (data.success && data.extractedUrl) {
+            setPlaybackInfo({
+              ...playbackInfo!,
+              isIframeEmbed: false,
+              iframeSrc: "",
+              streamUrl: data.extractedUrl
+            });
+          } else {
+            alert(data.error || "Impossible d'extraire le flux brut pour ce film.");
+          }
+        })
+        .catch(() => {
+          setIsLoading(false);
+          alert("Erreur lors de la tentative d'extraction du flux.");
+        });
+    } else {
+      const cleanUrl = normalizeEmbedUrl(targetUrl);
+      if (playbackInfo) {
+        setPlaybackInfo({
+          ...playbackInfo,
+          isIframeEmbed: true,
+          iframeSrc: cleanUrl,
+          streamUrl: cleanUrl
+        });
+      }
+      safeStorage.setItem("classico_global_server_index", String(idx));
+      setServerSelected(true);
+      setIsIframeLoading(true);
+      setIframeKey(prev => prev + 1);
+    }
+  };
+
+  const handleEpisodeSelect = (seasonNum: number, episodeNum: number) => {
+    setCurrentSeason(seasonNum);
+    setCurrentEpisode(episodeNum);
+
+    try {
+      const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
+      tvState[movieId] = { season: seasonNum, episode: episodeNum };
+      safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+    } catch(e) {}
+
+    try {
+      const baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      window.history.replaceState(null, "", `/player/${baseId}-tv-S${seasonNum}E${episodeNum}`);
+    } catch(e) {}
+
+    const cleanTmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const timeParam = "";
+    const newServers = generateServers(language, true, cleanTmdb, seasonNum, episodeNum, cleanTmdb, timeParam);
+    setAvailableServers(newServers);
+
+    const safeIdx = activeServerIndex >= newServers.length ? 0 : activeServerIndex;
+    setActiveServerIndex(safeIdx);
+    const targetUrl = normalizeEmbedUrl(newServers[safeIdx]?.url || newServers[0]?.url);
+
+    setPlaybackInfo(prev => ({
+      ...(prev || {
+        id: movieId,
+        streamUrl: targetUrl,
+        duration: 0,
+        container: "iframe",
+        title: currentTitle,
+        isDirect: false,
+      }),
+      isIframeEmbed: true,
+      iframeSrc: targetUrl,
+      streamUrl: targetUrl,
+      allServers: newServers
+    }));
+    setIsIframeLoading(true);
+    setIframeKey(k => k + 1);
+  };
+
+  const currentSeasonIdx = displaySeasons.findIndex((s: any) => s.season_number === currentSeason);
+  const canPrevSeason = currentSeasonIdx > 0 || currentSeason > 1;
+  const canNextSeason = currentSeasonIdx >= 0 && currentSeasonIdx < displaySeasons.length - 1;
+
+  const handlePrevSeason = () => {
+    if (currentSeasonIdx > 0) {
+      handleSeasonSelect(displaySeasons[currentSeasonIdx - 1].season_number);
+    } else if (currentSeason > 1) {
+      handleSeasonSelect(currentSeason - 1);
+    }
+  };
+
+  const handleNextSeason = () => {
+    if (currentSeasonIdx >= 0 && currentSeasonIdx < displaySeasons.length - 1) {
+      handleSeasonSelect(displaySeasons[currentSeasonIdx + 1].season_number);
+    } else {
+      handleSeasonSelect(currentSeason + 1);
+    }
+  };
+
+  const handleSeasonSelect = (seasonNum: number) => {
+    if (seasonNum === currentSeason) return;
+    setCurrentSeason(seasonNum);
+    handleEpisodeSelect(seasonNum, 1);
+  };
+
 
   const addLog = (msg: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -972,10 +1226,16 @@ export default function CinemaPlayerView({
         if (!data) {
           const isNumeric = /^\d+$/.test(movieId);
           
-          // Look up the movie in passedMovieData, fetchedDetails, heroMoviesData, or allMoviesData to get its tmdbId or imdbId
-          const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === String(movieId));
-          const matchedMovie = passedMovieData || fetchedDetails || heroMatch || allMoviesData.find(m => m.id === movieId || String(m.tmdbId) === String(movieId));
-          let actualTmdbId = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || (matchedMovie?.providerIds?.Tmdb) || movieId;
+          // Look up the movie in passedMovieData, fetchedDetails, heroMoviesData, or combined data to get its tmdbId or imdbId
+          const cleanMovieId = String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+          const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanMovieId);
+          const combined = [...importedMoviesData, ...allMoviesData];
+          const matchedMovie = passedMovieData || fetchedDetails || heroMatch || combined.find((m: any) => {
+            const mIsTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+            if (isSeries !== mIsTv) return false;
+            return m.id === movieId || m.id === cleanMovieId || String(m.tmdbId) === cleanMovieId;
+          }) || combined.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanMovieId);
+          let actualTmdbId = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || (matchedMovie?.providerIds?.Tmdb) || cleanMovieId;
           
           if (!forceJellyfin) {
             // ALWAYS use videasy now, even for jellyfin uuids, by using the looked up tmdbId
@@ -990,9 +1250,9 @@ export default function CinemaPlayerView({
             let imdbId = matchedMovie?.imdbId || (matchedMovie?.providerIds?.Imdb) || cleanId;
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             const tvState = isTv ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
-            const targetSeason = season || tvState.season || 1;
-            const targetEpisode = episode || tvState.episode || 1;
-            const newServers = generateServers(language, isTv, cleanId, targetSeason, targetEpisode, imdbId, timeParam);
+            const targetSeason = isSeries ? currentSeason : (season || tvState.season || 1);
+            const targetEpisode = isSeries ? currentEpisode : (episode || tvState.episode || 1);
+            const newServers = generateServers(language, isSeries, cleanId, targetSeason, targetEpisode, imdbId, timeParam);
             setAvailableServers(newServers);
             
             const safeActiveIndex = activeServerIndex >= newServers.length ? 0 : activeServerIndex;
@@ -1215,17 +1475,17 @@ export default function CinemaPlayerView({
               }
             }, 1500 * nextAttempt);
           } else {
-            const isTv = movieId.includes("-tv");
+            const isTvSeries = isSeries || movieId.includes("-tv");
             const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === String(movieId));
             const matchedMovie = passedMovieData || fetchedDetails || heroMatch || allMoviesData.find(m => m.id === movieId || String(m.tmdbId) === String(movieId));
             const resolvedTmdb = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || movieId.replace("-tv", "");
             const cleanId = String(resolvedTmdb).replace("-tv", "");
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             
-            const tvState = isTv ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
-            const targetSeason = season || tvState.season || 1;
-            const targetEpisode = episode || tvState.episode || 1;
-            const newServers = generateServers(language, isTv, cleanId, targetSeason, targetEpisode, cleanId, timeParam);
+            const tvState = isTvSeries ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
+            const targetSeason = isSeries ? currentSeason : (season || tvState.season || 1);
+            const targetEpisode = isSeries ? currentEpisode : (episode || tvState.episode || 1);
+            const newServers = generateServers(language, isTvSeries, cleanId, targetSeason, targetEpisode, cleanId, timeParam);
 
             const fallbackData = {
               id: movieId,
@@ -1260,7 +1520,7 @@ export default function CinemaPlayerView({
     return () => {
       active = false;
     };
-  }, [movieId, forceTranscode, playbackAttempts, isLowQuality, forceJellyfin, activeServerIndex, language]);
+  }, [movieId, forceTranscode, playbackAttempts, isLowQuality, forceJellyfin, activeServerIndex, language, currentSeason, currentEpisode, isSeries]);
 
   // Handle Audio && non-text Subtitle Track changes by reloading stream
   useEffect(() => {
@@ -2190,11 +2450,11 @@ export default function CinemaPlayerView({
   const movieData = fetchedDetails || passedMovieData || localMovieData;
   const cast = movieData?.cast || [];
   const castDetails = (movieData as any)?.castDetails || [];
-  const logo = movieData?.logoUrl;
-  const hasLogo = !!logo;
+  const logo = movieData?.logoUrl && movieData.logoUrl.trim() ? movieData.logoUrl.trim() : null;
+  const hasLogo = Boolean(logo);
   const currentTitle = movieData?.title || movieTitle;
-  const effectiveBackdrop = movieData?.backdropUrl || movieBackdrop;
-  const effectivePoster = movieData?.posterUrl || moviePoster;
+  const effectiveBackdrop = (movieData?.backdropUrl && movieData.backdropUrl.trim()) || (movieBackdrop && movieBackdrop.trim()) || null;
+  const effectivePoster = (movieData?.posterUrl && movieData.posterUrl.trim()) || (moviePoster && moviePoster.trim()) || null;
 
   const similarMovies = useMemo(() => {
     if ((movieData as any)?.similar && (movieData as any).similar.length > 0) {
@@ -2265,7 +2525,7 @@ export default function CinemaPlayerView({
         <div 
           className="absolute top-0 left-0 right-0 h-[100vh] bg-cover bg-top opacity-30"
           style={{ 
-            backgroundImage: `url(${effectiveBackdrop || effectivePoster || ''})`,
+            backgroundImage: (effectiveBackdrop || effectivePoster) ? `url("${effectiveBackdrop || effectivePoster}")` : 'none',
             maskImage: 'linear-gradient(to bottom, black 0%, transparent 90%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 90%)'
           }}
@@ -2273,10 +2533,10 @@ export default function CinemaPlayerView({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/80 to-[#0a0a0a]"></div>
       </div>
 
-      {/* AdGate Overlay disabled to ensure immediate playback */}
-      {false && serverSelected && adClicks < 3 && (
+      {/* AdGate Overlay */}
+      {serverSelected && adClicks < 3 && (
         <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center pointer-events-auto">
-          <div className="max-w-md w-full bg-neutral-900 border border-amber-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center">
+          <div className="max-w-md w-full bg-neutral-900 border border-amber-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
             <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Support Classico</h2>
             <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
               Classico is free and will stay that way, but our servers cost a lot to maintain. The only way we can compensate is by including three ads per movie.
@@ -2290,15 +2550,10 @@ export default function CinemaPlayerView({
             </div>
             
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                try { window.open("https://omg10.com/4/11192957", "_blank"); } catch(err) {}
-                setAdClicks(prev => prev + 1);
-              }}
-              className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4"
+              onClick={handleAdClick}
+              className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4 cursor-pointer"
             >
-              <span>Click Ad</span>
+              <span className="font-sans text-base">Click Ad ({adClicks + 1}/3)</span>
             </button>
 
             <div className="flex items-center gap-2">
@@ -2307,8 +2562,9 @@ export default function CinemaPlayerView({
             </div>
           </div>
           <button
-            onClick={() => setServerSelected(false)}
+            onClick={handleClosePlayer}
             className="absolute top-6 left-6 p-3 rounded-full bg-neutral-800/80 hover:bg-neutral-700 text-white transition-all cursor-pointer border border-white/10"
+            title="Retour"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -2331,7 +2587,7 @@ export default function CinemaPlayerView({
 
         {/* Title & Meta Above Player & Sidebars */}
         <div className="w-full flex flex-col items-center text-center gap-3.5 mb-8">
-          {hasLogo ? (
+          {hasLogo && logo ? (
             <div className="flex items-center justify-center py-1">
               <img 
                 src={logo} 
@@ -2382,8 +2638,8 @@ export default function CinemaPlayerView({
                 (showAllCast ? castDetails : castDetails.slice(0, 7)).map((actor: any, i: number) => (
                   <div key={i} className="flex items-center gap-2.5 py-1 px-1.5 rounded-lg hover:bg-white/[0.04] border border-transparent hover:border-white/5 transition-all group">
                     <div className="w-8 h-8 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-amber-400/40 transition-colors shadow-sm">
-                      {actor.imageUrl ? (
-                        <img src={actor.imageUrl} alt={actor.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      {actor.imageUrl && actor.imageUrl.trim() ? (
+                        <img src={actor.imageUrl.trim()} alt={actor.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       ) : (
                         <span className="text-xs font-sans font-medium text-zinc-400">{actor.name.charAt(0)}</span>
                       )}
@@ -2441,12 +2697,12 @@ export default function CinemaPlayerView({
                   </div>
                 ) : null}
 
-                {serverSelected && (playbackInfo?.iframeSrc || (!isLoading && !isStreamLoading && !playbackInfo?.isIframeEmbed)) ? (
+                {serverSelected && adClicks >= 3 && (playbackInfo?.iframeSrc || (!isLoading && !isStreamLoading && !playbackInfo?.isIframeEmbed)) ? (
                   <div className="absolute inset-0 w-full h-full z-40 opacity-100 pointer-events-auto overflow-hidden bg-black">
-                    {playbackInfo?.iframeSrc ? (
+                    {playbackInfo?.iframeSrc && playbackInfo.iframeSrc.trim() && normalizeEmbedUrl(playbackInfo.iframeSrc.trim()) ? (
                       <iframe
-                        key={`${playbackInfo.iframeSrc}-${iframeKey}`}
-                        src={normalizeEmbedUrl(playbackInfo.iframeSrc)}
+                        key={`${playbackInfo.iframeSrc.trim()}-${iframeKey}`}
+                        src={normalizeEmbedUrl(playbackInfo.iframeSrc.trim())}
                         allowFullScreen={true}
                         scrolling="no"
                         sandbox={isCineSrc ? "allow-scripts allow-same-origin allow-forms" : undefined}
@@ -2476,16 +2732,249 @@ export default function CinemaPlayerView({
                   </div>
                 ) : null}
               </div>
+
+              {/* Mobile Server Selector Button (Under the film - mobile only) */}
+              <div className="xl:hidden w-full mt-3 flex items-center justify-between gap-3 bg-[#111111]/90 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] uppercase font-sans text-zinc-400 tracking-wider font-semibold">Serveur</span>
+                    <span className="text-xs font-sans font-bold text-amber-300 truncate">
+                      {availableServers[activeServerIndex]?.name?.split(' (')[0] || `Server ${activeServerIndex + 1}`} ({language.toUpperCase()})
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileServerModalOpen(true)}
+                  className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-sans font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
+                >
+                  <Server className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Changer de serveur</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-amber-400" />
+                </button>
+              </div>
+
+              {/* SERIES ONLY: Minimalist Season & Episode Selector Bars */}
+              {isSeries && (
+                <div className="w-full mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 relative">
+                  {/* BARRE 1: SAISON */}
+                  <div className="relative flex-1 sm:max-w-[280px]">
+                    <div className="px-3 py-2 bg-[#121212]/95 border border-white/10 rounded-xl flex items-center justify-between gap-2 shadow-md">
+                      {/* Bouton Précédent */}
+                      <button
+                        type="button"
+                        disabled={!canPrevSeason}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrevSeason();
+                        }}
+                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer border border-white/5 shrink-0"
+                        title="Saison précédente"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* Clic central pour ouvrir la liste des saisons */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsSeasonModalOpen(prev => !prev);
+                          setIsEpisodeModalOpen(false);
+                        }}
+                        className="flex-1 flex items-center justify-between gap-2 px-2 py-1 hover:bg-white/[0.04] rounded-lg transition-colors cursor-pointer min-w-0 group"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                            <Tv className="w-3.5 h-3.5 text-amber-400" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-sans text-zinc-400 font-semibold tracking-wider">Saison</span>
+                            <span className="text-xs font-sans font-bold text-amber-300 truncate">
+                              Saison {currentSeason}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronDown className={`w-4 h-4 text-zinc-400 group-hover:text-amber-400 transition-transform duration-200 shrink-0 ml-1 ${isSeasonModalOpen ? 'rotate-180 text-amber-400' : ''}`} />
+                      </button>
+
+                      {/* Bouton Suivant */}
+                      <button
+                        type="button"
+                        disabled={!canNextSeason}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNextSeason();
+                        }}
+                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer border border-white/5 shrink-0"
+                        title="Saison suivante"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Menu déroulant minimaliste Saison */}
+                    {isSeasonModalOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsSeasonModalOpen(false)} />
+                        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 bg-[#141414] border border-white/15 rounded-xl shadow-2xl p-1.5 max-h-64 overflow-y-auto">
+                          {displaySeasons.map((s: any) => {
+                            const isSelected = s.season_number === currentSeason;
+                            return (
+                              <button
+                                key={s.season_number}
+                                type="button"
+                                onClick={() => {
+                                  handleSeasonSelect(s.season_number);
+                                  setIsSeasonModalOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 rounded-lg text-xs font-sans flex items-center justify-between text-left transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-amber-500 text-black font-bold'
+                                    : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                                }`}
+                              >
+                                <span>{s.name || `Saison ${s.season_number}`}</span>
+                                {s.episode_count ? (
+                                  <span className={`text-[10px] ${isSelected ? 'text-black/70' : 'text-zinc-400'}`}>
+                                    {s.episode_count} eps
+                                  </span>
+                                ) : null}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* BARRE 2: ÉPISODE */}
+                  <div className="relative flex-1">
+                    <div className="px-3 py-2 bg-[#121212]/95 border border-white/10 rounded-xl flex items-center justify-between gap-2 shadow-md">
+                      {/* Bouton Précédent */}
+                      <button
+                        type="button"
+                        disabled={currentEpisode <= 1}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEpisodeSelect(currentSeason, currentEpisode - 1);
+                        }}
+                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer border border-white/5 shrink-0"
+                        title="Épisode précédent"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* Clic central pour ouvrir la liste des épisodes */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEpisodeModalOpen(prev => !prev);
+                          setIsSeasonModalOpen(false);
+                        }}
+                        className="flex-1 flex items-center justify-between gap-2 px-2 py-1 hover:bg-white/[0.04] rounded-lg transition-colors cursor-pointer min-w-0 group"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                            <Film className="w-3.5 h-3.5 text-amber-400" />
+                          </div>
+                          <div className="flex flex-col text-left min-w-0">
+                            <span className="text-[10px] uppercase font-sans text-zinc-400 font-semibold tracking-wider">Épisode</span>
+                            <span className="text-xs font-sans font-bold text-zinc-100 group-hover:text-amber-300 transition-colors truncate">
+                              Ép. {currentEpisode} : {episodesList.find((ep: any) => ep.episode_number === currentEpisode)?.name || `Épisode ${currentEpisode}`}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronDown className={`w-4 h-4 text-zinc-400 group-hover:text-amber-400 transition-transform duration-200 shrink-0 ml-1 ${isEpisodeModalOpen ? 'rotate-180 text-amber-400' : ''}`} />
+                      </button>
+
+                      {/* Bouton Suivant */}
+                      <button
+                        type="button"
+                        disabled={episodesList.length > 0 && currentEpisode >= episodesList.length}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEpisodeSelect(currentSeason, currentEpisode + 1);
+                        }}
+                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white disabled:opacity-20 disabled:pointer-events-none flex items-center justify-center transition-colors cursor-pointer border border-white/5 shrink-0"
+                        title="Épisode suivant"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Menu déroulant minimaliste Épisode */}
+                    {isEpisodeModalOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsEpisodeModalOpen(false)} />
+                        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 bg-[#141414] border border-white/15 rounded-xl shadow-2xl p-1.5 max-h-64 overflow-y-auto">
+                          {isLoadingEpisodes ? (
+                            <div className="py-4 text-center text-xs text-zinc-400">Chargement...</div>
+                          ) : episodesList.length > 0 ? (
+                            episodesList.map((ep: any) => {
+                              const isSelected = ep.episode_number === currentEpisode;
+                              return (
+                                <button
+                                  key={ep.episode_number}
+                                  type="button"
+                                  onClick={() => {
+                                    handleEpisodeSelect(currentSeason, ep.episode_number);
+                                    setIsEpisodeModalOpen(false);
+                                  }}
+                                  className={`w-full px-3 py-2 rounded-lg text-xs font-sans flex items-center justify-between gap-2 text-left transition-colors cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-amber-500 text-black font-bold'
+                                      : 'text-zinc-200 hover:bg-white/10 hover:text-white'
+                                  }`}
+                                >
+                                  <span className="truncate">
+                                    {ep.episode_number}. {ep.name || `Épisode ${ep.episode_number}`}
+                                  </span>
+                                  {ep.runtime ? (
+                                    <span className={`text-[10px] shrink-0 ${isSelected ? 'text-black/70' : 'text-zinc-400'}`}>
+                                      {ep.runtime} min
+                                    </span>
+                                  ) : null}
+                                </button>
+                              );
+                            })
+                          ) : (
+                            <div className="py-3 text-center text-xs text-zinc-500">Aucun épisode</div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Rich Details Section Below Player (Scroll view) */}
               <div className="w-full mt-4 flex flex-col gap-6 text-left">
                 
                 {/* Tabs Header Navigation */}
                 <div className="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto scrollbar-hide">
+                  {isSeries && (
+                    <button
+                      type="button"
+                      onClick={() => setDetailsTab("episodes")}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                        detailsTab === "episodes"
+                          ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
+                          : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
+                      }`}
+                    >
+                      <Tv className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Saisons & Épisodes</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 font-semibold">
+                        S{currentSeason} E{currentEpisode}
+                      </span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => setDetailsTab("synopsis")}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
                       detailsTab === "synopsis"
                         ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
                         : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
@@ -2497,7 +2986,7 @@ export default function CinemaPlayerView({
                   <button
                     type="button"
                     onClick={() => setDetailsTab("similar")}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
                       detailsTab === "similar"
                         ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
                         : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
@@ -2515,7 +3004,7 @@ export default function CinemaPlayerView({
                   <button
                     type="button"
                     onClick={() => setDetailsTab("all")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer shrink-0 ${
                       detailsTab === "all"
                         ? "bg-white/10 text-white border border-white/15"
                         : "text-zinc-500 hover:text-zinc-300 border border-transparent"
@@ -2524,6 +3013,155 @@ export default function CinemaPlayerView({
                     <span>View All</span>
                   </button>
                 </div>
+
+                {/* TAB: Saisons & Épisodes (FOR SERIES ONLY) */}
+                {isSeries && (detailsTab === "episodes" || detailsTab === "all") && (
+                  <div className="w-full flex flex-col gap-4 pt-1">
+                    {/* Season Selector Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-[#101010]/80 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+                      <div className="flex items-center gap-2 relative">
+                        <span className="text-xs uppercase font-sans text-zinc-400 font-semibold tracking-wider">Saison:</span>
+                        
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setIsSeasonDropdownOpen(!isSeasonDropdownOpen)}
+                            className="flex items-center gap-2 bg-neutral-900 border border-amber-500/30 hover:border-amber-500/60 px-3.5 py-1.5 rounded-lg text-xs font-sans font-semibold text-amber-300 transition-colors cursor-pointer shadow-md"
+                          >
+                            <span>Saison {currentSeason}</span>
+                            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSeasonDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          {isSeasonDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-44 bg-[#141414] border border-white/15 rounded-xl shadow-2xl py-1.5 z-50 max-h-56 overflow-y-auto scrollbar-hide">
+                              {seasonsList.length > 0 ? (
+                                seasonsList.map((s: any) => (
+                                  <button
+                                    key={s.season_number}
+                                    type="button"
+                                    onClick={() => {
+                                      setCurrentSeason(s.season_number);
+                                      setIsSeasonDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3.5 py-2 text-xs font-sans flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer ${
+                                      currentSeason === s.season_number ? 'text-amber-400 font-bold bg-amber-500/10' : 'text-zinc-300'
+                                    }`}
+                                  >
+                                    <span>{s.name || `Saison ${s.season_number}`}</span>
+                                    {s.episode_count ? (
+                                      <span className="text-[10px] text-zinc-500">{s.episode_count} eps</span>
+                                    ) : null}
+                                  </button>
+                                ))
+                              ) : (
+                                [1, 2, 3, 4, 5].map((sNum) => (
+                                  <button
+                                    key={sNum}
+                                    type="button"
+                                    onClick={() => {
+                                      setCurrentSeason(sNum);
+                                      setIsSeasonDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3.5 py-2 text-xs font-sans flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer ${
+                                      currentSeason === sNum ? 'text-amber-400 font-bold bg-amber-500/10' : 'text-zinc-300'
+                                    }`}
+                                  >
+                                    <span>Saison {sNum}</span>
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-xs font-sans text-zinc-400">
+                        {isLoadingEpisodes ? (
+                          <span className="flex items-center gap-1.5 text-zinc-500">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
+                            Chargement...
+                          </span>
+                        ) : (
+                          <span>{episodesList.length} épisodes disponibles</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Episodes Grid/List */}
+                    <div className="flex flex-col gap-2.5">
+                      {isLoadingEpisodes ? (
+                        <div className="py-12 flex flex-col items-center justify-center gap-3 bg-[#101010]/40 rounded-xl border border-white/5">
+                          <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+                          <span className="text-xs text-zinc-400 font-sans">Chargement des épisodes de la saison {currentSeason}...</span>
+                        </div>
+                      ) : episodesList.length > 0 ? (
+                        episodesList.map((ep: any) => {
+                          const isPlayingThis = ep.episode_number === currentEpisode;
+                          return (
+                            <div
+                              key={ep.episode_number}
+                              onClick={() => handleEpisodeSelect(currentSeason, ep.episode_number)}
+                              className={`group flex flex-col sm:flex-row items-start sm:items-center gap-3.5 p-3 rounded-xl border transition-all cursor-pointer ${
+                                isPlayingThis
+                                  ? "bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.12)] ring-1 ring-amber-500/30"
+                                  : "bg-[#111111]/70 hover:bg-[#181818] border-white/5 hover:border-white/15"
+                              }`}
+                            >
+                              {/* Thumbnail */}
+                              <div className="relative shrink-0 w-full sm:w-40 aspect-video rounded-lg overflow-hidden bg-zinc-900 border border-white/10">
+                                {ep.stillUrl && ep.stillUrl.trim() ? (
+                                  <img 
+                                    src={ep.stillUrl.trim()} 
+                                    alt={ep.name} 
+                                    referrerPolicy="no-referrer" 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-600">
+                                    <Film className="w-6 h-6" />
+                                  </div>
+                                )}
+                                <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-mono font-bold text-amber-400 border border-white/10">
+                                  EP {ep.episode_number}
+                                </div>
+                                {isPlayingThis && (
+                                  <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center">
+                                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500 text-black text-[11px] font-sans font-bold shadow-lg">
+                                      <Play className="w-3 h-3 fill-black" /> En lecture
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Info */}
+                              <div className="flex-1 min-w-0 flex flex-col gap-1">
+                                <div className="flex items-center justify-between gap-2">
+                                  <h4 className={`text-sm font-sans font-semibold truncate transition-colors ${isPlayingThis ? 'text-amber-300 font-bold' : 'text-zinc-200 group-hover:text-amber-400'}`}>
+                                    {ep.episode_number}. {ep.name || `Épisode ${ep.episode_number}`}
+                                  </h4>
+                                  {ep.runtime ? (
+                                    <span className="text-[11px] font-sans text-zinc-400 shrink-0">{ep.runtime} min</span>
+                                  ) : null}
+                                </div>
+                                {ep.overview ? (
+                                  <p className="text-xs text-zinc-400 font-sans line-clamp-2 leading-relaxed">
+                                    {ep.overview}
+                                  </p>
+                                ) : (
+                                  <p className="text-xs text-zinc-500 italic font-sans">Pas de description disponible pour cet épisode.</p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="py-8 text-center text-zinc-500 text-xs font-sans bg-[#101010]/40 rounded-xl border border-white/5">
+                          Aucun épisode disponible pour cette saison.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* TAB 1: Synopsis & Vertical Details Card Side by Side */}
                 {(detailsTab === "synopsis" || detailsTab === "all") && (
@@ -2676,9 +3314,9 @@ export default function CinemaPlayerView({
                             className="shrink-0 w-32 sm:w-36 group cursor-pointer text-left flex flex-col"
                           >
                             <div className="aspect-[2/3] w-full rounded-xl overflow-hidden bg-zinc-900 relative border border-white/10 group-hover:border-amber-400/40 transition-all duration-300 shadow-lg">
-                              {sim.posterUrl ? (
+                              {sim.posterUrl && sim.posterUrl.trim() ? (
                                 <img 
-                                  src={sim.posterUrl} 
+                                  src={sim.posterUrl.trim()} 
                                   alt={sim.title} 
                                   referrerPolicy="no-referrer"
                                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
@@ -2722,10 +3360,10 @@ export default function CinemaPlayerView({
             </div>
           </div>
 
-          {/* Right Column: Server Selection Sidebar */}
+          {/* Right Column: Server Selection Sidebar (Desktop Only) */}
           <div 
             style={measuredPlayerHeight ? { height: `${measuredPlayerHeight}px` } : undefined}
-            className="w-full xl:w-[250px] shrink-0 order-2 xl:order-3 bg-[#101010]/85 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex flex-col gap-2 relative overflow-hidden xl:self-start max-h-[472px] xl:max-h-none"
+            className="hidden xl:flex w-[250px] shrink-0 order-3 bg-[#101010]/85 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex-col gap-2 relative overflow-hidden self-start max-h-[472px] xl:max-h-none"
           >
             
             <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
@@ -2735,15 +3373,27 @@ export default function CinemaPlayerView({
               </h3>
               <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-lg border border-white/10">
                 <button 
-                  onClick={() => { setLanguage("en"); setActiveServerIndex(0); }} 
-                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
+                  onClick={() => {
+                    setLanguage("en");
+                    const cleanTmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+                    const newServers = generateServers("en", isSeries, cleanTmdb, currentSeason, currentEpisode, cleanTmdb, "");
+                    setAvailableServers(newServers);
+                    handleSelectServer(0, newServers);
+                  }} 
+                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
                   title="English"
                 >
                   <img src="https://flagcdn.com/w40/gb.png" alt="EN" className="w-full h-full object-cover rounded-sm" />
                 </button>
                 <button 
-                  onClick={() => { setLanguage("fr"); setActiveServerIndex(0); }} 
-                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
+                  onClick={() => {
+                    setLanguage("fr");
+                    const cleanTmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+                    const newServers = generateServers("fr", isSeries, cleanTmdb, currentSeason, currentEpisode, cleanTmdb, "");
+                    setAvailableServers(newServers);
+                    handleSelectServer(0, newServers);
+                  }} 
+                  className={"w-5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
                   title="French"
                 >
                   <img src="https://flagcdn.com/w40/fr.png" alt="FR" className="w-full h-full object-cover rounded-sm" />
@@ -2759,55 +3409,8 @@ export default function CinemaPlayerView({
                   return (
                     <button 
                       key={idx}
-                      onClick={() => {
-                        setActiveServerIndex(idx);
-                        const isProxyStream = server.url.startsWith("/api/stream-proxy") || server.url.startsWith("/api/extract-stream-view");
-                        let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "");
-                        if (!isProxyStream && savedRestoreTimeRef.current > 0) {
-                          const sep = targetUrl.includes("?") ? "&" : "?";
-                          targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
-                        }
-                        
-                        if (isProxyStream) {
-                          setServerSelected(true);
-                          setIsLoading(true);
-                          const searchParams = new URLSearchParams(server.url.split("?")[1]);
-                          fetch(`/api/extract-stream?${searchParams.toString()}`)
-                            .then(res => res.json())
-                            .then(data => {
-                              setIsLoading(false);
-                              if (data.success && data.extractedUrl) {
-                                setPlaybackInfo({
-                                  ...playbackInfo!,
-                                  isIframeEmbed: false,
-                                  iframeSrc: "",
-                                  streamUrl: data.extractedUrl
-                                });
-                              } else {
-                                alert(data.error || "Impossible d'extraire le flux brut pour ce film.");
-                              }
-                            })
-                            .catch(() => {
-                              setIsLoading(false);
-                              alert("Erreur lors de la tentative d'extraction du flux.");
-                            });
-                        } else {
-                          const cleanUrl = normalizeEmbedUrl(targetUrl);
-                          if (playbackInfo) {
-                            setPlaybackInfo({
-                              ...playbackInfo,
-                              isIframeEmbed: true,
-                              iframeSrc: cleanUrl,
-                              streamUrl: cleanUrl
-                            });
-                          }
-                          safeStorage.setItem("classico_global_server_index", String(idx));
-                          setServerSelected(true);
-                          setIsIframeLoading(true);
-                          setIframeKey(prev => prev + 1);
-                        }
-                      }}
-                      className={`relative w-full flex items-center justify-between py-2 px-2.5 rounded-lg border transition-all duration-200 group overflow-hidden ${
+                      onClick={() => handleSelectServer(idx)}
+                      className={`relative w-full flex items-center justify-between py-2 px-2.5 rounded-lg border transition-all duration-200 group overflow-hidden cursor-pointer ${
                         isActive 
                           ? 'bg-amber-500/15 border-amber-500/30 text-white shadow-sm' 
                           : 'bg-white/[0.02] border-white/5 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200'
@@ -2815,7 +3418,7 @@ export default function CinemaPlayerView({
                     >
                       <div className="flex items-center gap-2.5">
                         <Play className={`w-3 h-3 transition-colors ${isActive ? 'text-amber-400 fill-amber-400' : 'text-zinc-500 group-hover:text-amber-400/80'}`} />
-                        <span className={`text-xs font-sans transition-colors ${isActive ? 'text-amber-200 font-medium' : 'text-zinc-400 group-hover:text-zinc-200'}`}>Server {idx + 1}</span>
+                        <span className={`text-xs font-sans transition-colors ${isActive ? 'text-amber-200 font-medium' : 'text-zinc-400 group-hover:text-zinc-200'}`}>{serverName || `Server ${idx + 1}`}</span>
                       </div>
                       <span className={`text-[9px] tracking-wide font-sans transition-colors px-1.5 py-0.5 rounded font-medium ${isActive ? 'text-amber-400 bg-amber-400/10' : 'text-zinc-400 bg-white/5'}`}>
                         HD
@@ -2834,6 +3437,110 @@ export default function CinemaPlayerView({
 
         </div>
       </div>
+
+      {/* Mobile Server Selection Modal / Drawer */}
+      {isMobileServerModalOpen && (
+        <div className="fixed inset-0 z-[150] xl:hidden bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-[#121212] border border-white/10 rounded-t-2xl sm:rounded-2xl p-4 shadow-2xl flex flex-col gap-3 animate-in fade-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse"></div>
+                <h3 className="text-sm font-sans font-bold text-zinc-100 uppercase tracking-wider">Choisir un serveur</h3>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Language selector in modal */}
+                <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-lg border border-white/10">
+                  <button 
+                    onClick={() => {
+                      setLanguage("en");
+                      const cleanTmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+                      const newServers = generateServers("en", isSeries, cleanTmdb, currentSeason, currentEpisode, cleanTmdb, "");
+                      setAvailableServers(newServers);
+                      handleSelectServer(0, newServers);
+                    }} 
+                    className={"w-6 h-4 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-40 hover:opacity-100")} 
+                    title="English"
+                  >
+                    <img src="https://flagcdn.com/w40/gb.png" alt="EN" className="w-full h-full object-cover rounded-sm" />
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setLanguage("fr");
+                      const cleanTmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+                      const newServers = generateServers("fr", isSeries, cleanTmdb, currentSeason, currentEpisode, cleanTmdb, "");
+                      setAvailableServers(newServers);
+                      handleSelectServer(0, newServers);
+                    }} 
+                    className={"w-6 h-4 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-40 hover:opacity-100")} 
+                    title="French"
+                  >
+                    <img src="https://flagcdn.com/w40/fr.png" alt="FR" className="w-full h-full object-cover rounded-sm" />
+                  </button>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setIsMobileServerModalOpen(false)}
+                  className="p-1 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 max-h-64 overflow-y-auto py-1">
+              {availableServers && availableServers.length > 0 ? (
+                availableServers.map((server, idx) => {
+                  let serverName = server.name.split(' (')[0];
+                  const isActive = serverSelected && activeServerIndex === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        handleSelectServer(idx);
+                        setIsMobileServerModalOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold shadow-sm'
+                          : 'bg-white/[0.03] border-white/5 text-zinc-300 hover:bg-white/[0.07]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Play className={`w-3.5 h-3.5 ${isActive ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'}`} />
+                        <span className="text-sm font-sans">{serverName || `Server ${idx + 1}`}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-sans font-semibold ${isActive ? 'bg-amber-400/20 text-amber-300' : 'bg-white/5 text-zinc-400'}`}>
+                          HD • {language.toUpperCase()}
+                        </span>
+                        {isActive && (
+                          <span className="text-xs text-amber-400 font-sans font-medium">Actif</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="py-6 text-center text-zinc-500 text-xs font-sans">
+                  Aucun serveur disponible pour cette configuration.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setIsMobileServerModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 font-sans text-xs font-semibold cursor-pointer transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -218,6 +218,23 @@ export const importedMoviesData = [
       "Jensen Ackles",
       "Misha Collins"
     ],
+    "castDetails": [
+      {
+        "name": "Jared Padalecki",
+        "character": "Sam Winchester",
+        "profile_path": "https://image.tmdb.org/t/p/w185/dTV5ImKP5uIdFShiG3VFbbjLFWo.jpg"
+      },
+      {
+        "name": "Jensen Ackles",
+        "character": "Dean Winchester",
+        "profile_path": "https://image.tmdb.org/t/p/w185/xgOAHqDiqdZCF1BhfHaeLrd47ki.jpg"
+      },
+      {
+        "name": "Misha Collins",
+        "character": "Castiel",
+        "profile_path": "https://image.tmdb.org/t/p/w185/szigprnenokR4yOpELIB2rj1Er2.jpg"
+      }
+    ],
     "genre": [
       "Drama",
       "Mystery",
@@ -4947,1171 +4964,1682 @@ export const importedMoviesData = [
     "iframeSrc": "https://111movies.net/movie/502356"
   },
   {
-    "id": "238",
-    "trailerUrl": "https://www.youtube.com/watch?v=Ew9ngL1GZvs",
-    "tmdbId": "238",
-    "imdbId": "tt0068646",
-    "isTv": false,
-    "tagline": "An offer you can't refuse.",
-    "title": "The Godfather",
-    "originalTitle": "The Godfather",
-    "originalLanguage": "en",
-    "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
-    "year": 1972,
-    "duration": 175,
-    "director": "Francis Ford Coppola",
-    "cast": [
-      "Marlon Brando",
-      "Al Pacino",
-      "James Caan",
-      "Robert Duvall",
-      "Richard S. Castellano",
-      "Diane Keaton"
-    ],
-    "logoUrl": "https://image.tmdb.org/t/p/w500/kysDTCloxUPJ1BILI4f8gs74fcr.png",
-    "hasLogo": true,
-    "castDetails": [
-      {
-        "id": "3084",
-        "name": "Marlon Brando",
-        "role": "Don Vito Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/fuTEPMsBtV1zE98ujPONbKiYDc2.jpg"
-      },
-      {
-        "id": "1158",
-        "name": "Al Pacino",
-        "role": "Michael Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/m8HAAjq1T75JypKk0v1FFQn4ysZ.jpg"
-      },
-      {
-        "id": "3085",
-        "name": "James Caan",
-        "role": "Sonny Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/z2Lz3rtxZ7aJjzBUkCnExvo8stn.jpg"
-      },
-      {
-        "id": "3087",
-        "name": "Robert Duvall",
-        "role": "Tom Hagen",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/3tcKxC5Sc3DJ6XPDKKC2EAomEWn.jpg"
-      },
-      {
-        "id": "3086",
-        "name": "Richard S. Castellano",
-        "role": "Clemenza",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/1vr75BdHWret81vuSJ3ugiCBkxw.jpg"
-      },
-      {
-        "id": "3092",
-        "name": "Diane Keaton",
-        "role": "Kay Adams",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/A8B3BsFgbmw2WEmJuQX38qeU9eR.jpg"
-      },
-      {
-        "id": "3094",
-        "name": "Talia Shire",
-        "role": "Connie Corleone Rizzi",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/oktJmlLeyYKBCWPNjHskDwAfjct.jpg"
-      },
-      {
-        "id": "3095",
-        "name": "Gianni Russo",
-        "role": "Carlo Rizzi",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/jfeGnQfXMzKXsuSPm9oTxm6FOuz.jpg"
-      },
-      {
-        "id": "3088",
-        "name": "Sterling Hayden",
-        "role": "Captain McCluskey",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/dCTe6BsGSp9QTcva2Pz4wbxxYMY.jpg"
-      },
-      {
-        "id": "3142",
-        "name": "John Marley",
-        "role": "Jack Woltz",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/xyzwd0CiBjXfowH3HcPhvuWcV5B.jpg"
-      },
-      {
-        "id": "3090",
-        "name": "Richard Conte",
-        "role": "Barzini",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/bDegodf4dYGXMejdm4T6XgOJwlr.jpg"
-      },
-      {
-        "id": "3091",
-        "name": "Al Lettieri",
-        "role": "Sollozzo",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/fE5mEWPkkVJlCji0EoKht8PYw89.jpg"
-      },
-      {
-        "id": "3093",
-        "name": "Abe Vigoda",
-        "role": "Sal Tessio",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/luWKPNb58IgJ2ovrtgPAzHGLLYL.jpg"
-      },
-      {
-        "id": "3096",
-        "name": "John Cazale",
-        "role": "Fredo Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/41wXX1FBalyIuf5eaA4S43Y8IfZ.jpg"
-      },
-      {
-        "id": "3143",
-        "name": "Rudy Bond",
-        "role": "Cuneo",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/bd3YONpGsvQrpz6MkhsqsiPSaOD.jpg"
-      },
-      {
-        "id": "3144",
-        "name": "Al Martino",
-        "role": "Johnny Fontane",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/jrxnZxAOBVXZaDr9r0nYpMnQwiU.jpg"
-      }
-    ],
-    "similar": [
-      {
-        "id": "1520193",
-        "tmdbId": "1520193",
-        "isTv": false,
-        "title": "Wasted",
-        "description": "A low-level hitman Ceasar Rodriguez wakes up in the passenger seat of a blood-soaked car with no memory of how he got there. Beside him, the driver is dead. The streets of Liberty City are empty, but his sins are not. Haunted by visions of the people he’s killed — and the person he used to be — he stumbles through a night filled with paranoia, betrayal, and bloody flashbacks. Each clue he uncovers leads him deeper into a conspiracy that may or may not be real. He sees faces from his past. Hears voices that aren't there. Fights enemies he can't prove exist.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/pgoSKVU589orB5IzPm37q1s6dyP.jpg",
-        "backdropUrl": "",
-        "year": 2012
-      },
-      {
-        "id": "743232",
-        "tmdbId": "743232",
-        "isTv": false,
-        "title": "Tigers",
-        "description": "Super-talented footballing prodigy Martin is bought by top club Inter Milan, aged just 16. It’s the chance of a lifetime – but at what price?",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/hEw0bwwrBUWbSBMcyDL4IqHDAQg.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/d7kwGh1SJZKv6oWqpIkEG6AEXNp.jpg",
-        "year": 2021
-      },
-      {
-        "id": "121642",
-        "tmdbId": "121642",
-        "isTv": false,
-        "title": "Twice Born",
-        "description": "Full-throttle melodrama about an ill-starred romance set against the backdrop of the siege of Sarajevo. A mother brings her teenage son to Sarajevo, where his father died in the Bosnian conflict years ago.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/uQ0ERG8dy3kHVP8aVlDFv448Gc7.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/uzr5OCSv6DnRWRDwq9btxdUNMNY.jpg",
-        "year": 2012
-      },
-      {
-        "id": "121674",
-        "tmdbId": "121674",
-        "isTv": false,
-        "title": "Great Expectations",
-        "description": "Orphan Pip discovers through lawyer Mr. Jaggers that a mysterious benefactor wishes to ensure that he becomes a gentleman. Reunited with his childhood patron, Miss Havisham, and his first love, the beautiful but emotionally cold Estella, he discovers that the elderly spinster has gone mad from having been left at the altar as a young woman, and has made her charge into a warped, unfeeling heartbreaker.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/z9eLxcsNOtoq4dTMDJwr79QR3xd.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/55zGKBnKQJ4JV7fZyXE2XsDAuJS.jpg",
-        "year": 2012
-      },
-      {
-        "id": "1323752",
-        "tmdbId": "1323752",
-        "isTv": false,
-        "title": "American Prom",
-        "description": "American Prom brings spirituality into the center of a modern day coming of age story. Trinity enters high school and finds herself mixed up with the \"in-crowd\" tempted by popularity, parties and peer pressure. As prom approaches and temptation grows, Trinity must decide her path.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/n0qhv7mBJT51OFfT4Nwj3glvDDn.jpg",
-        "backdropUrl": "",
-        "year": 2024
-      },
-      {
-        "id": "1323784",
-        "tmdbId": "1323784",
-        "isTv": false,
-        "title": "Bad Influence",
-        "description": "An ex-con gets a fresh start when hired to protect a wealthy heiress from a stalker — but their chemistry is hard to resist as they grow closer.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/3xVWCNDAgr01G1Lkjd7F9sAGOc4.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/zXUxcXnBPHF1cD0IHi4KUpsNvF4.jpg",
-        "year": 2025
-      },
-      {
-        "id": "806945",
-        "tmdbId": "806945",
-        "isTv": false,
-        "title": "Posel úsvitu",
-        "description": "A biographical film about a Czech mechanic and designer who was the first in the Czech lands to construct a steam car.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/8uhT465JnjlcaZlTIIkUHEEYY8R.jpg",
-        "backdropUrl": "",
-        "year": 1951
-      },
-      {
-        "id": "1369801",
-        "tmdbId": "1369801",
-        "isTv": false,
-        "title": "I Am The Immaculate Conception",
-        "description": "A group of eminent experts, including the Marian Fathers, analyze Greek texts of the Holy Scripture, revelations and the dogma of the Immaculate Conception. The result is a new interpretation of passages of the Scripture revealing Mary, the Mother of Christ, and her extraordinary role in the divine plan for the salvation of the world.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/3u5qjgPbRknDLbsRJ8NZDlNZ44G.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/tIAoufqKmutFNaAd0KTqqqBcEai.jpg",
-        "year": 2024
-      }
-    ],
-    "genre": [
-      "Drama",
-      "Crime"
-    ],
-    "voteAverage": 8.687,
-    "isIframeEmbed": true,
-    "seasons": [],
-    "iframeSrc": "https://111movies.net/movie/238"
-  },
-  {
-    "id": "1398-tv",
-    "trailerUrl": "https://www.youtube.com/watch?v=Q8cBFvpqmH0",
-    "tmdbId": "1398",
-    "imdbId": "1398",
+    "id": "61427-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=IzKkTKOY38Q",
+    "tmdbId": "61427",
+    "imdbId": "61427",
     "isTv": true,
-    "tagline": "Family. Redefined.",
-    "title": "The Sopranos",
-    "originalTitle": "The Sopranos",
+    "tagline": "One of the strong",
+    "title": "Kingdom",
+    "originalTitle": "Kingdom",
     "originalLanguage": "en",
-    "description": "The story of New Jersey-based Italian-American mobster Tony Soprano and the difficulties he faces as he tries to balance the conflicting requirements of his home life and the criminal organization he heads. Those difficulties are often highlighted through his ongoing professional relationship with psychiatrist Jennifer Melfi. The show features Tony's family members and Mafia associates in prominent roles and story arcs, most notably his wife Carmela and his cousin and protégé Christopher Moltisanti.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/rTc7ZXdroqjkKivFPvCPX0Ru7uw.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/lNpkvX2s8LGB0mjGODMT4o6Up7j.jpg",
-    "year": 1999,
+    "description": "A raw family drama set against the world of Mixed Martial Arts (MMA) in Venice, California. Alvey Kulina owns Navy St. MMA with the help of his girlfriend Lisa Prince. He is willing to go through extraordinary means to make sure his fighters are taken care of, but all of this responsibility comes at a steep price. He has complicated relationships with both of his sons, Jay and Nate, who are both struggling with their own identities and places within Alvey’s life and gym.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xkRyopANOnO60KWm6DjozXlq9w4.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/vzgIoCjNKDDpeEoDRqzTEwXPSo6.jpg",
+    "year": 2014,
     "duration": 45,
-    "director": "David Chase",
+    "director": "Byron Balasco",
     "cast": [
-      "James Gandolfini",
-      "Edie Falco",
-      "Jamie-Lynn Sigler",
-      "Robert Iler",
-      "Lorraine Bracco",
-      "Michael Imperioli"
+      "Frank Grillo",
+      "Jonathan Tucker",
+      "Nick Jonas",
+      "Matt Lauria",
+      "Kiele Sanchez",
+      "Joanna Going"
     ],
-    "logoUrl": "https://image.tmdb.org/t/p/w500/mfIihXrXUHmca7k7cYGupu6DGXQ.png",
+    "logoUrl": "https://image.tmdb.org/t/p/w500/6WHQB0rtfUxkgJqFuIffVz26mko.png",
     "hasLogo": true,
     "castDetails": [
       {
-        "id": "4691",
-        "name": "James Gandolfini",
-        "role": "Tony Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/vhtsFJZcfHdeDkFBoWMDzOS6xrP.jpg"
+        "id": "81685",
+        "name": "Frank Grillo",
+        "role": "Alvey Kulina",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/kuEco4vo1xrsM8DyrNSZUEi593P.jpg"
       },
       {
-        "id": "36190",
-        "name": "Edie Falco",
-        "role": "Carmela Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/jS2Hnr5OmntpX0J7EpH70zAG0mz.jpg"
+        "id": "17243",
+        "name": "Jonathan Tucker",
+        "role": "Jay Kulina",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/gR1lthok818AcmJsg87f1On6Qnf.jpg"
       },
       {
-        "id": "99241",
-        "name": "Jamie-Lynn Sigler",
-        "role": "Meadow Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/Aur8H7qOzDUr9cRaqqOsCE5kLJp.jpg"
+        "id": "130565",
+        "name": "Nick Jonas",
+        "role": "Nate Kulina",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/y79k7wrDeyRbrGFs2Z3XHU5mq0o.jpg"
       },
       {
-        "id": "1218240",
-        "name": "Robert Iler",
-        "role": "A.J. Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/vfTbVoV1Bp2fcDVHaGOIiQppk3J.jpg"
+        "id": "1224390",
+        "name": "Matt Lauria",
+        "role": "Ryan Wheeler",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/afzZ4QN5MV4Ui6oz5zWFLBvuDRE.jpg"
       },
       {
-        "id": "11478",
-        "name": "Lorraine Bracco",
-        "role": "Jennifer Melfi",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/tAtpCzN4sTOy1RHpMpJj52zTO4S.jpg"
+        "id": "31168",
+        "name": "Kiele Sanchez",
+        "role": "Lisa Prince",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/klmeWImg34TiEia6c6ZkwHhaVoB.jpg"
       },
       {
-        "id": "11486",
-        "name": "Michael Imperioli",
-        "role": "Christopher Moltisanti",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/bCDwQGrecRujCibI8rvsxEc91We.jpg"
-      },
-      {
-        "id": "107622",
-        "name": "Steven Van Zandt",
-        "role": "Silvio Dante",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/okh4QNQrGG647y5HnGSXAFFoIlp.jpg"
-      },
-      {
-        "id": "21385",
-        "name": "Tony Sirico",
-        "role": "Paulie Gualtieri",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/6mbO6Ziu4p5wRdKrRfFmrw0xKC3.jpg"
-      },
-      {
-        "id": "68186",
-        "name": "Dominic Chianese",
-        "role": "Corrado 'Junior' Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/9OCAByYHjY6yO0s5ipBH3roaQpy.jpg"
-      },
-      {
-        "id": "106791",
-        "name": "Aida Turturro",
-        "role": "Janice Soprano",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/kEPpV3eHXOKXGWGtsxUUV6k1hai.jpg"
-      },
-      {
-        "id": "97188",
-        "name": "Steve Schirripa",
-        "role": "Bobby 'Bacala' Baccalieri",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/2Nd2Hd4zIBCv4ZoXFhSkrJCx6wB.jpg"
+        "id": "59662",
+        "name": "Joanna Going",
+        "role": "Christina Kulina",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cqYMJFlkkAc2n1FTGaOmom4IFFL.jpg"
       }
     ],
     "similar": [
       {
-        "id": "28397-tv",
-        "tmdbId": "28397",
+        "id": "109-tv",
+        "tmdbId": "109",
         "isTv": true,
-        "title": "Whistle!",
-        "description": "Kazamatsuri Shou's dream has always been to become a professional soccer player, but he has one problem: he's not very good at the game. He was accepted to the prestigious Musashi no Mori Junior High, known for its top rate soccer team, but he was never able to rise beyond the rank of third stringer. After transferring to Sakura Jousui Junior High, he can finally play soccer. And, with the support of his new friends and teammates, his strong determination, and lots of hard work, his soccer skills are developing rapidly and setting Shou well on his way to achieving his dream.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/dhSbrNS1Tx3o6iWuE3BsqGriqAF.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/wej61ErNVDUxifnTGzpJriRVfsQ.jpg",
-        "year": 2002
+        "title": "Blue Water High",
+        "description": "Blue Water High is an Australian television drama series, broadcast by the Australian Broadcasting Corporation on ABC1 and on Austar/Foxtel Nickelodeon channel in Australia and on various channels in many other countries. Each season follows the lives of a young group of students at Solar Blue, a high-performance surf academy where several lucky 16-year-olds are selected for a 12-month-long surfing program on Sydney's northern beaches.\n\nThere are three series in Blue Water High. The first two series were screened in 2005 and 2006 and the producers did not intend to create a third series. However, due to popular demand by fans, they relented and made one more series with only Kate Bell returning in a main role. Series three ended with the closure of Solar Blue, indicating that the show would most likely not continue.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/4S5Twq1WW3Ihn3x2mvnL8i5pVC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/1HiRzaRcF7WxTMFnroszv2ICcWj.jpg",
+        "year": 2005
       },
       {
-        "id": "28472-tv",
-        "tmdbId": "28472",
+        "id": "1-tv",
+        "tmdbId": "1",
         "isTv": true,
-        "title": "Mafiosa",
-        "description": "By the will of her dead uncle who was murdered Sandra Paoli is propelled to the head of a powerful mafia clan. She becomes a respected, but also hated, woman in a world of men, murder and criminality.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/eQ7ZufX51LhWrgGMN7SSjGUoKNm.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/lfN2nJUhoCnW8STWCd2XY5j3cLu.jpg",
-        "year": 2006
+        "title": "Pride",
+        "description": "Haru Satonaka is the captain of an ice-hockey team, a star athlete who stakes everything on hockey but can only consider love as a game. Aki Murase is a woman who has been waiting for her lover who went abroad two years ago. These two persons start a relationship while frankly admitting to each other that it is only a love game. …The result is the unfolding of a drama of people with their respective pasts and with their pride as individuals.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/9Ub2BwnLYKoiSaQF93ItyXriCon.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/a5rVPxJAZuwIf5DJAr3IZI5RKYx.jpg",
+        "year": 2004
       },
       {
-        "id": "40-tv",
-        "tmdbId": "40",
+        "id": "124861-tv",
+        "tmdbId": "124861",
         "isTv": true,
-        "title": "Dallas",
-        "description": "The world's first mega-soap, and one of the most popular ever produced, Dallas had it all. Beautiful women, expensive cars, and men playing Monopoly with real buildings. Famous for one of the best cliffhangers in TV history, as the world asked \"Who shot J.R.?\" A slow-burner to begin with, Dallas hit its stride in the 2nd season, with long storylines and expert character development. Dallas ruled the airwaves in the 1980's.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/jmqo8bgHrhKYPc0RK5F71GHa8rm.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/sCTNR6iYgEAaYxjvibhzt8sc1nQ.jpg",
-        "year": 1978
+        "title": "Daughters",
+        "description": "A story about four high school girls, Pam, Pu, Duean, and Ngoh, who come together because of fate and family problems in a broken home.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/5tLAs2Rvn4zAqF2YH11zkbcnVjz.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/9MBoU9j4mUNChkzqMBsnWL2wZI.jpg",
+        "year": 2020
       },
       {
-        "id": "52-tv",
-        "tmdbId": "52",
+        "id": "207347-tv",
+        "tmdbId": "207347",
         "isTv": true,
-        "title": "That '70s Show",
-        "description": "Crank up the 8-track and flash back to a time when platform shoes and puka shells were all the rage in this hilarious retro-sitcom. For Eric, Kelso, Jackie, Hyde, Donna and Fez, a group of high school teens who spend most of their time hanging out in Eric’s basement, life in the ‘70s isn’t always so groovy. But between trying to figure out the meaning of life, avoiding their parents, and dealing with out-of-control hormones, they’ve learned one thing for sure: they’ll always get by with a little help from their friends.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/laEZvTqM80UaplUaDSCCbWhlyEV.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/rf2uHKzPniVL5LvSVxg5ACxv4cS.jpg",
-        "year": 1998
-      },
-      {
-        "id": "89-tv",
-        "tmdbId": "89",
-        "isTv": true,
-        "title": "Titus",
-        "description": "Titus is an American dark comedy sitcom that debuted on Fox in 2000. The series was created by its star, Christopher Titus, Jack Kenny, and Brian Hargrove. This sitcom was based on Christopher's stand-up comedy act, more specifically his one-man show Norman Rockwell is Bleeding, which was based loosely upon his real-life family; lines from Norman Rockwell is Bleeding were spoken by Titus as commentary. Titus plays an outwardly childish adult, who owns a custom car shop. The show follows him and his dimwitted halfbrother Dave, his girlfriend Erin with the \"heart of gold\", his goody-goody friend Tommy, and his arrogantly lewd, bigoted and multiple-divorced father Ken \"Papa\" Titus.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/Ab7WWSBFSYbZVXORydeEaPltG9K.jpg",
-        "backdropUrl": "",
-        "year": 2000
-      },
-      {
-        "id": "239137-tv",
-        "tmdbId": "239137",
-        "isTv": true,
-        "title": "Asura",
-        "description": "In 1979 Tokyo, four distinct sisters uncover their aging father's affair, causing their happy facades and bottled-up emotions to slowly unravel.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/6d4IrjS3t3O7dFynAmrLKXrSNwe.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/1aUZEebBamWzkrZ2fqqbPjMo1Mt.jpg",
-        "year": 2025
-      },
-      {
-        "id": "275591-tv",
-        "tmdbId": "275591",
-        "isTv": true,
-        "title": "Cinderella Game",
-        "description": "A woman who was used as a false daughter by her real family's enemy becomes the embodiment of revenge, but grows and heals as she realizes the true meaning of what she thought she wanted the most.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/z0aH1MsinhU6CIjvsHCdNhHlr2s.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/r5kh9WyUJE0NiJZnM8Q3KsVcS9g.jpg",
+        "title": "Blue Box",
+        "description": "Taiki Inomata loves badminton, but he has a long way to go before he can reach nationals. When Taiki sees upperclassman Chinatsu Kano practicing her heart out on the girls’ basketball team, he falls for her hard. After an unexpected turn of events brings the two closer together, sports might not be the first thing on their minds anymore!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sN3TuYevEPWxZhwcp6I2PJRW1jl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/8p39Ud6ZKMixBQ7R4frg2o3idzc.jpg",
         "year": 2024
       },
       {
-        "id": "92045-tv",
-        "tmdbId": "92045",
+        "id": "269-tv",
+        "tmdbId": "269",
         "isTv": true,
-        "title": "The Baker and the Beauty",
-        "description": "Daniel Garcia is working in the family bakery and doing everything that his loving Cuban parents and siblings expect him to do. But on a wild Miami night he meets Noa Hamilton, an international superstar and fashion mogul, and his life moves into the spotlight. Will this unlikely couple upend their lives to be together and pull their families into a culture clash?",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/i0AB2fH7KZNlrh9SBNY3a5ooD0Q.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/izMS1kNbfZ4jyQrpA3mMunRuCc7.jpg",
-        "year": 2020
+        "title": "One Tree Hill",
+        "description": "In Tree Hill, North Carolina two half brothers share a last name and nothing else. Brooding, blue-collar Lucas is a talented street-side basketball player, but his skills are appreciated only by his friends at the river court. Popular, affluent Nathan basks in the hero-worship of the town, as the star of his high school team. And both boys are the son of former college ball player Dan Scott whose long ago choice to abandon Lucas and his mother Karen, will haunt him long into his life with wife Deb and their son Nathan.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sOrelBaAhp7DZbPTivDwKEyPslC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/gJOpHgHa37qnglH3dL9g63iztky.jpg",
+        "year": 2003
+      },
+      {
+        "id": "125053-tv",
+        "tmdbId": "125053",
+        "isTv": true,
+        "title": "Say Cheese",
+        "description": "Peace Photography Studio is an established but traditional studio founded 80 years ago and had 5 branches in its heyday. Now, there's only a single studio left and is managed by Pan Renyi and daughter Pan Zejia . Pan Zejia quietly helped out at the studio as she feels indebted to Pan Renyi who helped her settle a huge debt 10 years ago, and as a result, she remained single since then.\n\nKe Yuanhang is a newspaper reporter who is kind and magnanimous, although 5 years younger than Pan Zejia, a friendship soon developed. While Pan Zejia is irritable and impatient, Ke Yuanhang is gentle and caring. Their hindrances do not stop there, as Pan Renyi is constantly at loggerheads with Ke Yuanhang's mother, Hong Ziyi. Due to Pan Renyi's temperament, he does not get along with all his children, the matter is made worse when Pan Zejia's mother suddenly died in a car accident.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1X7odnGYhDwpqfkCZAvndk714ZM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5yg5tmvYBmcwNV4iYp8eRdnbGhJ.jpg",
+        "year": 2018
+      },
+      {
+        "id": "125138-tv",
+        "tmdbId": "125138",
+        "isTv": true,
+        "title": "Captain",
+        "description": "The original is an impressive sports manga featuring not heroes, but common boys, and the story depicts the growth of Sumiya 2 junior high school baseball team (the successive captains and players) in downtown Tokyo. Takao Taniguchi, who was a substitute player of the second team of Aoba Gakuin, a prestigious junior high school in the baseball world, but he transferred to Sumiya 2 and he became the captain of the baseball club. After steady training, the team try to do a final game in the regional preliminaries, against Aoba Gakuin.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nOW3Bwqygz3qpxHTcFEUJJPxRWs.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5H9KQNtVwZMrV5OHzL4XyMJ8CMs.jpg",
+        "year": 1983
+      },
+      {
+        "id": "92453-tv",
+        "tmdbId": "92453",
+        "isTv": true,
+        "title": "The Great Show",
+        "description": "Wie Dae-Han  is an ex-lawmaker and is a materialistic kind of politician. He wants to get elected as lawmaker again. One day, 18-year-old girl Da-Jung comes to him. She tells him that he is her real father. Her mother raised four children, including Da-Jung, alone, but she died in a hit-and-run accident. Da-Jung is the only one now taking care of her 3 younger siblings. Wie Dae-Han accepts Da-Jung and her 3 younger siblings. He carries out “The Great Show” to become a lawmaker again.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1D2VTgfVvUNwOPb7Gt6CZ8gP5vp.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/wjpQc5Dy3p6RNhLICRNJXKnG0SM.jpg",
+        "year": 2019
       }
     ],
     "genre": [
-      "Crime",
       "Drama"
     ],
-    "voteAverage": 8.7,
+    "voteAverage": 6.88,
     "isIframeEmbed": true,
     "seasons": [
       {
         "season_number": 1,
         "name": "Season 1",
-        "episode_count": 13,
-        "air_date": "1999-01-10",
-        "poster_path": "https://image.tmdb.org/t/p/w500/3NsJzafk0Sp7yE9yShzQsybHw4x.jpg",
+        "episode_count": 10,
+        "air_date": "2014-10-08",
+        "poster_path": "https://image.tmdb.org/t/p/w500/cGfhftpI50oG3TNDFSQSf5xvWtX.jpg",
         "episodes": []
       },
       {
         "season_number": 2,
         "name": "Season 2",
-        "episode_count": 13,
-        "air_date": "2000-01-16",
-        "poster_path": "https://image.tmdb.org/t/p/w500/wvCOKWM1abB5CfuWKqDYeMRV3lN.jpg",
+        "episode_count": 20,
+        "air_date": "2015-10-14",
+        "poster_path": "https://image.tmdb.org/t/p/w500/cWErRWV8FxmVHBA1o8i4tv7ebgT.jpg",
         "episodes": []
       },
       {
         "season_number": 3,
         "name": "Season 3",
-        "episode_count": 13,
-        "air_date": "2001-03-04",
-        "poster_path": "https://image.tmdb.org/t/p/w500/zFuz2PgkHDr9Lx5YAEmiWbXKCio.jpg",
-        "episodes": []
-      },
-      {
-        "season_number": 4,
-        "name": "Season 4",
-        "episode_count": 13,
-        "air_date": "2002-09-15",
-        "poster_path": "https://image.tmdb.org/t/p/w500/q01fVFY7rQEMMnexa9Urv7NOdKO.jpg",
-        "episodes": []
-      },
-      {
-        "season_number": 5,
-        "name": "Season 5",
-        "episode_count": 13,
-        "air_date": "2004-03-07",
-        "poster_path": "https://image.tmdb.org/t/p/w500/p651eYM0Vd0CWDvndbMyaS0lDeD.jpg",
-        "episodes": []
-      },
-      {
-        "season_number": 6,
-        "name": "Season 6",
-        "episode_count": 21,
-        "air_date": "2006-03-12",
-        "poster_path": "https://image.tmdb.org/t/p/w500/b1P9PAUI18mb62N0DtHOd71L3CT.jpg",
+        "episode_count": 10,
+        "air_date": "2017-05-31",
+        "poster_path": "https://image.tmdb.org/t/p/w500/aZB3O48KFOnhHrapRLB7LyA3UhJ.jpg",
         "episodes": []
       }
     ],
     "iframeSrc": ""
   },
   {
-    "id": "df874a8ad2ee97ac6649de109d956ecc",
-    "trailerUrl": "https://www.youtube.com/watch?v=Ew9ngL1GZvs",
-    "tmdbId": "238",
-    "imdbId": "tt0068646",
+    "id": "70593",
+    "tmdbId": "70593",
+    "imdbId": "tt0106467",
     "isTv": false,
-    "tagline": "An offer you can't refuse.",
-    "title": "The Godfather",
-    "originalTitle": "The Godfather",
+    "tagline": "Car Accident, Automobile Racing",
+    "title": "Born to Run",
+    "originalTitle": "Born to Run",
     "originalLanguage": "en",
-    "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
-    "year": 1972,
-    "duration": 175,
-    "director": "Francis Ford Coppola",
+    "description": "An outlaw drag racer (Richard Grieco) tries to save his brother (Jay Acovone) from a crime boss (Joe Cortese) in Brooklyn.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fUkGIN4kwOTdXDiZ9QIu8tRuiUR.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/ebHFt9QDKE9LH20toQMEWin1ktF.jpg",
+    "year": 1993,
+    "duration": 97,
+    "director": "Albert Magnoli",
     "cast": [
-      "Marlon Brando",
-      "Al Pacino",
-      "James Caan",
-      "Robert Duvall",
-      "Richard S. Castellano",
-      "Diane Keaton"
+      "Richard Grieco",
+      "Jay Acovone",
+      "Shelli Lether",
+      "Joe Cortese",
+      "Christian Campbell",
+      "Brent Stait"
     ],
-    "logoUrl": "https://image.tmdb.org/t/p/w500/kysDTCloxUPJ1BILI4f8gs74fcr.png",
+    "logoUrl": "https://image.tmdb.org/t/p/w500/bPXgA6p9wc0MfhZqofMR0qhCowy.png",
     "hasLogo": true,
     "castDetails": [
       {
-        "id": "3084",
-        "name": "Marlon Brando",
-        "role": "Don Vito Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/fuTEPMsBtV1zE98ujPONbKiYDc2.jpg"
+        "id": "87295",
+        "name": "Richard Grieco",
+        "role": "Nicky Donatello",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/pYImBN56amgiIaR2EMUbcUi9CxC.jpg"
       },
       {
-        "id": "1158",
-        "name": "Al Pacino",
-        "role": "Michael Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/m8HAAjq1T75JypKk0v1FFQn4ysZ.jpg"
+        "id": "42547",
+        "name": "Jay Acovone",
+        "role": "Richie",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/ltaJoC5NUsE97f3GuP3d7BkANKJ.jpg"
       },
       {
-        "id": "3085",
-        "name": "James Caan",
-        "role": "Sonny Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/z2Lz3rtxZ7aJjzBUkCnExvo8stn.jpg"
+        "id": "177333",
+        "name": "Shelli Lether",
+        "role": "Sally",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/kp48bUJWWoPMICPTuuxV91hqboH.jpg"
       },
       {
-        "id": "3087",
-        "name": "Robert Duvall",
-        "role": "Tom Hagen",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/3tcKxC5Sc3DJ6XPDKKC2EAomEWn.jpg"
+        "id": "830",
+        "name": "Joe Cortese",
+        "role": "Phil",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/4Z2PvYRrpZ27xLKnDrtX6iRmJ3e.jpg"
       },
       {
-        "id": "3086",
-        "name": "Richard S. Castellano",
-        "role": "Clemenza",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/1vr75BdHWret81vuSJ3ugiCBkxw.jpg"
+        "id": "19225",
+        "name": "Christian Campbell",
+        "role": "Jamie",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/vRZvOyWcbiIJai5hGZRFDG7222F.jpg"
       },
       {
-        "id": "3092",
-        "name": "Diane Keaton",
-        "role": "Kay Adams",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/A8B3BsFgbmw2WEmJuQX38qeU9eR.jpg"
+        "id": "27127",
+        "name": "Brent Stait",
+        "role": "Raymond",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/qA9VbhVk3lqPsEOfshXlvGlai1y.jpg"
       },
       {
-        "id": "3094",
-        "name": "Talia Shire",
-        "role": "Connie Corleone Rizzi",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/oktJmlLeyYKBCWPNjHskDwAfjct.jpg"
+        "id": "116573",
+        "name": "Martin Cummins",
+        "role": "Art",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/gnc1YUrHiYciRWB4ZCJFk9boAHg.jpg"
       },
       {
-        "id": "3095",
-        "name": "Gianni Russo",
-        "role": "Carlo Rizzi",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/jfeGnQfXMzKXsuSPm9oTxm6FOuz.jpg"
+        "id": "558940",
+        "name": "Wren Roberts",
+        "role": "Tattoo",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/1rWQKRgBaEUuLoKVqWJX8zwGNx7.jpg"
       },
       {
-        "id": "3088",
-        "name": "Sterling Hayden",
-        "role": "Captain McCluskey",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/dCTe6BsGSp9QTcva2Pz4wbxxYMY.jpg"
+        "id": "50094",
+        "name": "Ken Kirzinger",
+        "role": "Torch",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/h9PfH9SP4gO7H7RPEpLvQWLY3zW.jpg"
       },
       {
-        "id": "3142",
-        "name": "John Marley",
-        "role": "Jack Woltz",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/xyzwd0CiBjXfowH3HcPhvuWcV5B.jpg"
+        "id": "25877",
+        "name": "Roger Cross",
+        "role": "Roscoe",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/p3B3Ex5PqNaTXIcdiYe8Ww5vIXi.jpg"
       },
       {
-        "id": "3090",
-        "name": "Richard Conte",
-        "role": "Barzini",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/bDegodf4dYGXMejdm4T6XgOJwlr.jpg"
+        "id": "52703",
+        "name": "A.C. Peterson",
+        "role": "Pitts",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hS5aFiAjJscsuJbxcxh2lmj5IF.jpg"
       },
       {
-        "id": "3091",
-        "name": "Al Lettieri",
-        "role": "Sollozzo",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/fE5mEWPkkVJlCji0EoKht8PYw89.jpg"
+        "id": "37431",
+        "name": "John Novak",
+        "role": "Baskin",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/xh8EyWCDggvZkyAlNGsTvH6KarE.jpg"
       },
       {
-        "id": "3093",
-        "name": "Abe Vigoda",
-        "role": "Sal Tessio",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/luWKPNb58IgJ2ovrtgPAzHGLLYL.jpg"
+        "id": "118816",
+        "name": "James Crescenzo",
+        "role": "Dennis",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/um2bVGZNAdnLfXTuW4eix4O6WAK.jpg"
       },
       {
-        "id": "3096",
-        "name": "John Cazale",
-        "role": "Fredo Corleone",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/41wXX1FBalyIuf5eaA4S43Y8IfZ.jpg"
+        "id": "75529",
+        "name": "Suzy Joachim",
+        "role": "Woman at Bar",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/jskeqLKa3diJFvOhyotzSgwU88g.jpg"
       },
       {
-        "id": "3143",
-        "name": "Rudy Bond",
-        "role": "Cuneo",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/bd3YONpGsvQrpz6MkhsqsiPSaOD.jpg"
+        "id": "1526463",
+        "name": "Veronica Lorenz",
+        "role": "Bride",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/sZAvRKpMwfYaFFvRG2gfPz3U36Z.jpg"
       },
       {
-        "id": "3144",
-        "name": "Al Martino",
-        "role": "Johnny Fontane",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/jrxnZxAOBVXZaDr9r0nYpMnQwiU.jpg"
+        "id": "74361",
+        "name": "Venus Terzo",
+        "role": "Assistant",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/pzDAljgejPs0lieYRE8dGPt3Xdl.jpg"
       }
     ],
     "similar": [
       {
-        "id": "1520193",
-        "tmdbId": "1520193",
+        "id": "5920",
+        "tmdbId": "5920",
         "isTv": false,
-        "title": "Wasted",
-        "description": "A low-level hitman Ceasar Rodriguez wakes up in the passenger seat of a blood-soaked car with no memory of how he got there. Beside him, the driver is dead. The streets of Liberty City are empty, but his sins are not. Haunted by visions of the people he’s killed — and the person he used to be — he stumbles through a night filled with paranoia, betrayal, and bloody flashbacks. Each clue he uncovers leads him deeper into a conspiracy that may or may not be real. He sees faces from his past. Hears voices that aren't there. Fights enemies he can't prove exist.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/pgoSKVU589orB5IzPm37q1s6dyP.jpg",
+        "title": "Le Mans",
+        "description": "Filmed during the annual 24-hour endurance race at Le Mans, Michael Delaney is a Porsche driver haunted by the memory of an accident at the previous year's race in which a competing driver was killed. Delaney also finds himself increasingly infatuated with the man's widow.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/45lMKp75PCDuTS4Or8B48FehY1z.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/ruIjq7TYVsy83Wo9Arb7rWjR1EU.jpg",
+        "year": 1971
+      },
+      {
+        "id": "10572",
+        "tmdbId": "10572",
+        "isTv": false,
+        "title": "Michel Vaillant",
+        "description": "Michel Vaillant is # 1 of pilots, undisputed champion in rallying in all circuits in the world. His success arouses admiration and envy. Ruth Wong, director of Team Leader, is determined to break his streak and avenge the memory of his father, founder of Leader. She is capable of anything to achieve her goal.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/6jBneaCmyN8gvgtUUUMkoTmmzqa.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/gjeCuv8B7i0saVy1Ftrjgc9Np0B.jpg",
+        "year": 2003
+      },
+      {
+        "id": "10477",
+        "tmdbId": "10477",
+        "isTv": false,
+        "title": "Driven",
+        "description": "Talented rookie race-car driver Jimmy Bly has started losing his focus and begins to slip in the race rankings. It's no wonder, with the immense pressure being shoveled on him by his overly ambitious promoter brother as well as Bly's romance with his arch rival's girlfriend Sophia. With much riding on Bly, car owner Carl Henry brings former racing star Joe Tanto on board to help Bly. To drive Bly back to the top of the rankings, Tanto must first deal with the emotional scars left over from a tragic racing accident which nearly took his life.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8tJ4Ya8yEyxCMihDumEyvwvUuLB.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/rODTjAT8q1u4ZXIVTCwsBbZo3EE.jpg",
+        "year": 2001
+      },
+      {
+        "id": "1386",
+        "tmdbId": "1386",
+        "isTv": false,
+        "title": "C'était un rendez-vous",
+        "description": "A high-speed drive through the streets of Paris.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xRa1Vs1z2FXmewlLWIM3ZMQilHl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/4lw52AgWNADFkdU3VSRvFK4TPr6.jpg",
+        "year": 1976
+      },
+      {
+        "id": "34652",
+        "tmdbId": "34652",
+        "isTv": false,
+        "title": "Drive a Crooked Road",
+        "description": "A mechanic gets caught up with the mob when he falls for a gangster's girlfriend.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/pdwuPI6KdFFyy2cl22ESucnRmFq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/sLeFt0ndJCPSoq9QsPWvOG3je0z.jpg",
+        "year": 1954
+      },
+      {
+        "id": "680570",
+        "tmdbId": "680570",
+        "isTv": false,
+        "title": "1320 video - Texas Streets 2013",
+        "description": "Each year in the spring there is a phenomenon that occurs just north of the border... For four days, hundreds of the nation's fastes and most powerful street-raced cats converge in the city of Huston to partake in what has become THE craziest street race event IN THE WORLD. Once the sun sets, Texas Streets are overrun by 1000-plus horsepower street machines that are out to prove a point. Packs of 30-60 cars venture out on the long flat, wide highways and street race for up to 7 hours every night! Texas Streets is the first movie of its kind to compile all of the best street racing from the weekend into one video. You'll see 1500+hp twin turbo Lamborghinis, a 1700hp Corvette, 1400_hp GT-Rs, 1200+hp Supras, and many other monsters all featured in this video. Watch over 150 street races between these beasts, at times reaching speed over 200 MPH!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/csCfFcZ3xQn95K55gKcQW0eSofA.jpg",
         "backdropUrl": "",
-        "year": 2012
+        "year": 2013
       },
       {
-        "id": "743232",
-        "tmdbId": "743232",
+        "id": "96721",
+        "tmdbId": "96721",
         "isTv": false,
-        "title": "Tigers",
-        "description": "Super-talented footballing prodigy Martin is bought by top club Inter Milan, aged just 16. It’s the chance of a lifetime – but at what price?",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/hEw0bwwrBUWbSBMcyDL4IqHDAQg.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/d7kwGh1SJZKv6oWqpIkEG6AEXNp.jpg",
-        "year": 2021
+        "title": "Rush",
+        "description": "In the 1970s, a rivalry propels race car drivers Niki Lauda and James Hunt to fame and glory — until a horrible accident threatens to end it all.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/95BDrWmcfJDEa2WCfjmLgi67jhi.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/D3eDUNEzJPBDG3TCJcR7RyRgTA.jpg",
+        "year": 2013
       },
       {
-        "id": "121642",
-        "tmdbId": "121642",
+        "id": "42621",
+        "tmdbId": "42621",
         "isTv": false,
-        "title": "Twice Born",
-        "description": "Full-throttle melodrama about an ill-starred romance set against the backdrop of the siege of Sarajevo. A mother brings her teenage son to Sarajevo, where his father died in the Bosnian conflict years ago.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/uQ0ERG8dy3kHVP8aVlDFv448Gc7.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/uzr5OCSv6DnRWRDwq9btxdUNMNY.jpg",
-        "year": 2012
+        "title": "Winning",
+        "description": "Frank Capua is a rising star on the race circuit who dreams of winning the big one - the Indianapolis 500. But to get there he runs the risk of losing his wife Elora to his rival, Luther Erding, and strains the relationship with his stepson.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ynLLloFYEMjhxxpuGZTujYJg7yi.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/wuZAk5sawu4sod4u2kf7f1fTLju.jpg",
+        "year": 1969
+      }
+    ],
+    "genre": [
+      "Action",
+      "TV Movie",
+      "Thriller"
+    ],
+    "voteAverage": 7.8,
+    "isIframeEmbed": true,
+    "seasons": [],
+    "iframeSrc": "https://111movies.net/movie/70593"
+  },
+  {
+    "id": "70593-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=Bmhqw0F3q-g",
+    "tmdbId": "70593",
+    "imdbId": "70593",
+    "isTv": true,
+    "tagline": "",
+    "title": "Kingdom",
+    "originalTitle": "킹덤",
+    "originalLanguage": "ko",
+    "description": "In this zombie thriller set in Korea's medieval Joseon dynasty which has been defeated by corruption and famine, a mysterious rumor of the king’s death spreads, as does a strange plague that renders the infected immune to death and hungry for flesh. The crown prince, fallen victim to a conspiracy, sets out on a journey to unveil the evil scheme and save his people.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/AsICtiVtz4icMQQRwDvOzfaTzjK.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/jRhJlV4inm8wAAqTeHUX5HpjZcc.jpg",
+    "year": 2019,
+    "duration": 45,
+    "director": "Kim Eun-hee",
+    "cast": [
+      "Ju Ji-hoon",
+      "Ryu Seung-ryong",
+      "Bae Doona",
+      "Kim Sang-ho",
+      "Kim Sung-kyu",
+      "Jun Seok-ho"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/vTO91EtVCNXl2y0jE1UxQkkMwdv.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "150125",
+        "name": "Ju Ji-hoon",
+        "role": "Crown Prince Chang",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/7PYfUrBBXhYv5PIsTalJhjbRteg.jpg"
       },
       {
-        "id": "121674",
-        "tmdbId": "121674",
-        "isTv": false,
-        "title": "Great Expectations",
-        "description": "Orphan Pip discovers through lawyer Mr. Jaggers that a mysterious benefactor wishes to ensure that he becomes a gentleman. Reunited with his childhood patron, Miss Havisham, and his first love, the beautiful but emotionally cold Estella, he discovers that the elderly spinster has gone mad from having been left at the altar as a young woman, and has made her charge into a warped, unfeeling heartbreaker.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/z9eLxcsNOtoq4dTMDJwr79QR3xd.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/55zGKBnKQJ4JV7fZyXE2XsDAuJS.jpg",
-        "year": 2012
+        "id": "227638",
+        "name": "Ryu Seung-ryong",
+        "role": "Cho Hak-ju",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/p0LjCRqVqgTyvlZScMmsVFCnTIt.jpg"
       },
       {
-        "id": "1323752",
-        "tmdbId": "1323752",
-        "isTv": false,
-        "title": "American Prom",
-        "description": "American Prom brings spirituality into the center of a modern day coming of age story. Trinity enters high school and finds herself mixed up with the \"in-crowd\" tempted by popularity, parties and peer pressure. As prom approaches and temptation grows, Trinity must decide her path.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/n0qhv7mBJT51OFfT4Nwj3glvDDn.jpg",
+        "id": "21688",
+        "name": "Bae Doona",
+        "role": "Seo-bi",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/lCL08q20zkqHcLLLZQRlJfG09P4.jpg"
+      },
+      {
+        "id": "123820",
+        "name": "Kim Sang-ho",
+        "role": "Moo-yeong",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/jGo5mG7OEj9LAGh55UPEwL4cEQl.jpg"
+      },
+      {
+        "id": "2159394",
+        "name": "Kim Sung-kyu",
+        "role": "Yeong-sin",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/72FPYyk1Zxzr3L2KZhjMmAVchfK.jpg"
+      },
+      {
+        "id": "1199744",
+        "name": "Jun Seok-ho",
+        "role": "Cho Beom-pal",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/xMUCuermXrjVNOWDV3gIfpP5yhF.jpg"
+      },
+      {
+        "id": "1872378",
+        "name": "Kim Hye-jun",
+        "role": "Queen Cho",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/9ptrnFQm0uBBogrHLmRb91usDo0.jpg"
+      },
+      {
+        "id": "564844",
+        "name": "Park Byung-eun",
+        "role": "Min Chi-rok",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/8lDiEHjbBxPD8VNu1kGifMXhPUn.jpg"
+      },
+      {
+        "id": "552067",
+        "name": "Kim Tae-hun",
+        "role": "Lee Kang-yoon",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/8mTd6HpLDFK2cwiWhoyZO78A5n1.jpg"
+      },
+      {
+        "id": "83637",
+        "name": "Huh Joon-ho",
+        "role": "Ahn Hyeon",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/t6wAW0pdbycCERKMdl4VF2Sm6E3.jpg"
+      },
+      {
+        "id": "1875711",
+        "name": "Ahn Eun-jin",
+        "role": "Moo Young’s wife",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cZDp8Qim5tmUN9gQxPkBOE5MS8w.jpg"
+      },
+      {
+        "id": "2931936",
+        "name": "Moon Dong-hyeok",
+        "role": "Yu Saeng",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/jvBYQNKI31wre5AjD2m25bNsMzn.jpg"
+      },
+      {
+        "id": "2519094",
+        "name": "Ji Hyun-jun",
+        "role": "[Commander]",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/z7j81jcOXywrfeCDnaBSybg6ebJ.jpg"
+      },
+      {
+        "id": "2878483",
+        "name": "Ha Min",
+        "role": "Queen Chief Court Lady",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/e9uTY6GfiWuFrAWaZjxCkaswjWF.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "35389-tv",
+        "tmdbId": "35389",
+        "isTv": true,
+        "title": "The Great Merchant",
+        "description": "This drama is based on a real life figure Kim Man-deuk who was living in Jeju Island. She goes through a lot of changes in her life; at first she becomes a Gisaeng but turned herself into a merchant, and then becomes one of the biggest philanthropists in Joseon Dynasty. Man-deuk gets adopted by Granny at a young age. With great efforts, she becomes a Gisaeng who has outstanding talents in various areas. However, she gives up everything and runs away with her lover Jeong Hong-soo. She gets caught and sends to the transitory wards for epidemics for one year. When she came out from the wards, she starts to take care of the Gisaengs who are suffering from illness. Man-deuk goes into a business and restores the business ethics in Jeju. Meanwhile, Moon-sun, who used to be a friend of Man-deuk, feels a sense of inferiority and competes with Man-deuk’s business.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/q6ubyDYt7RVvITk2rwwzv9m2Ahg.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/AaywrSWLNgEQQVIf5MyJp2cdMTp.jpg",
+        "year": 2010
+      },
+      {
+        "id": "64099-tv",
+        "tmdbId": "64099",
+        "isTv": true,
+        "title": "War and Peace",
+        "description": "The love story of young Countess Natasha Rostova and Count Pierre Bezukhov is interwoven with the Great Patriotic War of 1812 against Napoleon's invading army.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/e9uqJMuJXTlqgHrzmMjzhUsw7nI.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/dRz83kCWj4yu8SP7AbSzyvUO7rK.jpg",
+        "year": 2016
+      },
+      {
+        "id": "282614-tv",
+        "tmdbId": "282614",
+        "isTv": true,
+        "title": "Silver Knife",
+        "description": "Season 3 of the Women of Legend series. A drama about the cruelties borne by a childless wife in the Joseon Dynasty at the hands of her in-laws.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/oZGpGUdzQabAe7QfvsaP8zVJLYr.jpg",
         "backdropUrl": "",
-        "year": 2024
+        "year": 1982
       },
       {
-        "id": "1323784",
-        "tmdbId": "1323784",
-        "isTv": false,
-        "title": "Bad Influence",
-        "description": "An ex-con gets a fresh start when hired to protect a wealthy heiress from a stalker — but their chemistry is hard to resist as they grow closer.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/3xVWCNDAgr01G1Lkjd7F9sAGOc4.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/zXUxcXnBPHF1cD0IHi4KUpsNvF4.jpg",
+        "id": "282631-tv",
+        "tmdbId": "282631",
+        "isTv": true,
+        "title": "She May Not Be Cute",
+        "description": "Ambitious fashion magazine editor Xia Anran teams up with enigmatic dessert chef Lin Hao to create a new column. As their partnership deepens, romantic tensions and professional rivalries test their bond. Together, they navigate the challenges of love and ambition in a world of high stakes and hidden truths.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/6f5MtvqBFXzoG41kqkHD30Ynm9u.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/7DQheeACBxOQXKPCBYPkU2lqPgS.jpg",
         "year": 2025
       },
       {
-        "id": "806945",
-        "tmdbId": "806945",
-        "isTv": false,
-        "title": "Posel úsvitu",
-        "description": "A biographical film about a Czech mechanic and designer who was the first in the Czech lands to construct a steam car.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/8uhT465JnjlcaZlTIIkUHEEYY8R.jpg",
-        "backdropUrl": "",
-        "year": 1951
+        "id": "64150-tv",
+        "tmdbId": "64150",
+        "isTv": true,
+        "title": "Underground",
+        "description": "A group of slaves plan a daring 600-mile escape from a Georgia plantation. Along the way, they are aided by a secret abolitionist couple running a station on the Underground Railroad as they attempt to evade the people charged with bringing them back, dead or alive.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/hBgYiAHqZBY0ypGKMd8NzYbEwnq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/goXb9BbWZzdaAfehXlTPJ6y6kYq.jpg",
+        "year": 2016
       },
       {
-        "id": "1369801",
-        "tmdbId": "1369801",
-        "isTv": false,
-        "title": "I Am The Immaculate Conception",
-        "description": "A group of eminent experts, including the Marian Fathers, analyze Greek texts of the Holy Scripture, revelations and the dogma of the Immaculate Conception. The result is a new interpretation of passages of the Scripture revealing Mary, the Mother of Christ, and her extraordinary role in the divine plan for the salvation of the world.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/3u5qjgPbRknDLbsRJ8NZDlNZ44G.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/tIAoufqKmutFNaAd0KTqqqBcEai.jpg",
+        "id": "64230-tv",
+        "tmdbId": "64230",
+        "isTv": true,
+        "title": "Preacher",
+        "description": "A preacher sets out on a mission to make the almighty himself confess his sin of abandoning the world. With his best friend Cassidy, an alcoholic Irish vampire, his love Tulip, a red blooded gun towing Texan, and the power of genesis, an unholy child born from an angel and a devil, Jesse gives up everything to set the world straight with its creator.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ey1WQajA25E5sFGHSApcqSWUSEc.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/bENaaAmX4d0zUYYrZyFCT1U0V86.jpg",
+        "year": 2016
+      },
+      {
+        "id": "35261-tv",
+        "tmdbId": "35261",
+        "isTv": true,
+        "title": "Le Grand Charles",
+        "description": "Le Grand Charles was a 2006 French TV-drama on the life of Charles de Gaulle from 1939 to 1959, written and directed by Bernard Stora. De Gaulle was played by Bernard Farcy, Winston Churchill by David Ryall, and Franklin D. Roosevelt by Robert Hardy. Other actors in the cast included Dominic Gould, Sam Spiegel and Jay Benedict.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/9D0C3aiTqj13OFv3j3qElJpV4aO.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/mUtg0TAqQcjVaabCdh384oZlI0Q.jpg",
+        "year": 2006
+      },
+      {
+        "id": "4331-tv",
+        "tmdbId": "4331",
+        "isTv": true,
+        "title": "Wonder Woman",
+        "description": "With the strength of Hercules, the wisdom of Athena, the speed of Mercury and the beauty of Aphrodite, she’s Wonder Woman. Beautiful Amazon princess Wonder Woman travels to 1940s America disguised as Diana Prince, assistant to handsome but trouble-prone Major Steve Trevor. Using her golden belt, which imbues her with astonishing strength, her bullet-deflecting bracelets, a golden lasso that dispels dishonesty and an invisible supersonic plane, Wonder Woman combats evil.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/7vHxWO6ahByDWzWufFL48MXaktT.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/qwPc8zjwUYTcpKWzvw7ux4cwClB.jpg",
+        "year": 1975
+      }
+    ],
+    "genre": [
+      "Drama",
+      "Mystery"
+    ],
+    "voteAverage": 8.202,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Season 1",
+        "episode_count": 6,
+        "air_date": "2019-01-25",
+        "poster_path": "https://image.tmdb.org/t/p/w500/6jwwUCfXaVMB5a4QfwCelpXh8Vg.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 2,
+        "name": "Season 2",
+        "episode_count": 6,
+        "air_date": "2020-03-13",
+        "poster_path": "https://image.tmdb.org/t/p/w500/ifQHoN9XrLS3rM63fA4ej2XgGv3.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "46437",
+    "tmdbId": "46437",
+    "imdbId": "tt0240576",
+    "isTv": false,
+    "tagline": "",
+    "title": "Hijos del viento",
+    "originalTitle": "Hijos del viento",
+    "originalLanguage": "es",
+    "description": "As part of the conquest of Mexico by the Spaniards, Rodrigo, a Spanish shipwreck falls in love with Tizcuitl, the young and beautiful Aztec daughter of Nezuhual, king of Tlacopan, powerful under the emperor Moctezuma.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/aOjxizl7pD1OFUrXVUt9PQqjpvp.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/vJT67qI4OtR5r5LgCBl1jM6JuPd.jpg",
+    "year": 2000,
+    "duration": 120,
+    "director": "José Miguel Juárez",
+    "cast": [
+      "José Sancho",
+      "Bud Spencer",
+      "Úrsula Murayama",
+      "Omar Ayala",
+      "José Antonio Barón",
+      "Milton Cortés"
+    ],
+    "logoUrl": "",
+    "hasLogo": false,
+    "castDetails": [
+      {
+        "id": "3811",
+        "name": "José Sancho",
+        "role": "Hernán Cortes",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/tN3yTjahuAQuo51EbSV9ERT4mbG.jpg"
+      },
+      {
+        "id": "18841",
+        "name": "Bud Spencer",
+        "role": "Quintero",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cVbBoKxRDFOdDKwdpRmxVazDWlE.jpg"
+      },
+      {
+        "id": "236681",
+        "name": "Úrsula Murayama",
+        "role": "Tizcuitl",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/r6Oq65QmCFr0nVmfMHPh5HlY0MR.jpg"
+      },
+      {
+        "id": "973407",
+        "name": "Omar Ayala",
+        "role": "Soldado Españoll",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cxOERxdUEhFG1hdhoGPB6Xw4ryv.jpg"
+      },
+      {
+        "id": "236685",
+        "name": "José Antonio Barón",
+        "role": "Capitan Sandoval",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/pO9ohaBPbCiW8hsSSVk4h7Z7wq.jpg"
+      },
+      {
+        "id": "236688",
+        "name": "Milton Cortés",
+        "role": "Mixcoac",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/soMF7ggLSnbl2G5yc2eYxfJcQv3.jpg"
+      },
+      {
+        "id": "129453",
+        "name": "Carlos Fuentes",
+        "role": "Rodrigo",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/imTK8mSEt63yHt5snbxvwnUM9dC.jpg"
+      },
+      {
+        "id": "27468",
+        "name": "Blanca Marsillach",
+        "role": "Zaabai",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/2GPWghqT6pNfs3lfoGSJx28V0Of.jpg"
+      },
+      {
+        "id": "236686",
+        "name": "Manuel Ojeda",
+        "role": "Moctezuma",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/2hSuOIg4QpdfsCFfk60okOLocWe.jpg"
+      },
+      {
+        "id": "66146",
+        "name": "Anilú Pardo",
+        "role": "Malinalli",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cp6CQuKVvITGta1IJlS3zxG5CEN.jpg"
+      },
+      {
+        "id": "104389",
+        "name": "Rafael Velasco",
+        "role": "Mujer-Serpiente",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/fIsrGJHk0Khjf1ANOTmOIXY19J8.jpg"
+      },
+      {
+        "id": "66794",
+        "name": "Carlos Reig-Plaza",
+        "role": "Alvarado",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/tDcpirTcSNEGbSg7ajyMxcWpP4S.jpg"
+      },
+      {
+        "id": "1071846",
+        "name": "José Manuel Poncelis",
+        "role": "Chaman",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/dyPXhHV2iBc0IoG6KHX0dyV1FdD.jpg"
+      }
+    ],
+    "similar": [],
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Romance"
+    ],
+    "voteAverage": 4.114,
+    "isIframeEmbed": true,
+    "seasons": [],
+    "iframeSrc": "https://111movies.net/movie/46437"
+  },
+  {
+    "id": "46437-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=Rx7K2K4BzUQ",
+    "tmdbId": "46437",
+    "imdbId": "46437",
+    "isTv": true,
+    "tagline": "",
+    "title": "Kingdom",
+    "originalTitle": "キングダム",
+    "originalLanguage": "ja",
+    "description": "In the Warring States period, young orphan Xin vows to aid King Zheng of Qin in his quest to unify China by becoming a general himself.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/dehuJJkKo50nYvCYppigrWejqLe.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/5CGM0vQpq0QBcslUXqoo0unlGPZ.jpg",
+    "year": 2012,
+    "duration": 25,
+    "director": "Unknown",
+    "cast": [
+      "Masakazu Morita",
+      "Jun Fukuyama",
+      "Rie Kugimiya",
+      "Yoko Hikasa",
+      "Yoshimasa Hosoya",
+      "Hirofumi Nojima"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/njxcMoizy5vstTcBK9Sm4BnYaZB.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "78402",
+        "name": "Masakazu Morita",
+        "role": "Li Xin (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/2INsHYbx9gEhhzXPHdqBDdvHjFt.jpg"
+      },
+      {
+        "id": "131563",
+        "name": "Jun Fukuyama",
+        "role": "Ei Sei (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/eT9eloyIaIkTvTqMmpcsAleP2hM.jpg"
+      },
+      {
+        "id": "83928",
+        "name": "Rie Kugimiya",
+        "role": "Karyou Ten (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/xHonhNFpTpz9zCVXLAF7D4OuHLv.jpg"
+      },
+      {
+        "id": "1072774",
+        "name": "Yoko Hikasa",
+        "role": "Kyoukai (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/mP3bj0s1gqJ6tCKFLhu4b1CkJj7.jpg"
+      },
+      {
+        "id": "1253008",
+        "name": "Yoshimasa Hosoya",
+        "role": "Wang Ben (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/lUR5oN1LrqGgp25IOcI1qOH1Ud5.jpg"
+      },
+      {
+        "id": "1221026",
+        "name": "Hirofumi Nojima",
+        "role": "Meng Tian (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/sKj8nGVxv4hci3xuZgiFYPZvaX5.jpg"
+      },
+      {
+        "id": "1222060",
+        "name": "Kenyu Horiuchi",
+        "role": "Wang Jian (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/qIsrjSbtdhmmUdd3xvpDHNWRuJp.jpg"
+      },
+      {
+        "id": "210350",
+        "name": "Mie Sonozaki",
+        "role": "Yang Duanhe (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/iYnpn1e7Ba1oMK8ZdgAvqzxng9e.jpg"
+      },
+      {
+        "id": "81363",
+        "name": "Kentaro Ito",
+        "role": "Huan Yi (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/fIoreUBVEWcRLZanJlHUSQAjpeE.jpg"
+      },
+      {
+        "id": "9706",
+        "name": "Toshiyuki Morikawa",
+        "role": "Li Mu (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hrzGBe4nokgkBNFekNo5hlXB2Bv.jpg"
+      },
+      {
+        "id": "550663",
+        "name": "Koji Ishii",
+        "role": "Ji Hui (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/ao882dlS1ERrar6iq0qedBVBAhH.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "28460-tv",
+        "tmdbId": "28460",
+        "isTv": true,
+        "title": "Magical Idol Pastel Yumi",
+        "description": "Yumi Hanazono loves flowers. She does not perform well in school, but loves to draw, and wants to be a manga artist. Her family runs a flower shop so she has grown up with a floral appreciation. Yumi is a very good artist, but does not always use the best judgement when she chooses her subjects. On the day of the Flower Festival, she entertains the other children by drawing portraits of the Lady Fukurokouji on the walls of her mansion. An angry Fukurokouji makes her clean the entire wall, but as she is doing so, she sees Fukurokouji about to destroy a dandelion. After saving it, she replants it in a tulip field. To her surprise, it starts speaking to her. The voices belong to Kakimaru and Keshimaru, two flower elves who have come to the Human World to grant Yumi special powers as a reward for her kindness.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vC6JjhN79tnu0jvPvFGAbZKeRHh.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/o6m0pz9n67ziDNSY790FsODzwfY.jpg",
+        "year": 1986
+      },
+      {
+        "id": "28442-tv",
+        "tmdbId": "28442",
+        "isTv": true,
+        "title": "Saber Marionette R",
+        "description": "Jr., the heir of Romana and his battle sabers Cherry and Lime, who have girl circuits are enjoying their peaceful life in Romana. Suddenly, the evil Star-Face and his sexadolls attack Romana in order to take over so Star-Face can become the next High Official. In order to truly become the next High Official and ruler of Romana, he must first eliminate Jr. This begins a battle for, not only Jr.'s life, but for all of Romana. Also see: Saber Marionette J",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/dBhqOWZy6JqjEr5BDRVwEn9COKM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/w7yWVgUQ0csz42uECtJIGtO2Sdu.jpg",
+        "year": 1995
+      },
+      {
+        "id": "28502-tv",
+        "tmdbId": "28502",
+        "isTv": true,
+        "title": "White Album",
+        "description": "Touya Fujii is a twenty-year-old college student dating a rising singer named Yuki Morikawa. Along the way, they are faced with numerous challenges throughout the course of events at Fuji’s college. Be prepared for an exciting journey!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/u6Grq2AKqzvTQTbpG6uhHTvi5Qf.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/eKYNWVBYviuVfNB9c0e3aPaJR9U.jpg",
+        "year": 2009
+      },
+      {
+        "id": "207332-tv",
+        "tmdbId": "207332",
+        "isTv": true,
+        "title": "SAKAMOTO DAYS",
+        "description": "Once the greatest hitman of all, Taro Sakamoto retired in the name of love. But when his past catches up, he must fight to protect his beloved family.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/wRpCqsJFyKNuh5FMegNPrhzp2NF.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/blSthAPRbEOJBowdxppeQqNPRh9.jpg",
+        "year": 2025
+      },
+      {
+        "id": "207347-tv",
+        "tmdbId": "207347",
+        "isTv": true,
+        "title": "Blue Box",
+        "description": "Taiki Inomata loves badminton, but he has a long way to go before he can reach nationals. When Taiki sees upperclassman Chinatsu Kano practicing her heart out on the girls’ basketball team, he falls for her hard. After an unexpected turn of events brings the two closer together, sports might not be the first thing on their minds anymore!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sN3TuYevEPWxZhwcp6I2PJRW1jl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/8p39Ud6ZKMixBQ7R4frg2o3idzc.jpg",
         "year": 2024
+      },
+      {
+        "id": "124843-tv",
+        "tmdbId": "124843",
+        "isTv": true,
+        "title": "Nozaki Shuhei President of Bank",
+        "description": "",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mF7sLl2z6WP44ia78uBkPij2LQO.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/olbcYJ2o3MhjiAeNCSZqqoKsJp3.jpg",
+        "year": 2020
+      },
+      {
+        "id": "124928-tv",
+        "tmdbId": "124928",
+        "isTv": true,
+        "title": "Yoshimaho: Yoshi Yoshi Magic",
+        "description": "The protagonist is overworked and always exhausted by daily life, and yearns for comfort and solace. They want to be kindly praised and healed. They think, \"Children have it nice because they're spoiled.\" The protagonist wants to escape from reality, and so they go to a store and purchase a blue pacifier. When they put the pacifier in their mouth, it emits a strange light, and it magically transports the protagonist to another world. The protagonist is now in the body of a five-year-old child, and spends time at a day care center where there are many handsome men who are caregivers there. The caregivers use the \"There, There Magic\" to soothe the children at the day care center.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/wM2K783YH12OnG9ej9e8mVslhAb.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/7u5OrNdmJso53GgnLPX4TMFNMJ3.jpg",
+        "year": 2021
+      },
+      {
+        "id": "92090-tv",
+        "tmdbId": "92090",
+        "isTv": true,
+        "title": "Blade of the Immortal",
+        "description": "Manji is a crass, violent samurai with a special ability: he cannot die. Cursed with immortality by the nun Yobikuni as punishment for his ruthless deeds, he has grown weary of his ageless life. The only way to lift the curse is to slay 1,000 evil men. So Manji wanders Japan, shedding the blood of the wicked on his quest to finally die.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/cylJC7IgsWxvAboT6LLgvHWLJgk.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/pub9SbIQlKcdrcasZarZR405gOb.jpg",
+        "year": 2019
+      }
+    ],
+    "genre": [
+      "Action & Adventure",
+      "Animation",
+      "Drama"
+    ],
+    "voteAverage": 7.667,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Season 1",
+        "episode_count": 38,
+        "air_date": "2012-06-04",
+        "poster_path": "https://image.tmdb.org/t/p/w500/w6WluKCKPTrBk4NOAhcw7HVZPXf.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 2,
+        "name": "Season 2",
+        "episode_count": 39,
+        "air_date": "2013-06-08",
+        "poster_path": "https://image.tmdb.org/t/p/w500/8JxmmR0Ev59BdEAm2IrnjDW6Rpy.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 3,
+        "name": "Season 3",
+        "episode_count": 26,
+        "air_date": "2020-04-06",
+        "poster_path": "https://image.tmdb.org/t/p/w500/yTeMcsxNXLGqUMyprMY6jz3L4Bl.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 4,
+        "name": "Season 4",
+        "episode_count": 26,
+        "air_date": "2022-04-10",
+        "poster_path": "https://image.tmdb.org/t/p/w500/n5wf5sIRc6JxjC9WgawGYhImcad.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 5,
+        "name": "Season 5",
+        "episode_count": 13,
+        "air_date": "2024-01-14",
+        "poster_path": "https://image.tmdb.org/t/p/w500/uRF6SWLjtTspuBj9gqXKDxk22jz.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 6,
+        "name": "Season 6",
+        "episode_count": 14,
+        "air_date": "2025-10-05",
+        "poster_path": "https://image.tmdb.org/t/p/w500/eT1uX7OJ6ByEMQPcCrXiNzD4wDs.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "299939-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=gYTzF1vna40",
+    "tmdbId": "299939",
+    "imdbId": "299939",
+    "isTv": true,
+    "tagline": "",
+    "title": "Monster: The Lizzie Borden Story",
+    "originalTitle": "Monster: The Lizzie Borden Story",
+    "originalLanguage": "en",
+    "description": "Trapped in a cruel Victorian-era household, Lizzie Borden kills her parents in a gory ax murder that shocks the nation.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/57XScX1aYtKi1LvHYFQLPUxVhTG.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/gaew60NXUxok3Vmls7gkAT7lYW0.jpg",
+    "year": 2026,
+    "duration": 45,
+    "director": "Ian Brennan",
+    "cast": [
+      "Ella Beatty",
+      "Vicky Krieps",
+      "Sarah Paulson",
+      "Charlie Hunnam",
+      "Rebecca Hall",
+      "Billie Lourd"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/uTQrN2E9ulajgC6nN3JbjjSIjFl.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "4481381",
+        "name": "Ella Beatty",
+        "role": "Lizzie Borden",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/eLg8P9TdW0YO1h04A6tCwNdJc2F.jpg"
+      },
+      {
+        "id": "1080195",
+        "name": "Vicky Krieps",
+        "role": "Bridget Sullivan",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/9laK3w40qBnE5UY41wJfnUAYMmC.jpg"
+      },
+      {
+        "id": "34490",
+        "name": "Sarah Paulson",
+        "role": "Aileen Wuornos",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/tJnhBV516yrekR3hTDUw15UMbxS.jpg"
+      },
+      {
+        "id": "56365",
+        "name": "Charlie Hunnam",
+        "role": "Andrew Borden",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/5WIDrnY25Ps2RYu0zIzHSVuSt5n.jpg"
+      },
+      {
+        "id": "15556",
+        "name": "Rebecca Hall",
+        "role": "Abby Borden",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/coC58ANiDbqRIyle5zEl9QDektf.jpg"
+      },
+      {
+        "id": "1399531",
+        "name": "Billie Lourd",
+        "role": "Emma Borden",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/1u8bZL6ZXu5iDbPO3Z0Spetyt34.jpg"
+      },
+      {
+        "id": "550552",
+        "name": "Jessica Barden",
+        "role": "Nance O'Neil",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/yff76hxi2Y2yjezWZQ7jAWmbeGk.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "98149-tv",
+        "tmdbId": "98149",
+        "isTv": true,
+        "title": "Murdered by Morning",
+        "description": "True crime documentary series showcasing stories where individuals are unaware that the night in question will be their last. From a girls'-night-out gone bad to an overnight shift at a local toy store that takes an unexpected turn, the series recounts how an average night can quickly turn into a nightmare.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/cNasb3EvhXh3Mks5nB0Uj1TGEVg.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5CFzZWPh4W3xek9OuNyUB7OzWPm.jpg",
+        "year": 2020
+      },
+      {
+        "id": "64093-tv",
+        "tmdbId": "64093",
+        "isTv": true,
+        "title": "No Second Chance",
+        "description": "A doctor searching frantically for her missing baby daughter finds herself tangled in a web of ruthless criminals, suspicious cops and dark secrets.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2G6Or4qz5xZfuwCw13KRVOF4qk0.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/vGM1h8ilr3h8j4qR99VjkAnoPV5.jpg",
+        "year": 2015
+      },
+      {
+        "id": "64124-tv",
+        "tmdbId": "64124",
+        "isTv": true,
+        "title": "The Principal",
+        "description": "When history teacher Matt Bashir is promoted to Principal of a notoriously violent Boys' school in Sydney's south-west, his radical approach brings him into conflict and leaves his personal life dangerously exposed. But just when he seems to be making progress, a 17-year-old student is found dead on school grounds.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xLY5IMreEnBl7mnvVQqf9z0TxpN.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/w3XJNQs6r8JXN03KqRVcJq9frfZ.jpg",
+        "year": 2015
+      },
+      {
+        "id": "64158-tv",
+        "tmdbId": "64158",
+        "isTv": true,
+        "title": "River",
+        "description": "Respected police officer John River, a gifted cop with a troubled mind, struggles to come to terms with the recent loss of a colleague, and chases a suspect across London - with tragic consequences. Now at odds with the authorities, River ends up in a precarious position as he seeks to bring closure to the mother of murdered teenager, who blames him for failing to keep his promise.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fhiVcu9RA3MEVQtMowwQUsHJfJR.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/sryK4G2U27mWAiuKk7v63uSbmto.jpg",
+        "year": 2015
+      },
+      {
+        "id": "310392-tv",
+        "tmdbId": "310392",
+        "isTv": true,
+        "title": "Honeymoon Se Hatya",
+        "description": "A five-part true-crime docudrama uncovers real cases where wives kill their husbands. The series dives deep into how love, control, betrayal and hidden marital fractures can lead to fatal breakdowns",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/wxi68hCKtlxg7zJSF9WWc2nUkYh.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/WP5cP2acjX45RxF2WZdBcbbjL.jpg",
+        "year": 2026
+      },
+      {
+        "id": "64174-tv",
+        "tmdbId": "64174",
+        "isTv": true,
+        "title": "Love Me If You Dare",
+        "description": "Getting inside the head of a violent criminal is not easy. But Simon Bo, a brilliant criminal psychologist, has the ability to get into the minds of even the most mysterious and violent criminals. He’s a professor at The University of Maryland and works as an analyst and advisor on the police department’s most violent or difficult cases. With the help of his young assistant, Jenny Jian, Simon delves into the thoughts and intentions of the criminal mind. As the daughter of a veteran police investigator with a deep sense of justice, can Jenny help Simon open up emotionally as they work together to solve crimes?",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xfHBGNSTDxIfW7XaOpWkbzml8Ql.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fDkhbrvqSPquRGNCmURUo0WQcTn.jpg",
+        "year": 2015
+      },
+      {
+        "id": "35406-tv",
+        "tmdbId": "35406",
+        "isTv": true,
+        "title": "Rebel Highway",
+        "description": "Rebel Highway is a 1994 revival of American International Pictures, created and produced by Lou Arkoff, the son of Samuel Z. Arkoff, and Debra Hill for the Showtime network. The concept was a ten-week series of 1950s \"drive-in classic\" B-movies remade \"with a '90s edge\". Each episode shares a title with a late 1950s-early 1960s-era AIP film. However, they are not remakes; each installment is a different story from that which they are titled.\n\nThe impetus for the series, according to Arkoff was, 'what it would be like if you made Rebel Without a Cause today. It would be more lurid, sexier, and much more dangerous, and you definitely would have had Natalie Wood's top off'.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/g62Hih5WVF88uNnLZYEsSz3KwrE.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/ilPJ959l4Xvet6GUSkGYfeWonqA.jpg",
+        "year": 1994
+      },
+      {
+        "id": "35412-tv",
+        "tmdbId": "35412",
+        "isTv": true,
+        "title": "Lucky Chances",
+        "description": "Lucky Chances is a three-part 1990 television miniseries based on Jackie Collins' novels Chances (1981) and Lucky (1985), and produced by William Peters for NBC. It stars Vincent Irizarry, Nicollette Sheridan, Shawnee Smith, Alan Rosenberg, Anne-Marie Johnson, and Phil Morris.\n\nThe Santangelo family builds a casino empire in Las Vegas. After Gino's death, his daughter Lucky fights to maintain control of the business and fortune.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/eTxpw30G7WbI5NrTheUuBtb9KHr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/st5bVfSHxNPlA8tkrHbkcGvoRv7.jpg",
+        "year": 1990
       }
     ],
     "genre": [
       "Drama",
       "Crime"
     ],
-    "voteAverage": 8.687,
+    "voteAverage": 7.175,
     "isIframeEmbed": true,
-    "seasons": [],
-    "iframeSrc": "https://111movies.net/movie/238"
-  },
-  {
-    "id": "1398",
-    "trailerUrl": "https://www.youtube.com/watch?v=nFLQEuQuNKM",
-    "tmdbId": "1398",
-    "imdbId": "tt0079944",
-    "isTv": false,
-    "tagline": "There's no need to speak. You must only...concentrate and recall all your past life. When a man thinks of the past, he becomes kinder.",
-    "title": "Stalker",
-    "originalTitle": "Сталкер",
-    "originalLanguage": "ru",
-    "description": "Near a gray and unnamed city is the Zone, a place guarded by barbed wire and soldiers, and where the normal laws of physics are victim to frequent anomalies. A stalker guides two men into the Zone, specifically to an area in which deep-seated desires are granted.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/1qhOyf5C4s9ZdvY8d5JDx9DFMeT.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/6yrbWzzrPp7pwz6zHdifspJk8t3.jpg",
-    "year": 1979,
-    "duration": 162,
-    "director": "Andrei Tarkovsky",
-    "cast": [
-      "Alisa Freyndlikh",
-      "Aleksandr Kaydanovskiy",
-      "Anatoliy Solonitsyn",
-      "Mykola Hrynko",
-      "Natalya Abramova",
-      "Faime Jurno"
-    ],
-    "logoUrl": "https://image.tmdb.org/t/p/w500/1GFOyPdWDJAi9Uj4HDRWtwXZNz.png",
-    "hasLogo": true,
-    "castDetails": [
+    "seasons": [
       {
-        "id": "28079",
-        "name": "Alisa Freyndlikh",
-        "role": "Stalker's Wife",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/6r90VxIyPWE63DnBS91xeomZmIP.jpg"
-      },
-      {
-        "id": "28078",
-        "name": "Aleksandr Kaydanovskiy",
-        "role": "Stalker",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/yHYfkxQu3GVKxx5ibFmEom8qAS6.jpg"
-      },
-      {
-        "id": "8475",
-        "name": "Anatoliy Solonitsyn",
-        "role": "Writer",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/37Vb7vNMHAz1s2WI5kW4BHt0X0N.jpg"
-      },
-      {
-        "id": "1190992",
-        "name": "Mykola Hrynko",
-        "role": "Professor",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/n8lxXQbLYOed7AeowxA49yB2jyS.jpg"
-      },
-      {
-        "id": "28080",
-        "name": "Natalya Abramova",
-        "role": "Marta",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/iJOfkfk0MT3rW1iVrzp8t4pKotr.jpg"
-      },
-      {
-        "id": "1073948",
-        "name": "Faime Jurno",
-        "role": "Writer's Companion",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/kx04DJQeV2v3fdU23MeudKyTuBm.jpg"
-      },
-      {
-        "id": "85219",
-        "name": "Vladimir Zamanskiy",
-        "role": "Professor's Telephone Interlocutor (voice) (uncredited)",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/r5xiJE30c6gTd6Ps2Z5oLKAszM9.jpg"
+        "season_number": 1,
+        "name": "Miniseries",
+        "episode_count": 8,
+        "air_date": "2026-09-17",
+        "poster_path": "https://image.tmdb.org/t/p/w500/57XScX1aYtKi1LvHYFQLPUxVhTG.jpg",
+        "episodes": []
       }
     ],
-    "similar": [
-      {
-        "id": "1478298",
-        "tmdbId": "1478298",
-        "isTv": false,
-        "title": "The Guardian",
-        "description": "Jack and Ryan, two roommates and best friends, have their Christmas taken for a turn when a tiny visitor lands on their porch. Ryan welcomes the new member of the family with open arms while Jack is apprehensive about their peculiar guest.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/kuoJRSzBvG75R6vP0ofg9mhBAQN.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/tKuKP2XWwepFpEuVBntMMhtQHKX.jpg",
-        "year": 2025
-      },
-      {
-        "id": "1509677",
-        "tmdbId": "1509677",
-        "isTv": false,
-        "title": "The Lost Ones",
-        "description": "Motivated by his sister's disappearance, a man sneaks into the seemingly perfect town of Gloomshade Grove, only to reveal its chilling secret that holds the community together.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/vCdpnhHjV0BMHywiWe0kwpzDZYv.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/1CHuVyO9dXcYntSqEw282EK0RDL.jpg",
-        "year": 2026
-      },
-      {
-        "id": "114354",
-        "tmdbId": "114354",
-        "isTv": false,
-        "title": "The River and Death",
-        "description": "A useless and bloody vendetta has been going on for ages between two families in this Mexican village. Men, sons, have killed each other for generations, for a so-called conception of honor in a revenge that never ends since it is also triggered by people of the village. Now, today, there are only two sons left, one in each family. One has become a doctor in the big city and his culture is modern. The other last one - of the other family - hasn't left the village and is waiting for the doctor to come \"home\" as he plans to kill him, to settle this war on this matter of honor once and for all. And the people of the village want blood.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/h3UJBsso5jaEybQsdYiX4euau5o.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/7ClNA1wPIbRjwtEruh2KD4dtfnv.jpg",
-        "year": 1954
-      },
-      {
-        "id": "114358",
-        "tmdbId": "114358",
-        "isTv": false,
-        "title": "That Is the Dawn",
-        "description": "A generous doctor is aghast that the population of a small island is being oppressed and mistreated, but is seemingly unable to do anything about it, until the arrival of a young woman and the death of one of his friends prompts him into action.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/2gl0DRiQX3r5h3qL5uHgob5JXMU.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/tf2Tzb0Grt4qQPseKJdeXdiKafF.jpg",
-        "year": 1956
-      },
-      {
-        "id": "1369840",
-        "tmdbId": "1369840",
-        "isTv": false,
-        "title": "Straight Outta Space",
-        "description": "Best friends Amin and Mitchell work as street coaches in the lively neighbourhood of Schijndrecht. Not exactly a flashy job, but that changes when residents suddenly turn into creepy, slimy creatures. Together with a motley crew of local residents, the duo gets the ultimate chance to prove themselves.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/sD8LXNRXZD2o1ELWhjnND4V47Q9.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/r3qQ0vy1feqpeLJUbrODKPtBxw6.jpg",
-        "year": 2025
-      },
-      {
-        "id": "148430",
-        "tmdbId": "148430",
-        "isTv": false,
-        "title": "Dzhamilya",
-        "description": "In a remote Kyrgyz village, Dzhamilya follows her parents' orders when she marries a man without loving him. Then World War II breaks out and her new husband has to leave the village. While being alone, Dzhamiliya meets the returning soldier Daniyar and falls in love with him instead. Years later, their young friend Seid reminisces about the couple.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/eW4BUuZGughuPU7te69Gzhh6QZM.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/uM1m1Ez3W7XHPqVti76W0SeOkhM.jpg",
-        "year": 1969
-      },
-      {
-        "id": "415379",
-        "tmdbId": "415379",
-        "isTv": false,
-        "title": "Lullaby of Death",
-        "description": "Also known as: For My Daughter's 7th Birthday.  Many years following her mother’s suicide, Maya seeks out her father, who deserted them, for revenge. All intertwined with the investigation of journalists into local murders, the manipulations of a palmist known as the “blue moth”, and political corruption.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/YcXIyjpcBB7nVCv83EnpRF6SEv.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/5YNVPqGcHLVjaliSfkips5ERpdl.jpg",
-        "year": 1982
-      },
-      {
-        "id": "117959",
-        "tmdbId": "117959",
-        "isTv": false,
-        "title": "A Bell for Adano",
-        "description": "Major Joppolo and his men are assigned to restore order to the war-torn Italian town of Adano. He has to manage getting supplies into town without interfering with troop movements, all the while dealing with colorful citizens of the town. One of his quests is to replace the bell which orders the town's life.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/8HZyHowPUBVGSRgSJgZ2JOf2fRn.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/lb9iOvtP3YfJDfoarPhwqZOVvnB.jpg",
-        "year": 1945
-      }
-    ],
-    "genre": [
-      "Science Fiction",
-      "Drama"
-    ],
-    "voteAverage": 8.087,
-    "isIframeEmbed": true,
-    "seasons": [],
-    "iframeSrc": "https://111movies.net/movie/1398"
+    "iframeSrc": ""
   },
   {
-    "id": "1622",
-    "trailerUrl": "https://www.youtube.com/watch?v=cB4lf0huKfU",
-    "tmdbId": "1622",
-    "imdbId": "tt0415932",
-    "isTv": false,
-    "tagline": "",
-    "title": "Lemming",
-    "originalTitle": "Lemming",
-    "originalLanguage": "fr",
-    "description": "After the death of his boss's wife, a young engineer faces the sudden psychological metamorphosis of his own wife, seemingly possessed by the soul of the deceased...",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/zzGmXQnc9xsFoVM1Zqqm7r4hfBp.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/9wExS5BkPpCNnva3oXRkw1uV4xJ.jpg",
-    "year": 2005,
-    "duration": 130,
-    "director": "Dominik Moll",
-    "cast": [
-      "Laurent Lucas",
-      "Charlotte Gainsbourg",
-      "André Dussollier",
-      "Charlotte Rampling",
-      "Jacques Bonnaffé",
-      "Véronique Affholder"
-    ],
-    "logoUrl": "",
-    "hasLogo": false,
-    "castDetails": [
-      {
-        "id": "18178",
-        "name": "Laurent Lucas",
-        "role": "Alain Getty",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/dMb87uO627isT2BbCHEVbaiCL2g.jpg"
-      },
-      {
-        "id": "4273",
-        "name": "Charlotte Gainsbourg",
-        "role": "Bénédicte Getty",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/54RgTfNxhiTsaZfmCXWYLeZgMlC.jpg"
-      },
-      {
-        "id": "18177",
-        "name": "André Dussollier",
-        "role": "Richard Pollock",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/rw3J5sNFr7VYvTKAPak9d14F7R6.jpg"
-      },
-      {
-        "id": "44079",
-        "name": "Charlotte Rampling",
-        "role": "Alice Pollock",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/Htvl9mN6mlf2a18RAFzNXF3RiG.jpg"
-      },
-      {
-        "id": "5082",
-        "name": "Jacques Bonnaffé",
-        "role": "Nicolas Chevalier",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/7l3HN762NOiIaDlHuv1pntUBtWv.jpg"
-      },
-      {
-        "id": "1092022",
-        "name": "Emmanuel Gayet",
-        "role": "Le médecin de garde",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/92dHMAPT493vGj5nf1opn9xVvgc.jpg"
-      },
-      {
-        "id": "87900",
-        "name": "Nicolas Jouhet",
-        "role": "L'employé des eaux",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/9GR3b0hObPtJLsmzYi09UilOwYZ.jpg"
-      },
-      {
-        "id": "1092024",
-        "name": "Fabrice Robert",
-        "role": "Bruno",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/lKrYfflUjgUNNotjkXrj0ydkCY6.jpg"
-      }
-    ],
-    "similar": [
-      {
-        "id": "415347",
-        "tmdbId": "415347",
-        "isTv": false,
-        "title": "My Darling, What Have You Done to Me?",
-        "description": "What seemed like a naive adventure of love becomes a tragedy, since our protagonist Javier, being seduced by young friends of his uncle, discover a hidden plot: \"The Oedipus complex\". This trauma leads Javier to cause an accident in which his mother's lover dies and unfortunately herself. But the tragedy will continue.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/8hKeL2tKXV1lOcx2N6KQ4T75ja8.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/jrzG5ik6FjyUOBtmcruVBUXhKJ.jpg",
-        "year": 1979
-      },
-      {
-        "id": "97206",
-        "tmdbId": "97206",
-        "isTv": false,
-        "title": "Taboo",
-        "description": "Six young adults struggle with their personal demons while staying at a secluded mansion during a dark and stormy night where a seemingly innocent game of 'taboo' brings out their inter-most secrets which soon leads to murder.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/2eNwSS38g40j1JDoe6cCu2eoG1n.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/5OzFpCPy7wOj3s096blYMzT11Nn.jpg",
-        "year": 2002
-      },
-      {
-        "id": "354704",
-        "tmdbId": "354704",
-        "isTv": false,
-        "title": "And Winter Slow",
-        "description": "",
-        "posterUrl": "",
-        "backdropUrl": "",
-        "year": 2012
-      },
-      {
-        "id": "1098252",
-        "tmdbId": "1098252",
-        "isTv": false,
-        "title": "I Know When You Dead: Suicide Village",
-        "description": "Where Siena is experiencing depression due to being able to see someone's death sign. Even in this situation, she tries to help the people of Remetuk Village who are shrouded in a suicide mystery.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/yL1Bzdtzh8YgXkc39g5l8gEGSXb.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/n2NpmK3AyHb9ZDmoKem8IROJJh6.jpg",
-        "year": 2023
-      },
-      {
-        "id": "366617",
-        "tmdbId": "366617",
-        "isTv": false,
-        "title": "Blood Hunt",
-        "description": "Everything seems uneventful for Dean and Claire, as they head out into beautiful rural Australia for a weekend away. Their biggest problem is what to do about Claire being accepted into an interstate University. The couple come across Knuck and things start to spiral out of control. Heath and Jarred only stoke the fire and both Claire and Dean's greatest fears are made reality.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/jrVR5lJ1tRqJ1rUQLKkUBdqje9R.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/ccDvOBeLOH4UCQQth11ipqAbNSN.jpg",
-        "year": 2017
-      },
-      {
-        "id": "366502",
-        "tmdbId": "366502",
-        "isTv": false,
-        "title": "The Tip of the Iceberg",
-        "description": "A large, multinational company is badly shaken when three of its employees commit suicide. Sofía Cuevas, one of the company’s top executives, is chosen to prepare an in-house report to try and shed some light on the events.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/38mBeDyrz2wpweR49wZWpB07xAW.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/nhUXocuI3SgdTzsoqGBN80RSREH.jpg",
-        "year": 2016
-      },
-      {
-        "id": "554741",
-        "tmdbId": "554741",
-        "isTv": false,
-        "title": "Todo acaba al final del día",
-        "description": "Jéssica investigates the death of her girlfriend because she thinks it wasn't natural. Juan is trying to know if a robbery in a rural house is a fraud. Everything gets complicated and Juan's life will be in danger. While he is trying to survive, he will meet Jéssica and they will try to find the truth together.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/mn7ef1UT0d0AxMvJWTyskFuneEe.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/taUOQ235derxxrG8o1FjBbwFKg6.jpg",
-        "year": 2017
-      },
-      {
-        "id": "1509466",
-        "tmdbId": "1509466",
-        "isTv": false,
-        "title": "Black Flowers",
-        "description": "A State C.I.D. Detective is wrapped into a web of deceit and malignancy after a tragic murder takes place. With the help from a Private Investigator he attempts to uncover the truth before the death toll rises.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/e90BK2TO5qs1ge2PbRQ0b1DuSAQ.jpg",
-        "backdropUrl": "",
-        "year": 2026
-      }
-    ],
-    "genre": [
-      "Drama",
-      "Thriller",
-      "Mystery"
-    ],
-    "voteAverage": 6.467,
-    "isIframeEmbed": true,
-    "seasons": [],
-    "iframeSrc": "https://111movies.net/movie/1622"
-  },
-  {
-    "id": "108978",
-    "tmdbId": "108978",
-    "imdbId": "tt0207283",
-    "isTv": false,
-    "tagline": "",
-    "title": "1812",
-    "originalTitle": "1812",
-    "originalLanguage": "en",
-    "description": "The Chronicle of 1812",
-    "posterUrl": "",
-    "backdropUrl": "",
-    "year": 1984,
-    "duration": 120,
-    "director": "Allan Levine",
-    "cast": [
-      "Simon Henri",
-      "Simon Clery",
-      "Craig Williams"
-    ],
-    "logoUrl": "",
-    "hasLogo": false,
-    "castDetails": [],
-    "similar": [],
-    "genre": [
-      "History",
-      "Comedy",
-      "TV Movie"
-    ],
-    "voteAverage": 6,
-    "isIframeEmbed": true,
-    "seasons": [],
-    "iframeSrc": "https://111movies.net/movie/108978"
-  },
-  {
-    "id": "95350-tv",
-    "trailerUrl": "https://www.youtube.com/watch?v=7UIBOsuUwc4",
-    "tmdbId": "95350",
-    "imdbId": "95350",
+    "id": "5287-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=Jx8-h4PttkM",
+    "tmdbId": "5287",
+    "imdbId": "5287",
     "isTv": true,
-    "tagline": "Only one can wear the ring.",
-    "title": "Lanterns",
-    "originalTitle": "Lanterns",
+    "tagline": "",
+    "title": "Kingdom",
+    "originalTitle": "Kingdom",
     "originalLanguage": "en",
-    "description": "Two intergalactic cops, new recruit John Stewart and Lantern legend Hal Jordan, are drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
-    "year": 2026,
-    "duration": 45,
-    "director": "Damon Lindelof",
+    "description": "Looks can be deceiving. Peter Kingdom seems to have everything — a man of some standing in the seaside town of Market Shipborough, he dresses well and has all the trappings of success. Why, then, does he wander along the beach and stare out to sea for hours at a time? Despite Peter's thriving legal practice, he must deal with his dysfunctional family (which includes his unstable sister) and his grief over his missing half-brother and law partner, Simon.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/9hXjCwADXXUksnOG6FFN7xxKxSu.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/mwxpAjEoh00pgEEfji1ZTrOzkyP.jpg",
+    "year": 2007,
+    "duration": 46,
+    "director": "Simon Wheeler",
     "cast": [
-      "Kyle Chandler",
-      "Aaron Pierre",
-      "Kelly Macdonald"
+      "Stephen Fry",
+      "Celia Imrie",
+      "Karl Davies",
+      "Tony Slattery",
+      "Hermione Norris",
+      "Gerard Horan"
     ],
-    "logoUrl": "https://image.tmdb.org/t/p/w500/kANHXGvFKW13UEkZbYwl9nIJeEl.png",
-    "hasLogo": true,
+    "logoUrl": "",
+    "hasLogo": false,
     "castDetails": [
       {
-        "id": "3497",
-        "name": "Kyle Chandler",
-        "role": "Hal Jordan",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/66n7XNj1dyYkzCBWR3Lq8Vz4PJ1.jpg"
+        "id": "11275",
+        "name": "Stephen Fry",
+        "role": "Peter Kingdom",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/dH7GuUZ8QPM9RN99ak9KKOkSkdS.jpg"
       },
       {
-        "id": "1763709",
-        "name": "Aaron Pierre",
-        "role": "John Stewart",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/hNwZWdT2KxKj1YLbipvtUhNjfAp.jpg"
+        "id": "9139",
+        "name": "Celia Imrie",
+        "role": "Gloria Millington",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/eEtVfESOVnkkdPLYkyQpalEwAwj.jpg"
       },
       {
-        "id": "9015",
-        "name": "Kelly Macdonald",
-        "role": "Sheriff Kerry Kane",
-        "imageUrl": "https://image.tmdb.org/t/p/w200/k0yVocTnTMWlNdaeOO7YRViCdhO.jpg"
+        "id": "1220189",
+        "name": "Karl Davies",
+        "role": "Lyle Anderson",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hSyZI2vedubRXd1CS9w84ufCYDc.jpg"
+      },
+      {
+        "id": "162398",
+        "name": "Tony Slattery",
+        "role": "Sidney Snell",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/rxW6vimB3DHAXPHmeEYLILBdhJl.jpg"
+      },
+      {
+        "id": "132993",
+        "name": "Hermione Norris",
+        "role": "Beatrice Kingdom",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/jM67afr5YJn93RMDlexthlZwTKA.jpg"
+      },
+      {
+        "id": "56101",
+        "name": "Gerard Horan",
+        "role": "D.C. Yelland",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/crvohW6KrgAZUgoBE8IwKN5ErxQ.jpg"
       }
     ],
     "similar": [
       {
-        "id": "99138-tv",
-        "tmdbId": "99138",
+        "id": "98161-tv",
+        "tmdbId": "98161",
         "isTv": true,
-        "title": "The Furious Yama",
-        "description": "Xiao Luo, a young yama (god and judge of the dead), is afraid of ghosts. In order to properly reign in the underworld, she will have to face her fears.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/lL1zpbe1WjlTUSGxuFcmFwQMJgP.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/cYaEkdjDFsKvI8iJfNo7Tku83QY.jpg",
+        "title": "Home Before Dark",
+        "description": "Young investigative journalist Hilde Lisko moves with her family to the small town her father left behind, only to unearth shocking secrets in her pursuit of the truth.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mt4P2epJrSaqrlkMP9fTUKLP9OE.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/mr8wTuLBbF4n6eGd3xHADUufo0c.jpg",
         "year": 2020
       },
       {
-        "id": "6844-tv",
-        "tmdbId": "6844",
+        "id": "64067-tv",
+        "tmdbId": "64067",
         "isTv": true,
-        "title": "Phoo Action",
-        "description": "The high-kicking, high-action exploits of Buddhist Kung-Fu law enforcement officer Terry Phoo and feisty teen-rebel turned super-hero Whitey Action, who form an unlikely but effective crime-fighting team taking on Britain's super-vile, super-famous mutated criminals, The Freebies.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/cgWxQxXebKP7jXPePtLdzhDoZJZ.jpg",
-        "backdropUrl": "",
-        "year": 2008
+        "title": "The Kennedys",
+        "description": "Multi-generation family sitcom set in the 1970s, loosely based on Emma Kennedy's memoirs. The Kennedy family pursue every opportunity they can to climb the social ladder on their housing estate.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/lKybwk9cx3yCeig37fXhiL0DJoP.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/4JqHX8fBtUrcW2mvqImcudqj3j8.jpg",
+        "year": 2015
       },
       {
-        "id": "35725-tv",
-        "tmdbId": "35725",
+        "id": "4372-tv",
+        "tmdbId": "4372",
         "isTv": true,
-        "title": "Gormiti",
-        "description": "The show follows two brothers, Nick & Toby, who discover that they have the power to transform into powerful creatures known as Gormitis. Their two friends Jessica & Lucas join the fight and together they harness the power of the four elements. Now it's up to them to save their world from destruction.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/4lKFKV00Y2RvK2YEpPyVxCVgAJp.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/kbqAb0MVGdWYnv0GvpZo0ceYG1m.jpg",
-        "year": 2009
+        "title": "Tremors",
+        "description": "Inspired by the cult classic Tremors movies, locals attempt to coexist with the monstrous, man-eating Graboids, Shriekers, and Ass-blasters, which are now on a \"protected species\" list.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uJXjZ3OgU8v0HKUPbHk1DZUW3m9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/3zc9y0y8iSdB81OFcltusVqEasN.jpg",
+        "year": 2003
       },
       {
-        "id": "35728-tv",
-        "tmdbId": "35728",
+        "id": "35348-tv",
+        "tmdbId": "35348",
         "isTv": true,
-        "title": "Bouquet of Barbed Wire",
-        "description": "Bouquet of Barbed Wire explores the consequences of a father’s obsessive love for his daughter and how secrets once buried in the past return to haunt their lives. Trevor Eve plays Peter Manson, whose apparently successful life is turned upside down when his beloved teenage daughter Prue reveals she’s pregnant by her teacher, Gavin Sorenson. The very heart of the family is threatened as Peter has an intuitive sense that Gavin’s on a personal quest for revenge.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/n9Ey0zqcHgwHZFEbCDeDltJxLea.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/1unFT4LoAXXv7OmzDoGTRLiBSeU.jpg",
-        "year": 2010
+        "title": "Necessary Roughness",
+        "description": "A tough, sexy Long Island divorcee, Callie Thorne, gets a job as therapist for a professional football team in order to make ends meet. Underestimated at every turn, she succeeds beyond all expectations and soon finds herself as the sought-after therapist to high-profile clients. As a newly single mom raising two teenagers, she is determined to make her new career work by striking a balance between her personal and professional worlds.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ch0k5IfqOan8YkVEnVebbK0Sk0n.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/gBJYNXFUc8O5qiPBYoOR3gpWbLR.jpg",
+        "year": 2011
       },
       {
-        "id": "66859-tv",
-        "tmdbId": "66859",
+        "id": "4376-tv",
+        "tmdbId": "4376",
         "isTv": true,
-        "title": "Better Things",
-        "description": "Sam Fox is a single, working actor with no filter trying to raise her three daughters – Max, Frankie and Duke – in Los Angeles. She is mom, dad, referee and the cops.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/oydV7sWkFSBvHK57DfbPZzz4aDJ.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/wjx1GfVyaATVbKozljXjQZZulNy.jpg",
-        "year": 2016
+        "title": "JAG",
+        "description": "Harmon \"Harm\" Rabb Jr. is a former pilot turned lawyer working for the military's JAG (Judge Advocate General) division, the elite legal wing of officers that prosecutes and defends those accused of military-related crimes. He works closely with Lt. Col. Sarah Mackenzie, and together they do what needs to be done to find the truth.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/zPyHpkJZ5O08lbgrQQIROXtb3xz.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/rxnschfLZf3ZPRiIa6oBBMtY7hF.jpg",
+        "year": 1995
       },
       {
-        "id": "6934-tv",
-        "tmdbId": "6934",
+        "id": "4396-tv",
+        "tmdbId": "4396",
         "isTv": true,
-        "title": "Iron King",
-        "description": "Iron King is a tokusatsu superhero TV series about a giant cyborg. The series was produced by Nippon Gendai and Senkosha, and aired on Tokyo Broadcasting System from October 8, 1972 to April 8, 1973, with a total of 26 episodes.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/aFAwLDtUq0IxQmwO8LwRQf9nSDS.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/nHC2sGenriyTZXUWQLGq2EvMkyK.jpg",
-        "year": 1972
+        "title": "Northern Exposure",
+        "description": "After receiving a scholarship from the state, a recent Columbia University medical school graduate is required to set up his practice in an eccentric Alaskan town.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/BUSw61C2kNoMuKFQTamIgqMC5.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fi2vspZ6xuHZF1kU8wVXmYzYCMi.jpg",
+        "year": 1990
       },
       {
-        "id": "282247-tv",
-        "tmdbId": "282247",
+        "id": "64047-tv",
+        "tmdbId": "64047",
         "isTv": true,
-        "title": "Power of Paanch",
-        "description": "Bela's journey to Panchgiri unveils family secrets, mystical powers, and a battle against dark forces with friends who control wind, fire, water and earth.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/z7q8TPOLBlO7QV46wxmAIk7Nr6j.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/5RkcMRUH0nIeg1iRRpygvezwxkC.jpg",
-        "year": 2025
+        "title": "Ängelby",
+        "description": "Vera, a mother of two children, is left by her husband and looses her job all at once. She gets a job offer in another town, grabs her children and their belongings and moves there for a fresh new start in life. Before she gets there she hits a boy with her car. In chock, she assumes the boy to be dead. But is it really Vera who killed him?",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mVNkrLBVxGLGsqLpKJOZFHsNojS.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/z6k2Qt4eLOusseThRkUkM4eZhpG.jpg",
+        "year": 2015
       },
       {
-        "id": "35790-tv",
-        "tmdbId": "35790",
+        "id": "35200-tv",
+        "tmdbId": "35200",
         "isTv": true,
-        "title": "Cardcaptor Sakura",
-        "description": "Sakura Kinomoto, an elementary school student who discovers that she possesses magical powers after accidentally freeing a set of magical cards from the book they had been sealed in for years. She is then tasked with retrieving those cards in order to avoid an unknown catastrophe from befalling the world.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/dj0uI34MOkZMTE233tfRebs0YYx.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/w780/w6a3S1E5p3UfFcP3jkieXlAY5mz.jpg",
-        "year": 1998
+        "title": "Welcher & Welcher",
+        "description": "Welcher & Welcher was an Australian sitcom written by and starring Shaun Micallef which aired on the ABC in 2003. The show revolved around a husband and wife run law firm.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jyseqNPdIhXybrnuv1kBvja5vI9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/9gg1lKhYTyBjEwfvPIz2u8curE8.jpg",
+        "year": 2003
       }
     ],
     "genre": [
       "Drama",
-      "Mystery",
-      "Sci-Fi & Fantasy"
+      "Comedy"
     ],
-    "voteAverage": 8.305,
+    "voteAverage": 7.1,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Series 1",
+        "episode_count": 6,
+        "air_date": "2007-04-21",
+        "poster_path": "https://image.tmdb.org/t/p/w500/mqVS2jhgdqVJhcn3IZwzVB4IvhZ.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 2,
+        "name": "Series 2",
+        "episode_count": 6,
+        "air_date": "2008-01-12",
+        "poster_path": "https://image.tmdb.org/t/p/w500/fzAn2rrQaOTrjO6GCwqYoTCShcA.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 3,
+        "name": "Series 3",
+        "episode_count": 6,
+        "air_date": "2009-06-06",
+        "poster_path": "https://image.tmdb.org/t/p/w500/f9J9Prx9ip8xafLiyVafIQ12m1g.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "63333-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=WxPApTGWwas",
+    "tmdbId": "63333",
+    "imdbId": "63333",
+    "isTv": true,
+    "tagline": "England is born",
+    "title": "The Last Kingdom",
+    "originalTitle": "The Last Kingdom",
+    "originalLanguage": "en",
+    "description": "A show of heroic deeds and epic battles with a thematic depth that embraces politics, religion, warfare, courage, love, loyalty and our universal search for identity. Combining real historical figures and events with fictional characters, it is the story of how a people combined their strength under one of the most iconic kings of history in order to reclaim their land for themselves and build a place they call home.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8eJf0hxgIhE6QSxbtuNCekTddy1.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/QbtctI8EzlhsyFDMUMyG3fli8B.jpg",
+    "year": 2015,
+    "duration": 60,
+    "director": "Stephen Butchard",
+    "cast": [
+      "Alexander Dreymon",
+      "Eliza Butterworth",
+      "Mark Rowley",
+      "Ruby Hartley",
+      "James Northcote",
+      "Arnas Fedaravičius"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/rE7f5t0naWuCP404p2D9o01CzqX.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "1273309",
+        "name": "Alexander Dreymon",
+        "role": "Uhtred of Bebbanburg",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/ifI2QhpUlAwiWNwdDsFMRlPovsk.jpg"
+      },
+      {
+        "id": "1574968",
+        "name": "Eliza Butterworth",
+        "role": "Aelswith",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/4Zy6flJGeEQAix9P0DmQT4rPAVM.jpg"
+      },
+      {
+        "id": "1799858",
+        "name": "Mark Rowley",
+        "role": "Finan",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/6Yj5fb9kbkQPeOyxZP3gjGdsnDu.jpg"
+      },
+      {
+        "id": "3451119",
+        "name": "Ruby Hartley",
+        "role": "Stiorra",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/wBfjSa8WeYqhusjqzLzldoAsHAO.jpg"
+      },
+      {
+        "id": "1362119",
+        "name": "James Northcote",
+        "role": "Aldhelm",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/7eON5XLEGFseOWhSXDh7h5JsF9H.jpg"
+      },
+      {
+        "id": "1156305",
+        "name": "Arnas Fedaravičius",
+        "role": "Sihtric",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/7WfcGugvkuPqEzu0cUJBeJPt1lD.jpg"
+      },
+      {
+        "id": "1756015",
+        "name": "Harry Gilby",
+        "role": "Aethelstan",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/4rORd6r6Ts4eYWVhbP9iIsE4CEo.jpg"
+      },
+      {
+        "id": "1742597",
+        "name": "Timothy Innes",
+        "role": "King Edward",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/aUxpcqfSZjgi0BItJdjp156kilF.jpg"
+      },
+      {
+        "id": "1587318",
+        "name": "Stefanie Martini",
+        "role": "Eadith",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/cSSIiss7lTRAoZ1QqOJtA9iodUu.jpg"
+      },
+      {
+        "id": "3594113",
+        "name": "Phia Saban",
+        "role": "Aelfwynn",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/fBkNrVyKbsNBTnVxTZWhmVqXznA.jpg"
+      },
+      {
+        "id": "383624",
+        "name": "Adrian Schiller",
+        "role": "Aethelhelm",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hzaZSk4J0C78bU3zlqLjCruNGBQ.jpg"
+      },
+      {
+        "id": "2121703",
+        "name": "Jaakko Ohtonen",
+        "role": "Wolland",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/ceclABXwYO04sfxmzVVStomq6wm.jpg"
+      },
+      {
+        "id": "190699",
+        "name": "Cavan Clerkin",
+        "role": "Pyrlig",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/rtmU4RxFZze6s8At7Ob3ypLKp1l.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "35379-tv",
+        "tmdbId": "35379",
+        "isTv": true,
+        "title": "First Among Equals",
+        "description": "A ten-part serial based on Jeffrey Archer's 1984 novel of the same name, which follows the careers and personal lives of a quartet of fictional Parliament members from 1964 to 1991, with each vying to become Prime Minister.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/pEv6VNMv1pzvxbuxYGqZVNmrsdT.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fJNjSbC0PZUwvM0H9pYhngNPgeH.jpg",
+        "year": 1986
+      },
+      {
+        "id": "64099-tv",
+        "tmdbId": "64099",
+        "isTv": true,
+        "title": "War and Peace",
+        "description": "The love story of young Countess Natasha Rostova and Count Pierre Bezukhov is interwoven with the Great Patriotic War of 1812 against Napoleon's invading army.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/e9uqJMuJXTlqgHrzmMjzhUsw7nI.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/dRz83kCWj4yu8SP7AbSzyvUO7rK.jpg",
+        "year": 2016
+      },
+      {
+        "id": "64122-tv",
+        "tmdbId": "64122",
+        "isTv": true,
+        "title": "The Shannara Chronicles",
+        "description": "A young Healer armed with an unpredictable magic guides a runaway Elf in her perilous quest to save the peoples of the Four Lands from an age-old Demon scourge.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yzoaoBSMww5D22Kfrd2LEJumIzl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/h3iaMumqJlv2Z1CcIdGNVMJrB2a.jpg",
+        "year": 2016
+      },
+      {
+        "id": "64150-tv",
+        "tmdbId": "64150",
+        "isTv": true,
+        "title": "Underground",
+        "description": "A group of slaves plan a daring 600-mile escape from a Georgia plantation. Along the way, they are aided by a secret abolitionist couple running a station on the Underground Railroad as they attempt to evade the people charged with bringing them back, dead or alive.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/hBgYiAHqZBY0ypGKMd8NzYbEwnq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/goXb9BbWZzdaAfehXlTPJ6y6kYq.jpg",
+        "year": 2016
+      },
+      {
+        "id": "98187-tv",
+        "tmdbId": "98187",
+        "isTv": true,
+        "title": "The Irregulars",
+        "description": "In Victorian London, a gang of troubled street teens are manipulated into solving crimes for the sinister Doctor Watson and his mysterious business partner, the elusive Sherlock Holmes. As the crimes take on a horrifying supernatural edge and a dark power emerges, it'll be up to the Irregulars to come together to save not only London but the entire world.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qN6HCKR3ZRqbpGBWFctVlSTKR2k.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/4sIjlFa2jn0SsWQVuTBEFgQy4eH.jpg",
+        "year": 2021
+      },
+      {
+        "id": "64174-tv",
+        "tmdbId": "64174",
+        "isTv": true,
+        "title": "Love Me If You Dare",
+        "description": "Getting inside the head of a violent criminal is not easy. But Simon Bo, a brilliant criminal psychologist, has the ability to get into the minds of even the most mysterious and violent criminals. He’s a professor at The University of Maryland and works as an analyst and advisor on the police department’s most violent or difficult cases. With the help of his young assistant, Jenny Jian, Simon delves into the thoughts and intentions of the criminal mind. As the daughter of a veteran police investigator with a deep sense of justice, can Jenny help Simon open up emotionally as they work together to solve crimes?",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xfHBGNSTDxIfW7XaOpWkbzml8Ql.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fDkhbrvqSPquRGNCmURUo0WQcTn.jpg",
+        "year": 2015
+      },
+      {
+        "id": "310500-tv",
+        "tmdbId": "310500",
+        "isTv": true,
+        "title": "Secret by My Name",
+        "description": "After taking over his family’s company, Tan Jianfei becomes locked in a corporate power struggle with his former lover Li Shujing, reigniting old feelings—unaware that she has returned to uncover the truth behind her father’s death, turning their romance into a dangerous game of love and revenge.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/99rkgLQOqbiKnfVQ7TTVdpMIQU.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/ug72W0TibT3UPyGANnY3TD0xGDF.jpg",
+        "year": 2026
+      },
+      {
+        "id": "35412-tv",
+        "tmdbId": "35412",
+        "isTv": true,
+        "title": "Lucky Chances",
+        "description": "Lucky Chances is a three-part 1990 television miniseries based on Jackie Collins' novels Chances (1981) and Lucky (1985), and produced by William Peters for NBC. It stars Vincent Irizarry, Nicollette Sheridan, Shawnee Smith, Alan Rosenberg, Anne-Marie Johnson, and Phil Morris.\n\nThe Santangelo family builds a casino empire in Las Vegas. After Gino's death, his daughter Lucky fights to maintain control of the business and fortune.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/eTxpw30G7WbI5NrTheUuBtb9KHr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/st5bVfSHxNPlA8tkrHbkcGvoRv7.jpg",
+        "year": 1990
+      }
+    ],
+    "genre": [
+      "Action & Adventure",
+      "Drama",
+      "War & Politics"
+    ],
+    "voteAverage": 8.256,
     "isIframeEmbed": true,
     "seasons": [
       {
         "season_number": 1,
         "name": "Season 1",
         "episode_count": 8,
-        "air_date": "2026-08-16",
-        "poster_path": "https://image.tmdb.org/t/p/w500/23JHczmoLS41U760uaBNKZ3mLst.jpg",
+        "air_date": "2015-10-10",
+        "poster_path": "https://image.tmdb.org/t/p/w500/3YRcYKY1m3c2Y2b0IXQWs2RSEED.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 2,
+        "name": "Season 2",
+        "episode_count": 8,
+        "air_date": "2017-03-16",
+        "poster_path": "https://image.tmdb.org/t/p/w500/2zVx2TOMgMSuiVHv0Ma7f4H9T36.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 3,
+        "name": "Season 3",
+        "episode_count": 10,
+        "air_date": "2018-11-19",
+        "poster_path": "https://image.tmdb.org/t/p/w500/7ZTRAuWXq1amsMtVIAll6qB0Hc2.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 4,
+        "name": "Season 4",
+        "episode_count": 10,
+        "air_date": "2020-04-26",
+        "poster_path": "https://image.tmdb.org/t/p/w500/9DAuDj275Z8gPWKsV3QTihXmMtB.jpg",
+        "episodes": []
+      },
+      {
+        "season_number": 5,
+        "name": "Season 5",
+        "episode_count": 10,
+        "air_date": "2022-03-09",
+        "poster_path": "https://image.tmdb.org/t/p/w500/8eJf0hxgIhE6QSxbtuNCekTddy1.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "301991-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=uKzjZu_KVzU",
+    "tmdbId": "301991",
+    "imdbId": "301991",
+    "isTv": true,
+    "tagline": "",
+    "title": "Kingdom",
+    "originalTitle": "Kingdom",
+    "originalLanguage": "en",
+    "description": "Filmed across five years in a single spectacular location, the lives and fates of our four families - leopards, hyenas, wild dogs, and lions - are inextricably linked as they strive for a foothold in a remote and fertile river valley in Zambia.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/s596vM9OIz1k6tvid7s3LxfaNfu.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/8yzl3OCiASqbvimgpdepao43IqX.jpg",
+    "year": 2025,
+    "duration": 49,
+    "director": "Mike Gunton",
+    "cast": [
+      "David Attenborough"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/z7gFNqJfgS3apXP2v17zoup1tn3.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "86543",
+        "name": "David Attenborough",
+        "role": "Self - Narrator (voice)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/xE6aLZ2Ma1VSoZGhOUW8TcbBMN6.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "239243-tv",
+        "tmdbId": "239243",
+        "isTv": true,
+        "title": "Under Pressure: The U.S. Women's World Cup Team",
+        "description": "In this docuseries, the U.S. women's national soccer team pursues their third consecutive title amid trials and triumphs at the 2023 FIFA World Cup.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/arw7e6iw97KrBfyWjVbimWfxzl1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fQtt87hIJKdoqArVPGVdRzQuM5w.jpg",
+        "year": 2023
+      },
+      {
+        "id": "124877-tv",
+        "tmdbId": "124877",
+        "isTv": true,
+        "title": "The Secret Life of Pets",
+        "description": "This delightful new series gets under the sometimes leathery skin of our animal friends, exploring how we live with them, care for them and also rely on them to protect and defend as well as comfort us in our time of need. The series also takes a look at the individual personalities of our beloved pets, including the way in which they communicate and how they cope with domestication, as well as exploring some of their quirkier moments.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/edH3WB7NOuXh013yba0OAMC3TpO.jpg",
+        "backdropUrl": "",
+        "year": 2014
+      },
+      {
+        "id": "58703-tv",
+        "tmdbId": "58703",
+        "isTv": true,
+        "title": "David Attenborough's Natural Curiosities",
+        "description": "Sir David shines the spotlight on some of nature’s evolutionary anomalies and reveals how these curious animals continue to baffle and fascinate.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uzQAFloohsMyhNyuOgiProDKoOK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5TE5gW9WIdw4PStib8GyoHAlQwI.jpg",
+        "year": 2013
+      },
+      {
+        "id": "58723-tv",
+        "tmdbId": "58723",
+        "isTv": true,
+        "title": "The Restless Wave",
+        "description": "Three hour-long programs about the history of the Royal Canadian Navy. Filmed archives from Ottawa, the CBC and newsreels provide the bulk of the visuals.",
+        "posterUrl": "",
+        "backdropUrl": "",
+        "year": 1970
+      },
+      {
+        "id": "91979-tv",
+        "tmdbId": "91979",
+        "isTv": true,
+        "title": "Brazil Untamed",
+        "description": "The Pantanal is the world's largest tropical wetland, a lush environment where a tangled web of lives comes together. Tree-dwelling capuchin monkeys, gravity-defying Piraputanga fish that leap out of the water to pluck fruit from trees, and over 650 species of birds call this ecosystem home. Wade into this wonderland of biodiversity and uncover its natural rhythms.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mt5dIiosBtwrRAr1Sxr9uClm0P1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/pGMT9TVpGCL0vulsR8KsDBp6Env.jpg",
+        "year": 2016
+      },
+      {
+        "id": "275937-tv",
+        "tmdbId": "275937",
+        "isTv": true,
+        "title": "Call Me Ted",
+        "description": "The life and legacy of Ted Turner is told in his own words in this six-part documentary series.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/f5c0BaMTc7MRmnfRcthILFRCxQY.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/yYlXc9k9zKyXfz9Pr9gtseeQA3S.jpg",
+        "year": 2024
+      },
+      {
+        "id": "28678-tv",
+        "tmdbId": "28678",
+        "isTv": true,
+        "title": "Expedition Borneo",
+        "description": "Wildlife adventure series following a team of explorers in the heart of the tropical island of Borneo.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iSGL8nDBsvNjyV7XFUIPMq0aj9X.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/sstJfM9fc9wwyyQRSWUxj0zXiBZ.jpg",
+        "year": 2007
+      },
+      {
+        "id": "125011-tv",
+        "tmdbId": "125011",
+        "isTv": true,
+        "title": "The Abyss – Rise and Fall of the Nazis",
+        "description": "Explores the Third Reich from a contemporary perspective to investigate how the Nazis managed to conquer Germany and then half of Europe in the wake of World War I.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/y0lHtdr68Thf9WkFeBwWAZ27UBx.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/t3KBWlTJ1WW5i54cUI5n0qMtku3.jpg",
+        "year": 2021
+      }
+    ],
+    "genre": [
+      "Documentary"
+    ],
+    "voteAverage": 7.8,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Miniseries",
+        "episode_count": 6,
+        "air_date": "2025-11-09",
+        "poster_path": "https://image.tmdb.org/t/p/w500/s596vM9OIz1k6tvid7s3LxfaNfu.jpg",
         "episodes": []
       }
     ],

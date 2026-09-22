@@ -269,16 +269,21 @@ const normalizeEmbedUrl = (rawUrl: string): string => {
   return rawUrl;
 };
 
-const generateServers = (lang, isTv, tmdbId, season, episode, imdbId, timeParam) => {
+const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any, episode?: any, imdbId?: any, timeParam?: any) => {
+  const cleanId = String(tmdbId || "").replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+  const s = Number(season) || 1;
+  const e = Number(episode) || 1;
+  const tParam = timeParam || "";
+
   if (lang === "fr") {
     // Only FrEmbed for French
-    if (isTv && season && episode) {
+    if (isTv) {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/serie/${tmdbId}?id=${tmdbId}&sa=${season}&epi=${episode}`, stars: 3 }
+        { name: "Server 1", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 }
       ];
     } else {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/movie/${tmdbId}`, stars: 3 }
+        { name: "Server 1", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 }
       ];
     }
   } else {
@@ -287,19 +292,19 @@ const generateServers = (lang, isTv, tmdbId, season, episode, imdbId, timeParam)
     // 2: Peachify (progress tracking)
     // 3: VidSrc (no 404)
     // 4: CinemaOS (no 404 direct routes)
-    if (isTv && season && episode) {
+    if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${tmdbId}?s=${season}&e=${episode}&color=%23f59e0b&continueprompt=false&autonext=true&back=close${timeParam}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/tv/${tmdbId}/${season}/${episode}?accent=FF9900&servers=hide${timeParam}`, stars: 3 },
-        { name: "Server 3", url: `https://vidsrc.me/embed/tv/${tmdbId}/${season}/${episode}`, stars: 3 },
-        { name: "Server 4", url: `https://cinemaos.live/watch/tv/${tmdbId}?season=${season}&episode=${episode}`, stars: 3 }
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&color=%23f59e0b&continueprompt=false&autonext=true&back=close${tParam}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidsrc.me/embed/tv/${cleanId}/${s}/${e}`, stars: 3 },
+        { name: "Server 4", url: `https://cinemaos.live/watch/tv/${cleanId}?season=${s}&episode=${e}`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${tmdbId}?color=%23f59e0b&continueprompt=false&back=close${timeParam}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/movie/${tmdbId}?accent=FF9900&servers=hide${timeParam}`, stars: 3 },
-        { name: "Server 3", url: `https://vidsrc.me/embed/movie/${tmdbId}`, stars: 3 },
-        { name: "Server 4", url: `https://cinemaos.live/watch/movie/${tmdbId}`, stars: 3 }
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?color=%23f59e0b&continueprompt=false&back=close${tParam}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidsrc.me/embed/movie/${cleanId}`, stars: 3 },
+        { name: "Server 4", url: `https://cinemaos.live/watch/movie/${cleanId}`, stars: 3 }
       ];
     }
   }
@@ -327,8 +332,8 @@ export default function CinemaPlayerView({
 
   const isSeries = Boolean(
     isTv ||
-    movieId.includes("-tv") ||
-    (movieId.includes("-S") && movieId.includes("E")) ||
+    String(movieId || "").includes("-tv") ||
+    (String(movieId || "").includes("-S") && String(movieId || "").includes("E")) ||
     (passedMovieData as any)?.isTv ||
     (passedMovieData as any)?.genre?.includes("TV Series") ||
     (fetchedDetails as any)?.isTv ||
@@ -405,7 +410,7 @@ export default function CinemaPlayerView({
 
   useEffect(() => {
     if (!isSeries) return;
-    const tmdbCandidate = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const tmdbCandidate = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
     const cleanId = String(tmdbCandidate).replace("-tv", "");
     
     setIsLoadingEpisodes(true);
@@ -493,7 +498,7 @@ export default function CinemaPlayerView({
     const cleanId = String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
     const combined = [...importedMoviesData, ...allMoviesData];
     return combined.find((m: any) => {
-      const mIsTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      const mIsTv = Boolean(m.isTv || String(m.id || "").endsWith("-tv"));
       if (isSeries !== mIsTv) return false;
       return m.id === movieId || m.id === cleanId || String(m.tmdbId) === cleanId;
     }) || combined.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanId);
@@ -504,8 +509,22 @@ export default function CinemaPlayerView({
     const [activeServerIndex, setActiveServerIndex] = useState(0);
   const [serverSelected, setServerSelected] = useState(true);
   const [language, setLanguage] = useState<"en" | "fr">("en");
-  const [availableServers, setAvailableServers] = useState<{name: string, url: string, stars?: number}[]>([]);
+  const [availableServers, setAvailableServers] = useState<{name: string, url: string, stars?: number}[]>(() => {
+    const cleanId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    if (!cleanId) return [];
+    const isTvInitial = Boolean(isTv || String(movieId).includes("-tv") || season !== undefined);
+    return generateServers("en", isTvInitial, cleanId, season || 1, episode || 1, cleanId, "");
+  });
   const [playing, setPlaying] = useState(true);
+
+  useEffect(() => {
+    if (isIframeLoading) {
+      const timer = setTimeout(() => {
+        setIsIframeLoading(false);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [isIframeLoading, iframeKey]);
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
   const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false);
   const isInitialAutoplayRef = useRef<boolean>(true);
@@ -632,7 +651,7 @@ export default function CinemaPlayerView({
     } catch(e) {}
 
     try {
-      const baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      const baseId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
       window.history.replaceState(null, "", `/player/${baseId}-tv-S${seasonNum}E${episodeNum}`);
     } catch(e) {}
 
@@ -856,7 +875,7 @@ export default function CinemaPlayerView({
         const saved = (JSON.parse(safeStorage.getItem("classico_progress") || "{}") || {});
         let restoredTime = 0;
         if (isTv && season && episode) {
-          const baseId = movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+          const baseId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
           if (saved[baseId] && saved[baseId].type === "tv" && saved[baseId].show_progress) {
              const epProg = saved[baseId].show_progress[`s${season}e${episode}`];
              if (epProg && epProg.progress && epProg.progress.watched > 0) {
@@ -1224,14 +1243,14 @@ export default function CinemaPlayerView({
         
         // Fallback if prefetch was null or failed (now always runs since we cleared it)
         if (!data) {
-          const isNumeric = /^\d+$/.test(movieId);
+          const isNumeric = /^\d+$/.test(String(movieId || ""));
           
           // Look up the movie in passedMovieData, fetchedDetails, heroMoviesData, or combined data to get its tmdbId or imdbId
           const cleanMovieId = String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
           const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanMovieId);
           const combined = [...importedMoviesData, ...allMoviesData];
           const matchedMovie = passedMovieData || fetchedDetails || heroMatch || combined.find((m: any) => {
-            const mIsTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+            const mIsTv = Boolean(m.isTv || String(m.id || "").endsWith("-tv"));
             if (isSeries !== mIsTv) return false;
             return m.id === movieId || m.id === cleanMovieId || String(m.tmdbId) === cleanMovieId;
           }) || combined.find((m: any) => m.id === movieId || String(m.tmdbId) === cleanMovieId);
@@ -1250,8 +1269,8 @@ export default function CinemaPlayerView({
             let imdbId = matchedMovie?.imdbId || (matchedMovie?.providerIds?.Imdb) || cleanId;
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             const tvState = isTv ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
-            const targetSeason = isSeries ? currentSeason : (season || tvState.season || 1);
-            const targetEpisode = isSeries ? currentEpisode : (episode || tvState.episode || 1);
+            const targetSeason = isSeries ? (currentSeason || season || tvState.season || 1) : (season || tvState.season || 1);
+            const targetEpisode = isSeries ? (currentEpisode || episode || tvState.episode || 1) : (episode || tvState.episode || 1);
             const newServers = generateServers(language, isSeries, cleanId, targetSeason, targetEpisode, imdbId, timeParam);
             setAvailableServers(newServers);
             
@@ -1273,6 +1292,7 @@ export default function CinemaPlayerView({
             setIsLoading(false);
             setIsStreamLoading(false);
             setIsIframeLoading(false);
+            setIsMetadataLoaded(true);
             lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex, language };
             return;
           }
@@ -1475,17 +1495,18 @@ export default function CinemaPlayerView({
               }
             }, 1500 * nextAttempt);
           } else {
-            const isTvSeries = isSeries || movieId.includes("-tv");
+            const isTvSeries = isSeries || String(movieId || "").includes("-tv");
             const heroMatch = heroMoviesData?.heroes?.find((m: any) => m.id === movieId || String(m.tmdbId) === String(movieId));
             const matchedMovie = passedMovieData || fetchedDetails || heroMatch || allMoviesData.find(m => m.id === movieId || String(m.tmdbId) === String(movieId));
-            const resolvedTmdb = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || movieId.replace("-tv", "");
+            const resolvedTmdb = passedMovieData?.tmdbId || fetchedDetails?.tmdbId || heroMatch?.tmdbId || matchedMovie?.tmdbId || String(movieId || "").replace("-tv", "");
             const cleanId = String(resolvedTmdb).replace("-tv", "");
             const timeParam = savedRestoreTimeRef.current > 0 ? `&t=${Math.floor(savedRestoreTimeRef.current)}` : "";
             
             const tvState = isTvSeries ? JSON.parse(safeStorage.getItem("classico_tv_state") || "{}")[movieId] || {} : {};
-            const targetSeason = isSeries ? currentSeason : (season || tvState.season || 1);
-            const targetEpisode = isSeries ? currentEpisode : (episode || tvState.episode || 1);
+            const targetSeason = isSeries ? (currentSeason || season || tvState.season || 1) : (season || tvState.season || 1);
+            const targetEpisode = isSeries ? (currentEpisode || episode || tvState.episode || 1) : (episode || tvState.episode || 1);
             const newServers = generateServers(language, isTvSeries, cleanId, targetSeason, targetEpisode, cleanId, timeParam);
+            setAvailableServers(newServers);
 
             const fallbackData = {
               id: movieId,
@@ -1494,7 +1515,8 @@ export default function CinemaPlayerView({
               container: "iframe",
               title: movieTitle || "Film",
               isDirect: false,
-              iframeSrc: newServers[0].url,
+              isIframeEmbed: true,
+              iframeSrc: newServers[0]?.url || "",
               allServers: newServers,
               videoCodec: "h264",
               audioCodec: "aac",
@@ -1505,6 +1527,10 @@ export default function CinemaPlayerView({
             setPlaybackInfo(fallbackData as any);
             lastFetchedParamsRef.current = { movieId, forceTranscode, playbackAttempts, isLowQuality, activeServerIndex, language };
             setVideoError(null);
+            setIsLoading(false);
+            setIsStreamLoading(false);
+            setIsIframeLoading(false);
+            setIsMetadataLoaded(true);
           }
         }
       } finally {
@@ -1993,7 +2019,7 @@ export default function CinemaPlayerView({
         try {
           const saved = (JSON.parse(safeStorage.getItem("classico_progress") || "{}") || {});
           if (isTv && season && episode) {
-              const baseId = movieId ? movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+              const baseId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
               if (baseId) {
                 if (!saved[baseId] || saved[baseId].type !== "tv") {
                    saved[baseId] = {
@@ -2025,7 +2051,7 @@ export default function CinemaPlayerView({
           safeStorage.setItem("classico_progress", JSON.stringify(saved));
           
           if (isTv && season && episode) {
-             const baseId = movieId ? movieId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+             const baseId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
              if (baseId) {
                  try {
                      const tvState = (JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {});
@@ -2275,8 +2301,12 @@ export default function CinemaPlayerView({
                 try {
                   const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {};
                   tvState[pTmdbId] = { season: parsedData.season, episode: parsedData.episode };
+                  tvState[`${pTmdbId}-tv`] = { season: parsedData.season, episode: parsedData.episode };
                   safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
                 } catch (e) {}
+                setCurrentSeason(parsedData.season);
+                setCurrentEpisode(parsedData.episode);
+                onSelectMovie?.(`${pTmdbId}-tv-S${parsedData.season}E${parsedData.episode}`);
               }
             }
             break;

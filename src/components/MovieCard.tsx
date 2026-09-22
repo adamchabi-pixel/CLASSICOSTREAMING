@@ -13,7 +13,8 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie, onSelect, onPlay, progressPercent, trendingIndex }: MovieCardProps) {
-  
+  if (!movie) return null;
+
   const progressState = React.useMemo(() => {
     if (typeof progressPercent === "number") {
       if (progressPercent >= 0.95) return 'watched';
@@ -22,7 +23,7 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
     }
     try {
       const saved = JSON.parse(localStorage.getItem("classico_progress") || "{}");
-      const baseId = movie.id ? movie.id.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+      const baseId = movie.id ? String(movie.id).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
       if (baseId && saved[baseId]) {
          if (movie.isTv) {
             return 'none';
@@ -40,15 +41,17 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
   }, [movie.id, movie.isTv, progressPercent]);
 
   const getSubtitle = () => {
-    if (movie.director && movie.director.trim() !== "" && movie.director !== "Unknown") {
+    if (movie.director && typeof movie.director === "string" && movie.director.trim() !== "" && movie.director !== "Unknown") {
       return movie.director;
     }
     return movie.isTv ? "Série" : "Film";
   };
 
+  const posterSrc = typeof movie.posterUrl === "string" && movie.posterUrl.trim().length > 0 ? movie.posterUrl.trim() : null;
+
   return (
     <div
-      id={`movie-card-${movie.id}`}
+      id={`movie-card-${movie.id || 'item'}`}
       style={{
         "--hover-glow": `${movie.accentHex || "#fbbf24"}40`
       } as React.CSSProperties}
@@ -72,10 +75,10 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
              </div>
           )}
 
-          {movie.posterUrl && movie.posterUrl.trim() ? (
+          {posterSrc ? (
             <img
-              src={movie.posterUrl.trim()}
-              alt={movie.title}
+              src={posterSrc}
+              alt={movie.title || "Titre"}
               className="w-full h-full object-cover transition-transform duration-700 ease-out "
               loading="lazy"
               decoding="async" referrerPolicy="no-referrer"
@@ -85,9 +88,9 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
             />
           ) : null}
           
-          <div className={`absolute inset-0 flex flex-col justify-between ${!(movie.posterUrl && movie.posterUrl.trim()) ? (movie.gradient || 'bg-gradient-to-br from-zinc-900 to-neutral-950') : ''}`}>
+          <div className={`absolute inset-0 flex flex-col justify-between ${!posterSrc ? (movie.gradient || 'bg-gradient-to-br from-zinc-900 to-neutral-950') : ''}`}>
             
-            {!(movie.posterUrl && movie.posterUrl.trim()) && (
+            {!posterSrc && (
               <div className="flex flex-col items-center justify-center flex-grow py-4 text-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center bg-black/30 border border-white/5 shadow-inner">
                   <span className="text-xl font-bold tracking-tighter text-white/40">C</span>
@@ -125,7 +128,7 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
                 {getSubtitle()}
               </p>
               <h3 className="text-sm sm:text-base font-display font-extrabold text-white leading-tight line-clamp-2 drop-shadow-lg">
-                {movie.title}
+                {movie.title || movie.originalTitle || "Film"}
               </h3>
             </div>
 

@@ -225,13 +225,36 @@ app.get("/api/movie/:id", async (req, res) => {
     }
 
     
-    const url = isTv 
+    let url = isTv 
       ? `https://api.tmdb.org/3/tv/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`
       : `https://api.tmdb.org/3/movie/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`;
       
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
     });
+    
+    // Automatic fallback: if movie 404s, try tv
+    if (!response.ok && !isTv) {
+      const tvUrl = `https://api.tmdb.org/3/tv/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`;
+      const tvRes = await fetch(tvUrl, {
+        headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
+      });
+      if (tvRes.ok) {
+        response = tvRes;
+        isTv = true;
+      }
+    }
+    // Automatic fallback: if tv 404s, try movie
+    if (!response.ok && isTv) {
+      const movieUrl = `https://api.tmdb.org/3/movie/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`;
+      const movieRes = await fetch(movieUrl, {
+        headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
+      });
+      if (movieRes.ok) {
+        response = movieRes;
+        isTv = false;
+      }
+    }
     
     if (!response.ok) throw new Error("TMDB fetch failed");
     
@@ -328,6 +351,25 @@ app.get("/api/movie/:id", async (req, res) => {
     res.json({ success: true, movie: movieData });
   } catch (error: any) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get("/api/playback/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    res.json({
+      id: id,
+      streamUrl: "",
+      duration: 0,
+      container: "iframe",
+      title: "Playback",
+      isDirect: false,
+      isIframeEmbed: true,
+      subtitles: [],
+      audios: []
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

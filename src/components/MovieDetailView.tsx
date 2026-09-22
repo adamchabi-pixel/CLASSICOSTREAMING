@@ -25,8 +25,8 @@ export default function MovieDetailView({
   const [isSeasonDropdownOpen, setIsSeasonDropdownOpen] = React.useState(false);
     
   React.useEffect(() => {
-    const isTv = Boolean(movie.isTv || movie.id?.endsWith("-tv"));
-    const rawTmdb = movie.providerIds?.Tmdb || movie.tmdbId || movie.id.replace(/-tv$/, "");
+    const isTv = Boolean(movie.isTv || String(movie.id || "").endsWith("-tv"));
+    const rawTmdb = movie.providerIds?.Tmdb || movie.tmdbId || String(movie.id || "").replace(/-tv$/, "");
     const fetchId = isTv ? `${rawTmdb}-tv` : rawTmdb;
     fetch(`/api/movie/${fetchId}`)
       .then(res => res.json())
@@ -56,15 +56,62 @@ export default function MovieDetailView({
   React.useEffect(() => {
     if (fullMovie.isTv && selectedSeason) {
       const cleanTvId = String(fullMovie.tmdbId || fullMovie.id).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      let isMounted = true;
       fetch(`/api/tv/${cleanTvId}/season/${selectedSeason}`)
         .then(res => res.json())
         .then(data => {
-          if (data.success) {
+          if (!isMounted) return;
+          if (data && data.success && Array.isArray(data.episodes) && data.episodes.length > 0) {
             setEpisodes(data.episodes);
+          } else {
+            const seasonObj = fullMovie.seasons?.find((s: any) => s.season_number === selectedSeason);
+            const count = seasonObj?.episode_count || 10;
+            setEpisodes(Array.from({ length: count }, (_, i) => ({
+              id: i + 1,
+              episode_number: i + 1,
+              name: `Épisode ${i + 1}`,
+              overview: "",
+              still_path: null
+            })));
           }
+        })
+        .catch(() => {
+          if (!isMounted) return;
+          const seasonObj = fullMovie.seasons?.find((s: any) => s.season_number === selectedSeason);
+          const count = seasonObj?.episode_count || 10;
+          setEpisodes(Array.from({ length: count }, (_, i) => ({
+            id: i + 1,
+            episode_number: i + 1,
+            name: `Épisode ${i + 1}`,
+            overview: "",
+            still_path: null
+          })));
         });
+
+      // Safety timeout: never let loading spin indefinitely
+      const timeoutTimer = setTimeout(() => {
+        if (isMounted) {
+          setEpisodes(prev => {
+            if (prev && prev.length > 0) return prev;
+            const seasonObj = fullMovie.seasons?.find((s: any) => s.season_number === selectedSeason);
+            const count = seasonObj?.episode_count || 10;
+            return Array.from({ length: count }, (_, i) => ({
+              id: i + 1,
+              episode_number: i + 1,
+              name: `Épisode ${i + 1}`,
+              overview: "",
+              still_path: null
+            }));
+          });
+        }
+      }, 2000);
+
+      return () => {
+        isMounted = false;
+        clearTimeout(timeoutTimer);
+      };
     }
-  }, [fullMovie.id, fullMovie.isTv, selectedSeason]);
+  }, [fullMovie.id, fullMovie.isTv, selectedSeason, fullMovie.seasons]);
   React.useEffect(() => {
     if (fullMovie.seasons && fullMovie.seasons.length > 0 && !fullMovie.seasons.find((s: any) => s.season_number === selectedSeason)) {
       setSelectedSeason(fullMovie.seasons[0].season_number);
@@ -72,8 +119,8 @@ export default function MovieDetailView({
   }, [fullMovie.seasons]);
   
   const handlePlayEpisode = (seasonNum: number, episodeNum: number) => {
-    const isTv = Boolean(fullMovie.isTv || movie.isTv || fullMovie.id?.endsWith("-tv"));
-    let baseId = fullMovie.id.replace(/-S\d+E\d+$/, "");
+    const isTv = Boolean(fullMovie.isTv || movie.isTv || String(fullMovie.id || "").endsWith("-tv"));
+    let baseId = String(fullMovie.id || "").replace(/-S\d+E\d+$/, "");
     if (isTv && !baseId.endsWith("-tv")) {
       baseId = `${baseId}-tv`;
     }
@@ -92,11 +139,12 @@ export default function MovieDetailView({
   React.useEffect(() => {
      try {
         const saved = JSON.parse(localStorage.getItem("classico_progress") || "{}");
-        const baseId = fullMovie.id.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
-        if (saved[baseId] && saved[baseId].show_progress) {
+        const baseId = String(fullMovie.id || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+        const showData = saved[`${baseId}-tv`] || saved[baseId] || saved[fullMovie.id];
+        if (showData && showData.show_progress) {
             const we: Record<string, boolean> = {};
-            for (const key in saved[baseId].show_progress) {
-                if (saved[baseId].show_progress[key].progress && saved[baseId].show_progress[key].progress.watched > 0) {
+            for (const key in showData.show_progress) {
+                if (showData.show_progress[key].progress && showData.show_progress[key].progress.watched > 0) {
                     we[key] = true;
                 }
             }

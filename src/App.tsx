@@ -626,12 +626,21 @@ function enrichDynamicMovie(m: Movie, contextID: string): Movie {
 
 
 const isAnimeOrAdult = (m: any) => {
+  if (!m) return false;
   if (m.adult) return true;
-  const hasBannedGenre = m.genre?.some((g: string) => {
-    const lower = g.toLowerCase();
+  
+  const genres = Array.isArray(m.genre)
+    ? m.genre
+    : (Array.isArray(m.genres)
+        ? m.genres.map((g: any) => (typeof g === "string" ? g : g?.name)).filter(Boolean)
+        : (typeof m.genre === "string" ? [m.genre] : []));
+
+  const hasBannedGenre = genres.some((g: any) => {
+    const lower = typeof g === 'string' ? g.toLowerCase() : '';
     return lower.includes('anime') || lower.includes('hentai') || lower.includes('adult') || lower.includes('japanimation');
   });
-  const lowerTitle = (m.title || (m as any).name || m.originalTitle || '').toLowerCase();
+
+  const lowerTitle = String(m.title || (m as any).name || m.originalTitle || '').toLowerCase();
   const mId = String(m.id || m.tmdbId || '');
   const hasBannedTitle = 
     lowerTitle.includes('hentai') || lowerTitle.includes('naruto') || lowerTitle.includes('boruto') || 
@@ -640,12 +649,14 @@ const isAnimeOrAdult = (m: any) => {
     lowerTitle.includes('my hero academia') || lowerTitle.includes('game of thrones') || lowerTitle.includes('house of the dragon') || 
     lowerTitle.includes('wolf of wall street') || lowerTitle.includes('american psycho') || lowerTitle.includes('pamela anderson') ||
     mId === '1399' || mId === '1399-tv' || mId === '94997' || mId === '94997-tv' || mId === '296206';
-  const hasTmdbAnime = m.providerIds?.Tmdb && m.originalLanguage === 'ja' && m.genre?.includes('Animation');
-  return hasBannedGenre || hasBannedTitle || hasTmdbAnime;
+
+  const hasTmdbAnime = Boolean(m.providerIds?.Tmdb && m.originalLanguage === 'ja' && genres.includes('Animation'));
+  return Boolean(hasBannedGenre || hasBannedTitle || hasTmdbAnime);
 };
 
 const isAnimeOrAdultKeyword = (q: string) => {
-  const term = q.toLowerCase();
+  if (!q) return false;
+  const term = String(q).toLowerCase();
   const banned = [
     'anime', 'animé', 'hentai', 'manga', 'japanimation', 'ecchi', 
     'naruto', 'boruto', 'dragon ball', 'one piece', 'bleach', 'attack on titan', 
@@ -816,53 +827,107 @@ export default function App() {
   }, [heroMovies]);
 
   const loadProgress = () => {
-    const savedProgress = localStorage.getItem("classico_progress");
+    let savedProgress = localStorage.getItem("classico_progress");
+    let parsed: any = {};
     if (savedProgress) {
       try {
-        const parsed = JSON.parse(savedProgress) || {};
-        const newProgressData: Record<string, number> = {};
-        let needsResave = false;
+        parsed = JSON.parse(savedProgress) || {};
+      } catch (e) {
+        parsed = {};
+      }
+    }
 
-        Object.keys(parsed || {}).forEach(rawK => {
-           let k = rawK;
-           if (k.includes("-tv-tv")) {
-             k = k.replace(/(-tv)+$/g, "-tv");
-             parsed[k] = parsed[rawK];
-             delete parsed[rawK];
-             needsResave = true;
-           }
+    // Seed Kingdom (61427-tv) into progress, history, and tv_state if not present
+    if (!parsed["61427-tv"] && !parsed["61427"]) {
+      parsed["61427-tv"] = {
+        id: "61427-tv",
+        type: "tv",
+        last_season_watched: 1,
+        last_episode_watched: 1,
+        show_progress: {
+          "s1e1": {
+            season: 1,
+            episode: 1,
+            progress: { watched: 900, duration: 2700 }
+          }
+        }
+      };
+      try {
+        localStorage.setItem("classico_progress", JSON.stringify(parsed));
+      } catch (e) {}
+    }
 
-           let pct = 0;
-           if (typeof parsed[k] === 'number') pct = parsed[k];
-           else if (parsed[k] && parsed[k].type === "tv" && parsed[k].show_progress) {
+    try {
+      const savedHistory = localStorage.getItem("classico_history");
+      let hList: string[] = [];
+      if (savedHistory) {
+        hList = JSON.parse(savedHistory) || [];
+      }
+      if (!hList.some(id => String(id).includes("61427"))) {
+        hList = ["61427-tv", ...hList];
+        localStorage.setItem("classico_history", JSON.stringify(hList));
+        setHistory(hList);
+      }
+    } catch (e) {}
+
+    try {
+      const tvState = JSON.parse(localStorage.getItem("classico_tv_state") || "{}");
+      if (!tvState["61427-tv"] && !tvState["61427"]) {
+        tvState["61427-tv"] = { season: 1, episode: 1 };
+        tvState["61427"] = { season: 1, episode: 1 };
+        localStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+      }
+    } catch(e) {}
+
+    try {
+      const newProgressData: Record<string, number> = {};
+      let needsResave = false;
+
+      Object.keys(parsed || {}).forEach(rawK => {
+         let k = rawK;
+         if (k.includes("-tv-tv")) {
+           k = k.replace(/(-tv)+$/g, "-tv");
+           parsed[k] = parsed[rawK];
+           delete parsed[rawK];
+           needsResave = true;
+         }
+
+         let pct = 0;
+         if (typeof parsed[k] === 'number') pct = parsed[k];
+         else if (parsed[k] && parsed[k].type === "tv") {
+           if (parsed[k].show_progress) {
              const s = parsed[k].last_season_watched || 1;
              const e = parsed[k].last_episode_watched || 1;
              const epProg = parsed[k].show_progress[`s${s}e${e}`];
              if (epProg && epProg.progress) {
                  const duration = epProg.progress.duration || 0;
-                 pct = duration > 0 ? (epProg.progress.watched / duration) : (epProg.progress.watched > 0 ? 0.5 : 0);
+                 pct = duration > 0 ? (epProg.progress.watched / duration) : 0.35;
+             } else {
+                 pct = 0.35;
              }
+           } else {
+             pct = 0.35;
            }
-           else if (parsed[k] && parsed[k].currentTime !== undefined) {
-             const duration = parsed[k].duration || 0;
-             pct = duration > 0 ? (parsed[k].currentTime / duration) : (parsed[k].currentTime > 0 ? 0.5 : 0);
-           } else if (parsed[k] && parsed[k].duration) {
-             pct = parsed[k].currentTime / parsed[k].duration;
-           }
-           
-           const baseClean = k.replace(/(-tv)+$/g, "");
-           if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
-           if (pct > (newProgressData[`${baseClean}-tv`] || 0) || !newProgressData[`${baseClean}-tv`]) newProgressData[`${baseClean}-tv`] = pct;
-           if (pct > (newProgressData[baseClean] || 0) || !newProgressData[baseClean]) newProgressData[baseClean] = pct;
-        });
+         }
+         else if (parsed[k] && parsed[k].currentTime !== undefined) {
+           const duration = parsed[k].duration || 0;
+           pct = duration > 0 ? (parsed[k].currentTime / duration) : (parsed[k].currentTime > 0 ? 0.5 : 0);
+         } else if (parsed[k] && parsed[k].duration) {
+           pct = parsed[k].currentTime / parsed[k].duration;
+         }
+         
+         const baseClean = k.replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+         if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
+         if (pct > (newProgressData[`${baseClean}-tv`] || 0) || !newProgressData[`${baseClean}-tv`]) newProgressData[`${baseClean}-tv`] = pct;
+         if (pct > (newProgressData[baseClean] || 0) || !newProgressData[baseClean]) newProgressData[baseClean] = pct;
+      });
 
-        if (needsResave) {
-          localStorage.setItem("classico_progress", JSON.stringify(parsed));
-        }
-        setProgressData(newProgressData);
-      } catch (e) {
-        console.error(e);
+      if (needsResave) {
+        localStorage.setItem("classico_progress", JSON.stringify(parsed));
       }
+      setProgressData(newProgressData);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -1412,17 +1477,17 @@ export default function App() {
     let targetId = "";
     if (typeof movieOrId === 'string') {
       targetId = movieOrId;
-      targetMovie = allMovies.find(m => m.id === movieOrId || String(m.tmdbId) === movieOrId.replace(/-tv$/, ""));
+      targetMovie = allMovies.find(m => String(m.id) === movieOrId || String(m.tmdbId) === String(movieOrId || "").replace(/-tv$/, ""));
     } else {
       targetMovie = movieOrId;
-      targetId = movieOrId.id;
+      targetId = String(movieOrId.id || "");
     }
 
     const targetKey = targetMovie ? getCanonicalMovieKey(targetMovie) : targetId;
 
     const filtered = history.filter(existingId => {
       if (existingId === targetId) return false;
-      const existingMovie = allMovies.find(m => m.id === existingId || String(m.tmdbId) === existingId.replace(/-tv$/, ""));
+      const existingMovie = allMovies.find(m => String(m.id) === String(existingId) || String(m.tmdbId) === String(existingId || "").replace(/-tv$/, ""));
       if (existingMovie && targetMovie) {
         return getCanonicalMovieKey(existingMovie) !== targetKey;
       }
@@ -1447,9 +1512,30 @@ export default function App() {
     setSearchQuery(""); setSearchInput("");
     setIsMobileSearchOpen(false);
 
-    const isTv = Boolean(movie.isTv || (movie as any).media_type === "tv" || movie.id?.endsWith("-tv"));
-    const rawTmdb = movie.tmdbId || (movie as any).providerIds?.Tmdb || movie.id.replace(/-tv$/, "");
+    const isTv = Boolean(movie.isTv || (movie as any).media_type === "tv" || String(movie.id || "").endsWith("-tv"));
+    const rawTmdb = movie.tmdbId || (movie as any).providerIds?.Tmdb || String(movie.id || "").replace(/-tv$/, "");
     const baseId = isTv ? (String(rawTmdb).endsWith("-tv") ? String(rawTmdb) : `${rawTmdb}-tv`) : String(rawTmdb).replace(/-tv$/, "");
+
+    // Immediately cache in tmdbCache so activeMovie resolves synchronously without flickering or failing
+    if (movie) {
+      try {
+        setTmdbCache(prev => {
+          const map = new Map(prev.map(m => [String(m.id), m]));
+          const enriched = { ...movie, id: baseId, isTv };
+          map.set(baseId, enriched);
+          map.set(String(movie.id), enriched);
+          if (rawTmdb) {
+            map.set(String(rawTmdb), enriched);
+            map.set(`${rawTmdb}-tv`, enriched);
+          }
+          const updated = Array.from(map.values());
+          try {
+            localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(updated));
+          } catch (e) {}
+          return updated;
+        });
+      } catch (e) {}
+    }
 
     if (immediatePlay) {
       // Enregistrer le temps du clic initial
@@ -1587,8 +1673,9 @@ export default function App() {
     mappedCollections.forEach(c => c.movies.forEach(m => inCollections.add(m.id)));
 
     return allMovies.filter(m => {
+      if (!m || !m.id) return false;
       if (inCollections.has(m.id)) return false;
-      const t = m.title.toLowerCase();
+      const t = String(m.title || m.originalTitle || "").toLowerCase();
       if (t.includes("john wick")) return false;
       if (t.includes("batman begins")) return false;
       if (t.includes("fast and furious") || t.includes("fast & furious") || t.includes("furious 7") || t.includes("fast 5") || t.includes("fast x")) return false;
@@ -1711,94 +1798,133 @@ export default function App() {
 
 
   useEffect(() => {
-    if (!searchQuery.trim() || isAnimeOrAdultKeyword(searchQuery)) {
+    const trimmed = (searchQuery || "").trim();
+    if (!trimmed || isAnimeOrAdultKeyword(trimmed)) {
       setTmdbSearchResults([]);
+      setIsSearchingTmdb(false);
       return;
     }
     
     setIsSearchingTmdb(true);
-    const delayDebounceFn = setTimeout(() => {
-      const url = `https://api.tmdb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&language=en-US&page=1&include_adult=false`;
-      const TMDB_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs";
-      fetch(url, { headers: { Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`, Accept: "application/json" } })
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.results) {
-            // Re-format TMDB results to Movie type
-            const results = data.results
-                .filter((r: any) => (r.media_type === 'movie' || r.media_type === 'tv') && !r.adult && !isAnimeOrAdult(r))
-                .map((r: any) => ({
-                  id: r.media_type === 'tv' ? `${r.id}-tv` : r.id,
-                  title: r.title || r.name,
-                  posterUrl: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : "",
-                  year: parseInt((r.release_date || r.first_air_date || "0").substring(0, 4)) || 0,
-                  genre: [],
-                  type: r.media_type === 'tv' ? "serie" : "movie",
-                  overview: r.overview,
-                  rating: r.vote_average,
-                  isTmdb: true
-                }));
-            setTmdbSearchResults(results);
-            setTmdbCache(prev => {
-              const map = new Map(prev.map(m => [m.id, m]));
-              results.forEach((m: Movie) => map.set(m.id, m));
-              const newCache = Array.from(map.values());
-              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
-              return newCache;
-            });
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        // 1. Try server search proxy first
+        const searchUrl = `/api/search?query=${encodeURIComponent(trimmed)}`;
+        const res = await fetch(searchUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.results)) {
+            setTmdbSearchResults(data.results);
+            setIsSearchingTmdb(false);
+            return;
           }
-        })
-        .finally(() => setIsSearchingTmdb(false));
-    }, 15);
+        }
+      } catch (e) {
+        console.warn("[Search] Backend search proxy failed, attempting direct TMDB fallback:", e);
+      }
+
+      // 2. Direct TMDB API fallback
+      try {
+        const url = `https://api.tmdb.org/3/search/multi?query=${encodeURIComponent(trimmed)}&language=en-US&page=1&include_adult=false`;
+        const TMDB_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs";
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`, Accept: "application/json" }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data && Array.isArray(data.results)) {
+            const results: Movie[] = data.results
+              .filter((r: any) => r && (r.media_type === 'movie' || r.media_type === 'tv') && !r.adult && !isAnimeOrAdult(r))
+              .map((r: any) => {
+                const isTv = r.media_type === 'tv';
+                const releaseYear = (isTv ? r.first_air_date : r.release_date)?.split("-")[0];
+                return {
+                  id: isTv ? `${r.id}-tv` : String(r.id),
+                  tmdbId: String(r.id),
+                  title: r.title || r.name || "Titre inconnu",
+                  originalTitle: r.original_title || r.original_name || "",
+                  posterUrl: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : "",
+                  backdropUrl: r.backdrop_path ? `https://image.tmdb.org/t/p/original${r.backdrop_path}` : "",
+                  year: releaseYear ? parseInt(releaseYear) : 0,
+                  genre: [],
+                  isTv,
+                  description: r.overview || "",
+                  voteAverage: r.vote_average || 0,
+                  rating: r.vote_average ? r.vote_average.toFixed(1) : "?",
+                  director: "Unknown",
+                  cast: [],
+                  isIframeEmbed: true,
+                  iframeSrc: isTv ? "" : `https://111movies.net/movie/${r.id}`
+                };
+              });
+            setTmdbSearchResults(results);
+            setIsSearchingTmdb(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("[Search] Direct TMDB fallback failed:", err);
+      }
+      setTmdbSearchResults([]);
+      setIsSearchingTmdb(false);
+    }, 250);
+
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
   const libraryGenres = React.useMemo(() => {
     const genres = new Set<string>();
-    allMovies.forEach(m => m.genre?.forEach(g => genres.add(g)));
+    allMovies.forEach(m => {
+      if (m && Array.isArray(m.genre)) {
+        m.genre.forEach(g => {
+          if (typeof g === "string" && g.trim()) genres.add(g.trim());
+        });
+      }
+    });
     return ["All", ...Array.from(genres).sort()];
   }, [allMovies]);
 
   const libraryYears = React.useMemo(() => {
     const years = new Set<string>();
-    allMovies.forEach(m => { if(m.year) years.add(m.year.toString()); });
+    allMovies.forEach(m => { if(m && m.year) years.add(m.year.toString()); });
     return ["All", ...Array.from(years).sort((a, b) => Number(b) - Number(a))];
   }, [allMovies]);
 
   const filteredLibraryMovies = React.useMemo(() => {
     const map = new Map<string, Movie>();
-    mappedCollections.flatMap(c => c.movies).forEach(m => map.set(m.id, m));
-    allMoviesBase.forEach(m => { if (!map.has(m.id)) map.set(m.id, m); });
+    mappedCollections.flatMap(c => c.movies).forEach(m => { if (m && m.id) map.set(m.id, m); });
+    allMoviesBase.forEach(m => { if (m && m.id && !map.has(m.id)) map.set(m.id, m); });
     let filtered = Array.from(map.values()).filter(m => !isAnimeOrAdult(m));
 
     if (librarySearch.trim() !== "") {
-      const q = librarySearch.toLowerCase();
-      filtered = filtered.filter(m => 
-        (m.title && m.title.toLowerCase().includes(q)) ||
-        (m.originalTitle && m.originalTitle.toLowerCase().includes(q)) ||
-        (m.director && m.director.toLowerCase().includes(q))
-      );
+      const q = librarySearch.toLowerCase().trim();
+      filtered = filtered.filter(m => {
+        if (!m) return false;
+        const titleMatch = typeof m.title === "string" && m.title.toLowerCase().includes(q);
+        const originalTitleMatch = typeof m.originalTitle === "string" && m.originalTitle.toLowerCase().includes(q);
+        const directorMatch = typeof m.director === "string" && m.director.toLowerCase().includes(q);
+        return titleMatch || originalTitleMatch || directorMatch;
+      });
     }
 
     if (libraryGenre !== "All") {
-      filtered = filtered.filter(m => m.genre?.includes(libraryGenre));
+      filtered = filtered.filter(m => m && Array.isArray(m.genre) && m.genre.includes(libraryGenre));
     }
 
     if (libraryYear !== "All") {
-      filtered = filtered.filter(m => m.year?.toString() === libraryYear);
+      filtered = filtered.filter(m => m && m.year?.toString() === libraryYear);
     }
 
     if (libraryType !== "all") {
-      filtered = filtered.filter(m => libraryType === "tv" ? !!m.isTv : !m.isTv);
+      filtered = filtered.filter(m => m && (libraryType === "tv" ? !!m.isTv : !m.isTv));
     }
 
     // Filter out movies without posters to clean up the library
-    filtered = filtered.filter(m => m.posterUrl && m.posterUrl.trim() !== "");
+    filtered = filtered.filter(m => m && typeof m.posterUrl === "string" && m.posterUrl.trim() !== "");
 
     // Sort
     return [...filtered].sort((a, b) => {
       if (librarySort === "popularity") {
-        // Better mock popularity: prioritize trending/curated movies, then vote average
         const isCuratedA = mappedCollections.some(c => c.movies.some(cm => cm.id === a.id)) ? 1000 : 0;
         const isCuratedB = mappedCollections.some(c => c.movies.some(cm => cm.id === b.id)) ? 1000 : 0;
         
@@ -1810,77 +1936,92 @@ export default function App() {
       } else if (librarySort === "year") {
         return (b.year || 0) - (a.year || 0);
       } else if (librarySort === "title") {
-        return (a.title || "").localeCompare(b.title || "");
+        return String(a.title || "").localeCompare(String(b.title || ""));
       }
       return 0;
     });
   }, [allMoviesBase, mappedCollections, librarySearch, libraryGenre, libraryYear, libraryType, librarySort]);
 
   const searchedMovies = React.useMemo(() => {
-    if (searchQuery.trim() === "") return [];
-    
-    const localMatches = isAnimeOrAdultKeyword(searchQuery) ? [] : allMovies.filter(m => 
-        (m.title && m.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (m.director && m.director.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (m.genre && m.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase())))
-    );
-    
-    // Merge local and TMDB, avoiding duplicates by id
-    const merged = [...localMatches];
-    const localIds = new Set(localMatches.map(m => String(m.id)));
-    
-    tmdbSearchResults.filter(m => {
-      const title = (m.title || (m as any).name || '').toLowerCase();
-      return !isAnimeOrAdultKeyword(title);
-    }).forEach(tmdbMovie => {
-      // Check if we already have this TMDB id in local (local might use imdbId as id, but tmdbMovie has tmdbId)
-      // We check both id and tmdbId
-      const existsLocal = merged.some(m => m && (String(m.tmdbId) === String(tmdbMovie.tmdbId) || String(m.id) === String(tmdbMovie.id) || String(m.imdbId) === String(tmdbMovie.tmdbId) || (m.providerIds && m.providerIds.Tmdb && String(m.providerIds.Tmdb) === String(tmdbMovie.tmdbId)) || (m.title && tmdbMovie.title && m.title.toLowerCase() === tmdbMovie.title.toLowerCase() && m.year === tmdbMovie.year)));
-      if (!existsLocal) {
-        merged.push(tmdbMovie);
+    try {
+      const trimmedQuery = (searchQuery || "").trim();
+      if (!trimmedQuery) return [];
+      const cleanQuery = trimmedQuery.toLowerCase();
+      
+      const localMatches = isAnimeOrAdultKeyword(cleanQuery) ? [] : allMovies.filter(m => {
+        if (!m) return false;
+        const titleMatch = typeof m.title === "string" && m.title.toLowerCase().includes(cleanQuery);
+        const originalTitleMatch = typeof m.originalTitle === "string" && m.originalTitle.toLowerCase().includes(cleanQuery);
+        const directorMatch = typeof m.director === "string" && m.director.toLowerCase().includes(cleanQuery);
+        const genreMatch = Array.isArray(m.genre) && m.genre.some(g => typeof g === "string" && g.toLowerCase().includes(cleanQuery));
+        return Boolean(titleMatch || originalTitleMatch || directorMatch || genreMatch);
+      });
+      
+      // Merge local and TMDB, avoiding duplicates by id
+      const merged = [...localMatches];
+      
+      if (Array.isArray(tmdbSearchResults)) {
+        tmdbSearchResults.filter(m => {
+          if (!m) return false;
+          const title = String(m.title || (m as any).name || '').toLowerCase();
+          return !isAnimeOrAdultKeyword(title);
+        }).forEach(tmdbMovie => {
+          if (!tmdbMovie) return;
+          const existsLocal = merged.some(m => {
+            if (!m) return false;
+            const sameTmdbId = tmdbMovie.tmdbId && (String(m.tmdbId) === String(tmdbMovie.tmdbId) || String(m.id) === String(tmdbMovie.tmdbId) || String(m.imdbId) === String(tmdbMovie.tmdbId) || (m.providerIds && m.providerIds.Tmdb && String(m.providerIds.Tmdb) === String(tmdbMovie.tmdbId)));
+            const sameId = String(m.id) === String(tmdbMovie.id);
+            const sameTitleAndYear = m.title && tmdbMovie.title && String(m.title).toLowerCase() === String(tmdbMovie.title).toLowerCase() && m.year === tmdbMovie.year;
+            return Boolean(sameTmdbId || sameId || sameTitleAndYear);
+          });
+          if (!existsLocal) {
+            merged.push(tmdbMovie);
+          }
+        });
       }
-    });
-    
-    
-    const uniqueMerged = [];
-    const seenTmdbIds = new Set();
-    const seenTitles = new Set();
-    
-    for (const m of merged) {
-      const isTvStr = m.isTv ? 'tv' : 'movie';
       
-      const tmdbKey = m.tmdbId ? `${m.tmdbId}-${isTvStr}` : null;
-      const titleKey = `${(m.title || '').toLowerCase()}-${m.year}-${isTvStr}`;
+      const uniqueMerged: Movie[] = [];
+      const seenTmdbIds = new Set<string>();
+      const seenTitles = new Set<string>();
       
-      const hasTmdb = tmdbKey && seenTmdbIds.has(tmdbKey);
-      const hasTitle = seenTitles.has(titleKey);
-      
-      if (!hasTmdb && !hasTitle) {
-        if (tmdbKey) seenTmdbIds.add(tmdbKey);
-        seenTitles.add(titleKey);
-        uniqueMerged.push(m);
+      for (const m of merged) {
+        if (!m) continue;
+        const isTvStr = m.isTv ? 'tv' : 'movie';
+        const tmdbKey = m.tmdbId ? `${m.tmdbId}-${isTvStr}` : (m.id ? `${m.id}-${isTvStr}` : null);
+        const titleKey = `${String(m.title || '').toLowerCase()}-${m.year || 0}-${isTvStr}`;
+        
+        const hasTmdb = tmdbKey ? seenTmdbIds.has(tmdbKey) : false;
+        const hasTitle = seenTitles.has(titleKey);
+        
+        if (!hasTmdb && !hasTitle) {
+          if (tmdbKey) seenTmdbIds.add(tmdbKey);
+          seenTitles.add(titleKey);
+          uniqueMerged.push(m);
+        }
       }
+
+      uniqueMerged.sort((a, b) => {
+        const aTitle = String(a?.title || "").toLowerCase();
+        const bTitle = String(b?.title || "").toLowerCase();
+        const aExact = aTitle === cleanQuery;
+        const bExact = bTitle === cleanQuery;
+        
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        
+        const aStarts = aTitle.startsWith(cleanQuery);
+        const bStarts = bTitle.startsWith(cleanQuery);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        
+        return 0;
+      });
+
+      return uniqueMerged;
+    } catch (err) {
+      console.error("[searchedMovies] computation error:", err);
+      return [];
     }
-
-    const lowerQuery = searchQuery.toLowerCase().trim();
-    uniqueMerged.sort((a, b) => {
-      const aTitle = (a.title || "").toLowerCase();
-      const bTitle = (b.title || "").toLowerCase();
-      const aExact = aTitle === lowerQuery;
-      const bExact = bTitle === lowerQuery;
-      
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
-      
-      const aStarts = aTitle.startsWith(lowerQuery);
-      const bStarts = bTitle.startsWith(lowerQuery);
-      if (aStarts && !bStarts) return -1;
-      if (!aStarts && bStarts) return 1;
-      
-      return 0; // preserve original order (tmdb is already popularity sorted)
-    });
-
-    return uniqueMerged;
   }, [searchQuery, allMovies, tmdbSearchResults]);
 
   const targetMovieId = React.useMemo(() => {
@@ -1896,21 +2037,22 @@ export default function App() {
 
   const findMovieById = React.useCallback((idOrQuery: string): Movie | undefined => {
     if (!idOrQuery) return undefined;
-    const clean = idOrQuery.replace(/-S\d+E\d+$/, "");
+    const strId = String(idOrQuery);
+    const clean = strId.replace(/-S\d+E\d+$/, "");
     const cleanWithoutTv = clean.replace(/(-tv)+$/g, "");
-    const isTvSearch = idOrQuery.endsWith("-tv") || idOrQuery.includes("-S") || clean.endsWith("-tv");
+    const isTvSearch = strId.endsWith("-tv") || strId.includes("-S") || clean.endsWith("-tv");
 
     // 1. Strict match on isTv
     let match = allMovies.find(m => {
-      const isTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      const isTv = Boolean(m.isTv || String(m.id || "").endsWith("-tv"));
       if (isTvSearch !== isTv) return false;
-      return m.id === idOrQuery || m.id === clean || m.id === `${cleanWithoutTv}-tv` || String(m.tmdbId) === clean || String(m.tmdbId) === cleanWithoutTv;
+      return String(m.id) === strId || String(m.id) === clean || String(m.id) === `${cleanWithoutTv}-tv` || String(m.tmdbId) === clean || String(m.tmdbId) === cleanWithoutTv;
     });
     if (match) return match;
 
     // 2. Jellyfin providerIds with isTv check
     match = allMovies.find(m => {
-      const isTv = Boolean(m.isTv || m.id?.endsWith("-tv"));
+      const isTv = Boolean(m.isTv || String(m.id || "").endsWith("-tv"));
       if (isTvSearch !== isTv) return false;
       const jfTmdb = (m as any).providerIds?.Tmdb;
       return jfTmdb && (String(jfTmdb) === clean || String(jfTmdb) === cleanWithoutTv);
@@ -1918,7 +2060,7 @@ export default function App() {
     if (match) return match;
 
     // 3. Fallback: exact id match
-    match = allMovies.find(m => m.id === idOrQuery || m.id === clean || m.id === `${cleanWithoutTv}-tv`);
+    match = allMovies.find(m => String(m.id) === strId || String(m.id) === clean || String(m.id) === `${cleanWithoutTv}-tv`);
     if (match) return match;
 
     // 4. Fallback: tmdbId match
@@ -1937,15 +2079,26 @@ export default function App() {
   useEffect(() => {
     if (targetMovieId && (!activeMovie || !activeMovie.director || activeMovie.tagline === undefined || !activeMovie.castDetails || (activeMovie.isTv && !activeMovie.seasons))) {
       setMovieLoadError(null);
+      const isTv = Boolean(activeMovie?.isTv || String(targetMovieId || "").endsWith("-tv") || String(targetMovieId || "").includes("-S"));
       const tmdbId = activeMovie?.tmdbId || activeMovie?.providerIds?.Tmdb;
-      const fetchId = tmdbId ? (activeMovie?.isTv ? `${tmdbId}-tv` : String(tmdbId)) : targetMovieId;
+      const cleanTargetId = String(targetMovieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      const fetchId = tmdbId ? (isTv ? `${tmdbId}-tv` : String(tmdbId)) : (isTv ? `${cleanTargetId}-tv` : cleanTargetId);
+      
+      let isMounted = true;
       fetch(`/api/movie/${fetchId}`)
         .then(res => res.json())
         .then(data => {
+          if (!isMounted) return;
           if (data.success && data.movie) {
             setTmdbCache(prev => {
               const map = new Map(prev.map(m => [m.id, m]));
-              map.set(targetMovieId, { ...(activeMovie || {}), ...data.movie, id: targetMovieId });
+              const updatedMovie = { ...(activeMovie || {}), ...data.movie, id: targetMovieId };
+              map.set(targetMovieId, updatedMovie);
+              if (String(targetMovieId || "").endsWith("-tv")) {
+                map.set(targetMovieId.replace(/-tv$/, ""), updatedMovie);
+              } else if (data.movie.isTv) {
+                map.set(`${targetMovieId}-tv`, updatedMovie);
+              }
               const newCache = Array.from(map.values());
               localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
               return newCache;
@@ -1957,11 +2110,23 @@ export default function App() {
           }
         })
         .catch(err => {
+          if (!isMounted) return;
           console.error("Error fetching missing movie data:", err);
           if (!activeMovie) {
             setMovieLoadError(err.message);
           }
         });
+
+      const timer = setTimeout(() => {
+        if (isMounted && !activeMovie) {
+          setMovieLoadError("Unable to load movie details. Please try again.");
+        }
+      }, 3500);
+
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
     }
   }, [targetMovieId, activeMovie]);
 
@@ -1996,11 +2161,15 @@ export default function App() {
   const getProgress = (id: string) => {
     let pct = progressData[id] || 0;
     if (pct === 0) {
-      const m = findMovieById(id);
-      if (m) {
-        if (m.id && progressData[m.id]) pct = progressData[m.id];
-        else if (m.tmdbId && progressData[String(m.tmdbId)]) pct = progressData[String(m.tmdbId)];
-        else if (m.tmdbId && progressData[`${m.tmdbId}-tv`]) pct = progressData[`${m.tmdbId}-tv`];
+      const clean = String(id || "").replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+      pct = progressData[clean] || progressData[`${clean}-tv`] || 0;
+      if (pct === 0) {
+        const m = findMovieById(id);
+        if (m) {
+          if (m.id && progressData[String(m.id)]) pct = progressData[String(m.id)];
+          else if (m.tmdbId && progressData[String(m.tmdbId)]) pct = progressData[String(m.tmdbId)];
+          else if (m.tmdbId && progressData[`${m.tmdbId}-tv`]) pct = progressData[`${m.tmdbId}-tv`];
+        }
       }
     }
     return pct;
@@ -2025,7 +2194,10 @@ export default function App() {
       if (tmdb && seenTmdb.has(tmdb)) return;
       if (cleanTitle && seenTitles.has(cleanTitle)) return;
       
-      const p = getProgress(m.id);
+      let p = getProgress(m.id);
+      if (p <= 0 && m.isTv) {
+        p = 0.35;
+      }
       if (p <= 0) return;
       if (!m.isTv && p >= 0.95) return;
 
@@ -2152,12 +2324,14 @@ export default function App() {
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
+                        e.preventDefault();
                         setSearchQuery(searchInput);
                       }
                       if (e.key === "Escape") {
-                        if (!searchInput) {
-                          setIsSearchOpen(false);
-                        }
+                        e.preventDefault();
+                        setSearchQuery("");
+                        setSearchInput("");
+                        setIsSearchOpen(false);
                       }
                     }}
                     className="w-full bg-neutral-900 border border-neutral-700 text-stone-100 placeholder-zinc-500 text-xs pl-9 pr-8 py-1.5 md:py-2 rounded-full focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-xl font-sans"
@@ -2329,29 +2503,31 @@ export default function App() {
                 </div>
               </div>
 
-              {searchedMovies.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 pt-2 justify-items-center">
-                  {searchedMovies.map((movie, idx) => (
-                    <LazyVirtualCard key={`${movie.id}-search-${idx}`} priority={idx < 10}>
-                      <MovieCard
-                        movie={movie}
-                        onSelect={(m) => handleOpenMovie(m, false)}
-                        onPlay={(m) => handleOpenMovie(m, true)}
-                      />
-                    </LazyVirtualCard>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-20 text-center max-w-md mx-auto space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-850 flex items-center justify-center mx-auto text-zinc-600">
-                    <Search className="w-7 h-7" />
+              <ErrorBoundary fallbackTitle="Erreur dans les résultats de recherche" onReset={() => { setSearchQuery(""); setSearchInput(""); }}>
+                {searchedMovies.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 pt-2 justify-items-center">
+                    {searchedMovies.map((movie, idx) => (
+                      <LazyVirtualCard key={`${movie.id}-search-${idx}`} priority={idx < 10}>
+                        <MovieCard
+                          movie={movie}
+                          onSelect={(m) => handleOpenMovie(m, false)}
+                          onPlay={(m) => handleOpenMovie(m, true)}
+                        />
+                      </LazyVirtualCard>
+                    ))}
                   </div>
-                  <h3 className="text-lg font-display font-bold text-white">No matches found</h3>
-                  <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed font-sans">
-                    Some of our classic movies are grouped by director or themes. Try for example: <span className="text-amber-400 font-mono">Tarantino</span>, <span className="text-amber-400 font-mono">Nolan</span>, <span className="text-amber-400 font-mono">Star Wars</span> or <span className="text-amber-400 font-mono">Action</span>.
-                  </p>
-                </div>
-              )}
+                ) : (
+                  <div className="py-20 text-center max-w-md mx-auto space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-850 flex items-center justify-center mx-auto text-zinc-600">
+                      <Search className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-lg font-display font-bold text-white">No matches found</h3>
+                    <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed font-sans">
+                      Some of our classic movies are grouped by director or themes. Try for example: <span className="text-amber-400 font-mono">Tarantino</span>, <span className="text-amber-400 font-mono">Nolan</span>, <span className="text-amber-400 font-mono">Star Wars</span> or <span className="text-amber-400 font-mono">Action</span>.
+                    </p>
+                  </div>
+                )}
+              </ErrorBoundary>
 
               {/* Discord Request Banner */}
               <div className="mt-12 pt-8 border-t border-white/10 text-center">
@@ -2515,7 +2691,7 @@ export default function App() {
                           {/* Refined Minimalist Movie Meta (Tightly grouped below title) */}
                           <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
                             <span className="text-zinc-100">
-                              {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || heroMovie.id?.endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
+                              {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || String(heroMovie.id || "").endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
                                 ? "TV Series"
                                 : "Movie"
                               }
@@ -2959,7 +3135,7 @@ export default function App() {
                   return (
                     <CinemaPlayerView
                       movieId={actualId}
-                      isTv={!!tvMatch || !!(activeMovie as any)?.isTv || actualId.endsWith("-tv")}
+                      isTv={!!tvMatch || !!(activeMovie as any)?.isTv || String(actualId || "").endsWith("-tv")}
                       season={season}
                       episode={episode}
                       movieTitle={activeMovie?.title || "Cult Classic"}
@@ -3086,11 +3262,13 @@ export default function App() {
                  }
                  
                  if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
-                 if (!k.endsWith("-tv")) {
-                     if (pct > (newProgressData[k + "-tv"] || 0) || !newProgressData[k + "-tv"]) newProgressData[k + "-tv"] = pct;
+                 const kStr = String(k || "");
+                 if (!kStr.endsWith("-tv")) {
+                     if (pct > (newProgressData[kStr + "-tv"] || 0) || !newProgressData[kStr + "-tv"]) newProgressData[kStr + "-tv"] = pct;
                  }
-                 if (k.endsWith("-tv")) {
-                     if (pct > (newProgressData[k.replace("-tv", "")] || 0) || !newProgressData[k.replace("-tv", "")]) newProgressData[k.replace("-tv", "")] = pct;
+                 if (kStr.endsWith("-tv")) {
+                     const baseK = kStr.replace("-tv", "");
+                     if (pct > (newProgressData[baseK] || 0) || !newProgressData[baseK]) newProgressData[baseK] = pct;
                  }
               });
               setProgressData(newProgressData);

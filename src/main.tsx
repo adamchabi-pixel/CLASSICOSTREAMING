@@ -387,13 +387,21 @@ if (typeof window !== "undefined") {
       return (async () => {
         try {
           const parts = url.split("/api/movie/");
-          const id = parts[1]?.split("?")[0];
-          const isTv = id.endsWith('-tv');
-          const actualId = isTv ? id.replace('-tv', '') : id;
-          const u = isTv 
+          const rawId = String(parts[1]?.split("?")[0] || "");
+          let isTv = rawId.endsWith('-tv');
+          const actualId = isTv ? rawId.replace('-tv', '') : rawId;
+          let u = isTv 
              ? `https://api.tmdb.org/3/tv/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`
             : `https://api.tmdb.org/3/movie/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`;
-          const res = await fetch(u, { headers: { "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs`, "Accept": "application/json" } });
+          let res = await fetch(u, { headers: { "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs`, "Accept": "application/json" } });
+          if (!res.ok && !isTv) {
+            const tvUrl = `https://api.tmdb.org/3/tv/${actualId}?append_to_response=credits,videos,similar,images&include_image_language=en,null&language=en-US`;
+            const tvRes = await fetch(tvUrl, { headers: { "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs`, "Accept": "application/json" } });
+            if (tvRes.ok) {
+              res = tvRes;
+              isTv = true;
+            }
+          }
           if (!res.ok) throw new Error("TMDB failed");
           const m = await res.json();
           const releaseDate = isTv ? m.first_air_date : m.release_date;
@@ -419,7 +427,7 @@ if (typeof window !== "undefined") {
           const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : undefined;
           
           const movieData = {
-            id: id,
+            id: rawId,
             trailerUrl: trailerUrl,
             tmdbId: String(m.id),
             imdbId: m.imdb_id || String(m.id),
@@ -469,13 +477,13 @@ if (typeof window !== "undefined") {
         try {
           const parts = url.split("/api/tv/");
           const rest = parts[1]?.split("?")[0];
-          const [id, seasonPart, seasonNumber] = rest.split("/");
-          const cleanId = id.replace("-tv", "");
+          const [id, seasonPart, seasonNumber] = (rest || "").split("/");
+          const cleanId = String(id || "").replace("-tv", "");
           const u = `https://api.tmdb.org/3/tv/${cleanId}/season/${seasonNumber}?language=en-US`;
           const res = await fetch(u, { headers: { "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs`, "Accept": "application/json" } });
           if (!res.ok) throw new Error("TMDB failed");
           const seasonData = await res.json();
-          const episodes = seasonData.episodes.map((ep: any) => ({
+          const episodes = (seasonData?.episodes || []).map((ep: any) => ({
             id: ep.id,
             episode_number: ep.episode_number,
             name: ep.name,

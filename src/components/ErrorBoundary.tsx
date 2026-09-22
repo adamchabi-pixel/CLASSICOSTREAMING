@@ -26,33 +26,44 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("[ERROR BOUNDARY CATCH]", error, errorInfo);
-    
-    // Auto-reset logic
-    if (typeof window !== 'undefined') {
-      const resetCount = parseInt(sessionStorage.getItem('error_boundary_reset_count') || '0', 10);
-      if (resetCount < 2) {
-        sessionStorage.setItem('error_boundary_reset_count', String(resetCount + 1));
-        localStorage.clear();
-        if (this.props.onReset) {
-            this.props.onReset();
-        } else {
-            window.location.hash = "";
-            window.location.pathname = "/";
-        }
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+    if (this.props.onReset) {
+      this.props.onReset();
+    } else {
+      try {
+        window.history.pushState(null, "", "/");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      } catch (e) {
+        window.location.href = "/";
       }
     }
-  }
+  };
 
   render() {
     if (this.state.hasError) {
-      // We don't want to show the French error screen.
-      // Show a simple loading indicator while the page reloads.
       return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center">
-            <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></div>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center text-white bg-black">
+          <div className="max-w-md p-6 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl space-y-4">
+            <h2 className="text-xl font-bold font-display text-amber-400">
+              {this.props.fallbackTitle || "Une interruption est survenue"}
+            </h2>
+            <p className="text-sm text-zinc-400">
+              Une erreur inattendue est survenue lors de l'affichage. Vous pouvez réinitialiser pour revenir à l'accueil.
+            </p>
+            <button
+              onClick={this.handleReset}
+              className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm transition-transform active:scale-95 shadow-lg cursor-pointer"
+            >
+              Retour à l'accueil
+            </button>
+          </div>
         </div>
       );
     }
     return this.props.children;
   }
 }
+

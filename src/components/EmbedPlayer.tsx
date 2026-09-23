@@ -36,6 +36,8 @@ const EmbedPlayer: React.FC<EmbedPlayerProps> = ({ embedUrl }) => {
         frameBorder="0"
         scrolling="no"
         allowFullScreen
+        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         onError={handleError}
       ></iframe>
     </div>

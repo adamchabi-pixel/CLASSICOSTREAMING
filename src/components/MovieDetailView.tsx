@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Plus, Play, ChevronDown, Award, Users, Film, ArrowLeft, Star, Clock, Heart, X, User, ChevronLeft, ChevronRight, Download, CheckCircle } from "lucide-react";
 import { Movie } from "../data";
+import { useAuth } from "../context/AuthContext";
 
 interface MovieDetailViewProps {
   movie: Movie;
@@ -16,6 +17,7 @@ export default function MovieDetailView({
   onPlay,
   onSimilarClick,
 }: MovieDetailViewProps) {
+  const { isInWatchlist, toggleWatchlist, isFavorite, toggleFavorite, addToHistory } = useAuth();
   const [fullMovie, setFullMovie] = React.useState<Movie>(movie);
   React.useEffect(() => {
     setFullMovie(movie);
@@ -278,6 +280,7 @@ export default function MovieDetailView({
             <div className="flex items-center gap-3.5 pt-3 [@media(max-height:500px)_and_(orientation:landscape)]:pt-1">
                 <button
                   onClick={() => {
+                    addToHistory(String(fullMovie.id), fullMovie);
                     if (fullMovie.isTv) {
                       const s = lastWatched ? lastWatched.season : (selectedSeason || 1);
                       const e = lastWatched ? lastWatched.episode : 1;
@@ -301,8 +304,30 @@ export default function MovieDetailView({
                   <Download className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
-                <button onClick={() => console.log('Added to list')} className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-neutral-800/80 hover:bg-neutral-700/80 text-white rounded-full transition-all active:scale-95 cursor-pointer border border-neutral-700/50 hover:border-neutral-500/50 shrink-0">
-                  <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+                {/* Watchlist Toggle */}
+                <button 
+                  onClick={() => toggleWatchlist(String(fullMovie.id), fullMovie)} 
+                  className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all active:scale-95 cursor-pointer border shrink-0 ${
+                    isInWatchlist(String(fullMovie.id))
+                      ? "bg-amber-500 text-black border-amber-400 font-bold shadow-lg shadow-amber-500/20"
+                      : "bg-neutral-800/80 hover:bg-neutral-700/80 text-white border-neutral-700/50 hover:border-neutral-500/50"
+                  }`}
+                  title={isInWatchlist(String(fullMovie.id)) ? "Retirer de ma liste" : "Ajouter à ma liste"}
+                >
+                  {isInWatchlist(String(fullMovie.id)) ? <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : <Plus className="w-5 h-5 sm:w-6 sm:h-6" />}
+                </button>
+
+                {/* Favorites Toggle */}
+                <button 
+                  onClick={() => toggleFavorite(String(fullMovie.id), fullMovie)} 
+                  className={`inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all active:scale-95 cursor-pointer border shrink-0 ${
+                    isFavorite(String(fullMovie.id))
+                      ? "bg-rose-600/90 text-white border-rose-500 shadow-lg shadow-rose-600/30"
+                      : "bg-neutral-800/80 hover:bg-neutral-700/80 text-zinc-300 hover:text-rose-400 border-neutral-700/50 hover:border-neutral-500/50"
+                  }`}
+                  title={isFavorite(String(fullMovie.id)) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                >
+                  <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isFavorite(String(fullMovie.id)) ? "fill-current text-white" : ""}`} />
                 </button>
               </div>
               

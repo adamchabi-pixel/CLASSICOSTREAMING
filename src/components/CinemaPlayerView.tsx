@@ -897,6 +897,9 @@ export default function CinemaPlayerView({
     }
     return () => {
       logMissingEvents("Rechargement du composant ou fermeture du lecteur");
+      try {
+        window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+      } catch(e) {}
     };
   }, []);
 
@@ -2049,6 +2052,7 @@ export default function CinemaPlayerView({
               };
           }
           safeStorage.setItem("classico_progress", JSON.stringify(saved));
+          window.dispatchEvent(new CustomEvent("classico_progress_updated"));
           
           if (isTv && season && episode) {
              const baseId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
@@ -2416,6 +2420,9 @@ export default function CinemaPlayerView({
             };
           }
           safeStorage.setItem("classico_progress", JSON.stringify(saved));
+          try {
+            window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+          } catch(e) {}
           
           // Also maintain legacy classico_tv_state for App.tsx and MovieDetailView.tsx compatibility
           if (pIsTv && pSeason && pEpisode && pTmdbId) {

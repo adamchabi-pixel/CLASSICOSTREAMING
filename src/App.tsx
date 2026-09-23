@@ -22,6 +22,12 @@ const CinemaPlayerView = React.lazy(() => import("./components/CinemaPlayerView"
 import ErrorBoundary from "./components/ErrorBoundary";
 import LazyVirtualCard from "./components/LazyVirtualCard";
 import HeroSkeleton from "./components/HeroSkeleton";
+import { useAuth } from "./context/AuthContext";
+import AuthModal from "./components/AuthModal";
+import ProfileDropdown from "./components/ProfileDropdown";
+import NotificationDropdown from "./components/NotificationDropdown";
+import UserProfileView from "./components/UserProfileView";
+import RecommendedView from "./components/RecommendedView";
 
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
@@ -765,15 +771,16 @@ export default function App() {
   
   
   const initialPath = window.location.pathname;
-  let initialTab: "accueil" | "collections" | "series" | "profil" | "collection-detail" | "movie" | "player" = "accueil";
+  let initialTab: "accueil" | "collections" | "series" | "recommended" | "profil" | "collection-detail" | "movie" | "player" = "accueil";
   if (initialPath === "/collections") initialTab = "collections";
   else if (initialPath === "/series") initialTab = "series";
+  else if (initialPath === "/recommended") initialTab = "recommended";
   else if (initialPath === "/profil") initialTab = "profil";
   else if (initialPath.startsWith("/collection/")) initialTab = "collection-detail";
   else if (initialPath.startsWith("/player/")) initialTab = "player";
   else if (initialPath.startsWith("/movie/")) initialTab = "movie";
 
-  const [activeTab, setActiveTab ] = useState<"accueil" | "collections" | "series" | "profil" | "collection-detail" | "movie" | "player">(initialTab);
+  const [activeTab, setActiveTab ] = useState<"accueil" | "collections" | "series" | "recommended" | "profil" | "collection-detail" | "movie" | "player">(initialTab);
   const [routePath, setRoutePath] = useState(initialPath);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -795,6 +802,37 @@ export default function App() {
   const [progressData, setProgressData] = useState<Record<string, number>>({});
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [history, setHistory] = useState<string[]>([]);
+
+  const {
+    user,
+    activeProfile,
+    profiles,
+    watchlist: authWatchlist,
+    toggleWatchlist: authToggleWatchlist,
+    watchHistory: authWatchHistory,
+    addToHistory: authAddToHistory,
+    playbackProgress: authPlaybackProgress,
+    saveProgress: authSaveProgress,
+    isProfileSelectorOpen,
+    setIsProfileSelectorOpen,
+    openAuthModal
+  } = useAuth();
+
+  useEffect(() => {
+    setWatchlist(authWatchlist || []);
+  }, [authWatchlist]);
+
+  useEffect(() => {
+    setHistory(authWatchHistory || []);
+  }, [authWatchHistory]);
+
+  useEffect(() => {
+    if (!user) {
+      setWatchlist([]);
+      setHistory([]);
+      setProgressData({});
+    }
+  }, [user]);
   
   const [expandedCollections, setExpandedCollections] = useState<Record<string, boolean>>({});
   const isHeroLoading = !asyncData;
@@ -803,7 +841,7 @@ export default function App() {
   const [direction, setDirection] = useState(0);
   const [routeScrollPositions, setRouteScrollPositions] = useState<Record<string, number>>({});
     
-    const heroMovies = asyncData ? asyncData.hero.heroes : [];
+  const heroMovies = asyncData ? asyncData.hero.heroes : [];
   const heroMovie = heroMovies[currentHeroIndex] || null;
   const useTextTitleForHero = false;
   const setUseTextTitleForHero = (val: boolean) => {};
@@ -837,47 +875,15 @@ export default function App() {
       }
     }
 
-    // Seed Kingdom (61427-tv) into progress, history, and tv_state if not present
-    if (!parsed["61427-tv"] && !parsed["61427"]) {
-      parsed["61427-tv"] = {
-        id: "61427-tv",
-        type: "tv",
-        last_season_watched: 1,
-        last_episode_watched: 1,
-        show_progress: {
-          "s1e1": {
-            season: 1,
-            episode: 1,
-            progress: { watched: 900, duration: 2700 }
-          }
-        }
-      };
-      try {
-        localStorage.setItem("classico_progress", JSON.stringify(parsed));
-      } catch (e) {}
-    }
-
     try {
       const savedHistory = localStorage.getItem("classico_history");
-      let hList: string[] = [];
       if (savedHistory) {
-        hList = JSON.parse(savedHistory) || [];
-      }
-      if (!hList.some(id => String(id).includes("61427"))) {
-        hList = ["61427-tv", ...hList];
-        localStorage.setItem("classico_history", JSON.stringify(hList));
+        const hList = JSON.parse(savedHistory) || [];
         setHistory(hList);
+      } else {
+        setHistory([]);
       }
     } catch (e) {}
-
-    try {
-      const tvState = JSON.parse(localStorage.getItem("classico_tv_state") || "{}");
-      if (!tvState["61427-tv"] && !tvState["61427"]) {
-        tvState["61427-tv"] = { season: 1, episode: 1 };
-        tvState["61427"] = { season: 1, episode: 1 };
-        localStorage.setItem("classico_tv_state", JSON.stringify(tvState));
-      }
-    } catch(e) {}
 
     try {
       const newProgressData: Record<string, number> = {};
@@ -949,8 +955,8 @@ export default function App() {
     setRoutePath(path);
     if (path === "/") setActiveTab("accueil");
     else if (path === "/collections") setActiveTab("collections");
-      else if (path === "/series") setActiveTab("series");
     else if (path === "/series") setActiveTab("series");
+    else if (path === "/recommended") setActiveTab("recommended");
     else if (path === "/profil") setActiveTab("profil");
     else if (path.startsWith("/collection/")) {
       setSelectedCollectionId(path.split("/")[2]);
@@ -1465,9 +1471,11 @@ export default function App() {
   }, []);
 
   const handleToggleWatchlist = (movieID: string) => {
-    const updated = watchlist.includes(movieID)
-      ? watchlist.filter(id => id !== movieID)
-      : [...watchlist, movieID];
+    const cleanId = String(movieID || "");
+    authToggleWatchlist(cleanId);
+    const updated = watchlist.includes(cleanId)
+      ? watchlist.filter(id => id !== cleanId)
+      : [...watchlist, cleanId];
     setWatchlist(updated);
     localStorage.setItem("classico_watchlist", JSON.stringify(updated));
   };
@@ -1481,6 +1489,10 @@ export default function App() {
     } else {
       targetMovie = movieOrId;
       targetId = String(movieOrId.id || "");
+    }
+
+    if (targetId) {
+      authAddToHistory(targetId, targetMovie);
     }
 
     const targetKey = targetMovie ? getCanonicalMovieKey(targetMovie) : targetId;
@@ -2353,7 +2365,7 @@ export default function App() {
                 <button
                   id="nav-search-icon-btn"
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-2 text-zinc-300 hover:text-amber-400 hover:bg-white/5 rounded-full transition-colors flex items-center justify-center cursor-pointer"
+                  className="p-2 text-zinc-300 hover:text-amber-400 transition-colors flex items-center justify-center cursor-pointer"
                   title="Search"
                 >
                   <Search className="w-5 h-5" />
@@ -2361,8 +2373,10 @@ export default function App() {
               )}
             </div>
 
-            {/* Mobile Actions: Hamburger (hidden on md) */}
-            <div className="flex md:hidden items-center gap-2 shrink-0">
+            {/* Mobile Actions: Notifications & Profile & Hamburger (hidden on md) */}
+            <div className="flex md:hidden items-center gap-1.5 sm:gap-2 shrink-0">
+              <NotificationDropdown />
+              <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} />
               <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 text-zinc-300 hover:text-amber-400 transition-colors z-50 relative"
@@ -2377,6 +2391,7 @@ export default function App() {
                 { id: "accueil", label: "Home", icon: Compass },
                 { id: "collections", label: "Movies", icon: FilmIcon },
                 { id: "series", label: "Series", icon: Tv },
+                { id: "recommended", label: "Recommended", icon: Sparkles },
                 { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" },
                 { id: "profil", label: "My Profile", icon: User }
               ].map((tab) => {
@@ -2411,6 +2426,11 @@ export default function App() {
                   </button>
                 );
               })}
+
+              <div className="flex items-center gap-2 ml-1 sm:ml-2 pl-2 border-l border-zinc-800/80">
+                <NotificationDropdown />
+                <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} />
+              </div>
             </nav>
           </div>
         </div>
@@ -2430,6 +2450,7 @@ export default function App() {
                   { id: "accueil", label: "Home", icon: Compass },
                   { id: "collections", label: "Movies", icon: FilmIcon },
                   { id: "series", label: "Series", icon: Tv },
+                  { id: "recommended", label: "Recommended", icon: Sparkles },
                   { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" },
                   { id: "profil", label: "My Profile", icon: User }
                 ].map((tab) => {
@@ -2476,7 +2497,7 @@ export default function App() {
       {/* ========================================================== */}
       {/* 2. MAIN VIEWER CONTENT CONTAINER                           */}
       {/* ========================================================== */}
-      <main className={(activeTab === "collections" || activeTab === "series") ? "min-h-screen" : "pb-16 min-h-[75vh]"}>
+      <main className={(activeTab === "collections" || activeTab === "series" || activeTab === "recommended") ? "min-h-screen" : "pb-16 min-h-[75vh]"}>
         <AnimatePresence mode="wait">
 
           {/* SEARCH RESULTS SHOWCASE GRID OVERLAY */}
@@ -2511,7 +2532,7 @@ export default function App() {
                         <MovieCard
                           movie={movie}
                           onSelect={(m) => handleOpenMovie(m, false)}
-                          onPlay={(m) => handleOpenMovie(m, true)}
+                          onPlay={(m) => handleOpenMovie(m, false)}
                         />
                       </LazyVirtualCard>
                     ))}
@@ -2808,8 +2829,8 @@ export default function App() {
                           <LazyVirtualCard key={`resume-${movie.id}-${idx}`} priority={idx < 6}>
                             <MovieCard
                               movie={movie}
-                              onSelect={(m) => handleOpenMovie(m, true)}
-                              onPlay={(m) => handleOpenMovie(m, true)}
+                              onSelect={(m) => handleOpenMovie(m, false)}
+                              onPlay={(m) => handleOpenMovie(m, false)}
                               progressPercent={getProgress(movie.id)}
                             />
                           </LazyVirtualCard>
@@ -2946,7 +2967,7 @@ export default function App() {
                               <MovieCard
                                 movie={movie}
                                 onSelect={(m) => handleOpenMovie(m, false)}
-                                onPlay={(m) => handleOpenMovie(m, true)}
+                                onPlay={(m) => handleOpenMovie(m, false)}
                                 trendingIndex={collection.id === "trending-now" ? idx + 1 : undefined}
                               />
                             </LazyVirtualCard>
@@ -2970,7 +2991,7 @@ export default function App() {
               key="library-movies"
               type="movie"
               onSelect={(m) => handleOpenMovie(m, false)}
-              onPlay={(m) => handleOpenMovie(m, true)}
+              onPlay={(m) => handleOpenMovie(m, false)}
               getProgress={getProgress}
             />
           ) : activeTab === "series" ? (
@@ -2981,8 +3002,26 @@ export default function App() {
               key="library-series"
               type="tv"
               onSelect={(m) => handleOpenMovie(m, false)}
-              onPlay={(m) => handleOpenMovie(m, true)}
+              onPlay={(m) => handleOpenMovie(m, false)}
               getProgress={getProgress}
+            />
+          ) : activeTab === "recommended" ? (
+            /* ========================================================== */
+            /* VIEW B3: PERSONALIZED RECOMMENDED SHOWS & MOVIES           */
+            /* ========================================================== */
+            <RecommendedView 
+              key="tab-recommended"
+              allMovies={allMoviesBase}
+              onSelect={(m) => handleOpenMovie(m, false)}
+              onPlay={(m) => handleOpenMovie(m, false)}
+              getProgress={getProgress}
+              history={history}
+              watchlist={watchlist}
+              toggleWatchlist={handleToggleWatchlist}
+              favoriteGenre={activeProfile?.favorite_genre || (user?.user_metadata as any)?.favorite_genre}
+              activeProfileName={activeProfile?.name || (user?.user_metadata as any)?.username}
+              onOpenSignUp={() => openAuthModal("signup")}
+              isLoggedIn={!!user}
             />
           ) : activeTab === "collection-detail" ? (
             /* ========================================================== */
@@ -3055,7 +3094,7 @@ export default function App() {
                           <MovieCard
                             movie={movie}
                             onSelect={(m) => handleOpenMovie(m, false)}
-                            onPlay={(m) => handleOpenMovie(m, true)}
+                            onPlay={(m) => handleOpenMovie(m, false)}
                           />
                         </LazyVirtualCard>
                       ))}
@@ -3161,50 +3200,14 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="max-w-[2000px] mx-auto px-4 sm:px-8 py-8 space-y-12"
+              className="w-full"
             >
-              
-                            {/* Profile Header */}
-              <div className="pb-4 border-b border-zinc-800">
-                <h2 className="text-3xl sm:text-4xl font-cinzel font-bold text-white uppercase tracking-widest">
-                  My Profile
-                </h2>
-              </div>
-
-              
-              {/* Profile Card Deck */}
-              <div className="space-y-8 text-left">
-                
-                {/* Film Library & Watchlists */}
-                <div className="space-y-12">
-                  
-                  {/* Watch History displaying viewed films */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-display font-bold uppercase tracking-wider text-white flex items-center gap-2 border-b border-zinc-800/80 pb-2">
-                      <History className="w-4 h-4 text-zinc-400" />
-                      Recently Viewed ({recentlyViewedMovies.length})
-                    </h3>
-
-                    {recentlyViewedMovies.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-8 justify-items-center">
-                        {recentlyViewedMovies.map((movie, idx) => (
-                          <LazyVirtualCard key={`${movie.id}-history-${idx}`} priority={idx < 8}>
-                            <MovieCard
-                              movie={movie}
-                              onSelect={(m) => handleOpenMovie(m, false)}
-                              onPlay={(m) => handleOpenMovie(m, true)}
-                            />
-                          </LazyVirtualCard>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-zinc-500 font-mono italic">No recent watch history available.</p>
-                    )}
-                  </div>
-
-                </div>
-
-              </div>
+              <UserProfileView
+                allMovies={allMovies}
+                onSelectMovie={(m) => handleOpenMovie(m, false)}
+                onPlayMovie={(m) => handleOpenMovie(m, true)}
+                getProgressPercent={getProgress}
+              />
             </motion.div>
           ) : null}
 
@@ -3279,6 +3282,7 @@ export default function App() {
 
       
 
-      </div>
+      <AuthModal />
+    </div>
   );
 }

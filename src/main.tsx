@@ -619,11 +619,15 @@ if (typeof window !== "undefined") {
   }
 }
 
+import { AuthProvider } from './context/AuthContext';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary fallbackTitle="Une interruption est survenue dans l'application Classico">
-      <App />
-      <Analytics />
+      <AuthProvider>
+        <App />
+        <Analytics />
+      </AuthProvider>
     </ErrorBoundary>
   </StrictMode>,
 );

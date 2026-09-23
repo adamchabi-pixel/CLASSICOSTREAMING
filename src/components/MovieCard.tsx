@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Play, Clock, CheckCircle } from "lucide-react";
+import { Star, Play, Clock, CheckCircle, Info } from "lucide-react";
 import { Movie } from "../data";
 
 interface MovieCardProps {
@@ -105,18 +105,19 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
           {/* Persistent Gradient overlay for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-          {/* Quick Direct Play Button Overlay */}
+          {/* Quick Info/Details Button Overlay */}
           <div className="absolute inset-0 z-25 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 pointer-events-none">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onPlay(movie);
+                onSelect(movie);
               }}
-              className="pointer-events-auto w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-black flex items-center justify-center shadow-[0_0_24px_rgba(245,158,11,0.6)] transition-all duration-200 hover:scale-110 cursor-pointer"
-              title="Lancer directement"
+              className="pointer-events-auto px-3.5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 active:scale-95 text-black font-semibold text-xs tracking-wider uppercase flex items-center gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.6)] transition-all duration-200 hover:scale-105 cursor-pointer font-['Montserrat',sans-serif]"
+              title="Voir les détails et informations"
             >
-              <Play className="w-5 h-5 fill-current ml-0.5" />
+              <Info className="w-3.5 h-3.5 fill-current" />
+              <span>Détails & Infos</span>
             </button>
           </div>
 

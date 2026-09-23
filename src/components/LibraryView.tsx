@@ -312,7 +312,7 @@ export default function LibraryView({ onSelect, onPlay, getProgress, type = 'mov
                           <MovieCard
                             movie={movie}
                             onSelect={onSelect}
-                            onPlay={onPlay}
+                            onPlay={onSelect}
                             progressPercent={getProgress(movie.id)}
                           />
                        </LazyVirtualCard>

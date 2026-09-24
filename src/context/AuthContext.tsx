@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase, Profile, DEFAULT_AVATARS } from "../lib/supabase";
 
@@ -79,6 +79,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [playbackProgress, setPlaybackProgress] = useState<Record<string, any>>({});
 
+  // Interplatform cloud synchronization refs & debouncing
+  const pendingCloudSyncRef = useRef<{
+    progress?: Record<string, any>;
+    history?: string[];
+    favorites?: string[];
+    watchlist?: string[];
+    profiles?: Profile[];
+    activeProfileId?: string;
+  }>({});
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSyncTimeRef = useRef<number>(0);
+  const userRef = useRef<User | null>(user);
+  const loadedUserIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
+  const flushCloudSync = useCallback(async () => {
+    const currentUser = userRef.current;
+    if (!currentUser) return;
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+      syncTimeoutRef.current = null;
+    }
+    const pending = { ...pendingCloudSyncRef.current };
+    if (Object.keys(pending).length === 0) return;
+    pendingCloudSyncRef.current = {};
+
+    try {
+      const updatePayload: Record<string, any> = {};
+      if (pending.progress) updatePayload.classico_playback_progress = pending.progress;
+      if (pending.history) updatePayload.classico_watch_history = pending.history;
+      if (pending.favorites) updatePayload.classico_favorites = pending.favorites;
+      if (pending.watchlist) updatePayload.classico_watchlist = pending.watchlist;
+      if (pending.profiles) updatePayload.classico_profiles = pending.profiles;
+      if (pending.activeProfileId) updatePayload.classico_active_profile_id = pending.activeProfileId;
+
+      if (Object.keys(updatePayload).length > 0) {
+        await supabase.auth.updateUser({
+          data: updatePayload
+        });
+        lastSyncTimeRef.current = Date.now();
+      }
+    } catch (err) {
+      console.warn("[AUTH] Interplatform cloud sync error:", err);
+    }
+  }, []);
+
+  const queueCloudSync = useCallback((type: "progress" | "history" | "favorites" | "watchlist" | "profiles" | "activeProfileId", data: any, immediate = false) => {
+    if (!userRef.current) return;
+    pendingCloudSyncRef.current[type] = data;
+
+    if (immediate) {
+      flushCloudSync();
+      return;
+    }
+
+    const now = Date.now();
+    const timeSinceLastSync = now - lastSyncTimeRef.current;
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    const delay = timeSinceLastSync > 5000 ? 1000 : 3500;
+    syncTimeoutRef.current = setTimeout(() => {
+      flushCloudSync();
+    }, delay);
+  }, [flushCloudSync]);
+
   // Auth modal UI controls
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authModalInitialMode, setAuthModalInitialMode] = useState<"login" | "signup">("login");
@@ -149,96 +219,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // 2. Fetch or initialize profiles when user changes
+  const resolveActiveProfile = useCallback((profileList: Profile[], currentUser?: User) => {
+    if (!profileList || profileList.length === 0) return;
+    const userObj = currentUser || userRef.current;
+    const cloudActiveId = userObj?.user_metadata?.classico_active_profile_id;
+    const savedId = localStorage.getItem("classico_active_profile_id") || cloudActiveId;
+    const matched = profileList.find(p => p.id === savedId);
+    if (matched) {
+      setActiveProfile(matched);
+      localStorage.setItem("classico_active_profile_id", matched.id);
+    } else {
+      const primary = profileList.find(p => p.is_primary) || profileList[0];
+      setActiveProfile(primary);
+      localStorage.setItem("classico_active_profile_id", primary.id);
+    }
+  }, []);
+
+  // 2. Fetch or initialize profiles when user changes (Cloud-First Interplatform)
   const loadProfiles = useCallback(async (currentUser: User) => {
     try {
-      // Attempt to query Supabase profiles table
+      // 1. Attempt to query Supabase profiles table
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", currentUser.id)
         .order("created_at", { ascending: true });
 
-      if (error) {
-        setIsTablesReady(false);
-        const localProfilesKey = `classico_profiles_${currentUser.id}`;
-        const raw = localStorage.getItem(localProfilesKey);
-        let loadedProfiles: Profile[] = raw ? JSON.parse(raw) : [];
-
-        if (loadedProfiles.length === 0) {
-          // Generate default primary profile
-          const primary: Profile = {
-            id: "profile-1-" + currentUser.id.slice(0, 6),
-            user_id: currentUser.id,
-            name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Principal",
-            avatar_url: currentUser.user_metadata?.avatar_url || DEFAULT_AVATARS[0].url,
-            favorite_genre: currentUser.user_metadata?.favorite_genre || undefined,
-            is_kids: false,
-            is_primary: true,
-            created_at: new Date().toISOString()
-          };
-          loadedProfiles = [primary];
-          localStorage.setItem(localProfilesKey, JSON.stringify(loadedProfiles));
-        }
-
-        setProfiles(loadedProfiles);
-        resolveActiveProfile(loadedProfiles);
+      if (!error && data && data.length > 0) {
+        setIsTablesReady(true);
+        setProfiles(data as Profile[]);
+        resolveActiveProfile(data as Profile[], currentUser);
         return;
       }
 
-      setIsTablesReady(true);
-      if (data && data.length > 0) {
-        setProfiles(data as Profile[]);
-        resolveActiveProfile(data as Profile[]);
-      } else {
-        // No profiles found in Supabase -> Auto-create primary profile
-        const defaultName = currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Principal";
-        const newProfile: Partial<Profile> = {
-          user_id: currentUser.id,
-          name: defaultName,
-          avatar_url: currentUser.user_metadata?.avatar_url || DEFAULT_AVATARS[0].url,
-          favorite_genre: currentUser.user_metadata?.favorite_genre || undefined,
-          is_kids: false,
-          is_primary: true
-        };
-
-        const { data: created, error: insertError } = await supabase
-          .from("profiles")
-          .insert(newProfile)
-          .select()
-          .single();
-
-        if (insertError) {
-          console.warn("[AUTH] Could not insert default profile in Supabase:", insertError);
-          // Fallback to local
-          const fallbackProfile: Profile = {
-            id: "profile-1-" + currentUser.id.slice(0, 6),
-            user_id: currentUser.id,
-            name: defaultName,
-            avatar_url: currentUser.user_metadata?.avatar_url || DEFAULT_AVATARS[0].url,
-            favorite_genre: currentUser.user_metadata?.favorite_genre || undefined,
-            is_kids: false,
-            is_primary: true,
-            created_at: new Date().toISOString()
-          };
-          setProfiles([fallbackProfile]);
-          resolveActiveProfile([fallbackProfile]);
-        } else if (created) {
-          setProfiles([created as Profile]);
-          resolveActiveProfile([created as Profile]);
-        }
+      if (error) {
+        setIsTablesReady(false);
       }
-    } catch (e) {
-      console.warn("[AUTH] Error loading profiles, using local fallback:", e);
+
+      // 2. Check Supabase Auth user_metadata (cross-platform cloud source)
+      const cloudProfiles = currentUser.user_metadata?.classico_profiles;
+      if (Array.isArray(cloudProfiles) && cloudProfiles.length > 0) {
+        setProfiles(cloudProfiles);
+        resolveActiveProfile(cloudProfiles, currentUser);
+        localStorage.setItem(`classico_profiles_${currentUser.id}`, JSON.stringify(cloudProfiles));
+        return;
+      }
+
+      // 3. Fallback to localStorage
       const localProfilesKey = `classico_profiles_${currentUser.id}`;
       const raw = localStorage.getItem(localProfilesKey);
       let loadedProfiles: Profile[] = raw ? JSON.parse(raw) : [];
 
       if (loadedProfiles.length === 0) {
+        const defaultName = currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Principal";
         const primary: Profile = {
           id: "profile-1-" + currentUser.id.slice(0, 6),
           user_id: currentUser.id,
-          name: currentUser.user_metadata?.full_name || currentUser.email?.split("@")[0] || "Principal",
+          name: defaultName,
           avatar_url: currentUser.user_metadata?.avatar_url || DEFAULT_AVATARS[0].url,
           favorite_genre: currentUser.user_metadata?.favorite_genre || undefined,
           is_kids: false,
@@ -250,27 +287,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setProfiles(loadedProfiles);
-      resolveActiveProfile(loadedProfiles);
-    }
-  }, []);
+      resolveActiveProfile(loadedProfiles, currentUser);
 
-  const resolveActiveProfile = (profileList: Profile[]) => {
-    if (!profileList || profileList.length === 0) return;
-    const savedId = localStorage.getItem("classico_active_profile_id");
-    const matched = profileList.find(p => p.id === savedId);
-    if (matched) {
-      setActiveProfile(matched);
-    } else {
-      const primary = profileList.find(p => p.is_primary) || profileList[0];
-      setActiveProfile(primary);
-      localStorage.setItem("classico_active_profile_id", primary.id);
+      // Immediately sync profiles to cloud so any other environment/browser has them
+      queueCloudSync("profiles", loadedProfiles, true);
+      queueCloudSync("activeProfileId", loadedProfiles[0].id, true);
+    } catch (e) {
+      console.warn("[AUTH] Error loading profiles:", e);
     }
-  };
+  }, [queueCloudSync, resolveActiveProfile]);
 
   useEffect(() => {
     if (user) {
-      loadProfiles(user);
+      if (loadedUserIdRef.current !== user.id) {
+        loadedUserIdRef.current = user.id;
+        loadProfiles(user);
+      }
     } else {
+      loadedUserIdRef.current = null;
       // Disconnected / guest mode: completely wipe session data
       setProfiles([]);
       setActiveProfile(null);
@@ -298,8 +332,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const profileId = activeProfile.id;
 
     async function loadProfileData() {
-      // 1. History
+      // 1. History (Cloud-First Interplatform Sync)
       let loadedHistory: string[] = [];
+      if (Array.isArray(user.user_metadata?.classico_watch_history) && user.user_metadata.classico_watch_history.length > 0) {
+        loadedHistory = [...user.user_metadata.classico_watch_history];
+      }
+
       if (isTablesReady) {
         try {
           const { data, error } = await supabase
@@ -309,7 +347,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .order("viewed_at", { ascending: false });
 
           if (!error && data && data.length > 0) {
-            loadedHistory = data.map(d => d.movie_id);
+            const tableHist = data.map(d => d.movie_id);
+            loadedHistory = Array.from(new Set([...tableHist, ...loadedHistory]));
           }
         } catch {}
       }
@@ -319,15 +358,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const emailKey = cleanEmail ? `classico_email_progress_${cleanEmail}` : null;
       const profileKey = getStorageKey(userId, profileId, "progress");
 
-      if (loadedHistory.length === 0) {
-        const localHist = 
-          localStorage.getItem(getStorageKey(userId, profileId, "history")) ||
-          localStorage.getItem(`classico_user_history_${userId}`) ||
-          (cleanEmail ? localStorage.getItem(`classico_email_history_${cleanEmail}`) : null) ||
-          localStorage.getItem("classico_history");
-        if (localHist) {
-          try { loadedHistory = JSON.parse(localHist); } catch {}
-        }
+      const localHist = 
+        localStorage.getItem(getStorageKey(userId, profileId, "history")) ||
+        localStorage.getItem(`classico_user_history_${userId}`) ||
+        (cleanEmail ? localStorage.getItem(`classico_email_history_${cleanEmail}`) : null) ||
+        localStorage.getItem("classico_history");
+      if (localHist) {
+        try {
+          const parsed = JSON.parse(localHist);
+          if (Array.isArray(parsed)) {
+            const beforeCount = loadedHistory.length;
+            loadedHistory = Array.from(new Set([...parsed, ...loadedHistory])).slice(0, 50);
+            if (loadedHistory.length > beforeCount) {
+              queueCloudSync("history", loadedHistory, false);
+            }
+          }
+        } catch {}
       }
 
       if (isMounted) {
@@ -338,8 +384,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (cleanEmail) localStorage.setItem(`classico_email_history_${cleanEmail}`, JSON.stringify(loadedHistory));
       }
 
-      // 2. Favorites
+      // 2. Favorites (Cloud-First Interplatform Sync)
       let loadedFavorites: string[] = [];
+      if (Array.isArray(user.user_metadata?.classico_favorites) && user.user_metadata.classico_favorites.length > 0) {
+        loadedFavorites = [...user.user_metadata.classico_favorites];
+      }
+
       if (isTablesReady) {
         try {
           const { data, error } = await supabase
@@ -349,20 +399,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .order("created_at", { ascending: false });
 
           if (!error && data && data.length > 0) {
-            loadedFavorites = data.map(d => d.movie_id);
+            const tableFavs = data.map(d => d.movie_id);
+            loadedFavorites = Array.from(new Set([...tableFavs, ...loadedFavorites]));
           }
         } catch {}
       }
 
-      if (loadedFavorites.length === 0) {
-        const localFav = 
-          localStorage.getItem(getStorageKey(userId, profileId, "favorites")) ||
-          localStorage.getItem(`classico_user_favorites_${userId}`) ||
-          (cleanEmail ? localStorage.getItem(`classico_email_favorites_${cleanEmail}`) : null) ||
-          localStorage.getItem("classico_favorites");
-        if (localFav) {
-          try { loadedFavorites = JSON.parse(localFav); } catch {}
-        }
+      const localFav = 
+        localStorage.getItem(getStorageKey(userId, profileId, "favorites")) ||
+        localStorage.getItem(`classico_user_favorites_${userId}`) ||
+        (cleanEmail ? localStorage.getItem(`classico_email_favorites_${cleanEmail}`) : null) ||
+        localStorage.getItem("classico_favorites");
+      if (localFav) {
+        try {
+          const parsed = JSON.parse(localFav);
+          if (Array.isArray(parsed)) {
+            const beforeCount = loadedFavorites.length;
+            loadedFavorites = Array.from(new Set([...loadedFavorites, ...parsed]));
+            if (loadedFavorites.length > beforeCount) {
+              queueCloudSync("favorites", loadedFavorites, false);
+            }
+          }
+        } catch {}
       }
 
       if (isMounted) {
@@ -373,8 +431,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (cleanEmail) localStorage.setItem(`classico_email_favorites_${cleanEmail}`, JSON.stringify(loadedFavorites));
       }
 
-      // 3. Watchlist
+      // 3. Watchlist (Cloud-First Interplatform Sync)
       let loadedWatchlist: string[] = [];
+      if (Array.isArray(user.user_metadata?.classico_watchlist) && user.user_metadata.classico_watchlist.length > 0) {
+        loadedWatchlist = [...user.user_metadata.classico_watchlist];
+      }
+
       if (isTablesReady) {
         try {
           const { data, error } = await supabase
@@ -384,20 +446,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .order("created_at", { ascending: false });
 
           if (!error && data && data.length > 0) {
-            loadedWatchlist = data.map(d => d.movie_id);
+            const tableWatch = data.map(d => d.movie_id);
+            loadedWatchlist = Array.from(new Set([...tableWatch, ...loadedWatchlist]));
           }
         } catch {}
       }
 
-      if (loadedWatchlist.length === 0) {
-        const localWatch = 
-          localStorage.getItem(getStorageKey(userId, profileId, "watchlist")) ||
-          localStorage.getItem(`classico_user_watchlist_${userId}`) ||
-          (cleanEmail ? localStorage.getItem(`classico_email_watchlist_${cleanEmail}`) : null) ||
-          localStorage.getItem("classico_watchlist");
-        if (localWatch) {
-          try { loadedWatchlist = JSON.parse(localWatch); } catch {}
-        }
+      const localWatch = 
+        localStorage.getItem(getStorageKey(userId, profileId, "watchlist")) ||
+        localStorage.getItem(`classico_user_watchlist_${userId}`) ||
+        (cleanEmail ? localStorage.getItem(`classico_email_watchlist_${cleanEmail}`) : null) ||
+        localStorage.getItem("classico_watchlist");
+      if (localWatch) {
+        try {
+          const parsed = JSON.parse(localWatch);
+          if (Array.isArray(parsed)) {
+            const beforeCount = loadedWatchlist.length;
+            loadedWatchlist = Array.from(new Set([...loadedWatchlist, ...parsed]));
+            if (loadedWatchlist.length > beforeCount) {
+              queueCloudSync("watchlist", loadedWatchlist, false);
+            }
+          }
+        } catch {}
       }
 
       if (isMounted) {
@@ -408,8 +478,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (cleanEmail) localStorage.setItem(`classico_email_watchlist_${cleanEmail}`, JSON.stringify(loadedWatchlist));
       }
 
-      // 4. Playback Progress
+      // 4. Playback Progress (INTERPLATFORM SUPABASE CLOUD PERSISTENCE)
       let loadedProgress: Record<string, any> = {};
+
+      // 4.1 First check Supabase Auth user_metadata (cross-platform cloud source of truth)
+      if (user.user_metadata?.classico_playback_progress && typeof user.user_metadata.classico_playback_progress === "object") {
+        loadedProgress = { ...user.user_metadata.classico_playback_progress };
+      }
+
+      // 4.2 Also check Supabase SQL table if available
       if (isTablesReady) {
         try {
           const { data, error } = await supabase
@@ -419,28 +496,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (!error && data && data.length > 0) {
             data.forEach((row: any) => {
-              loadedProgress[row.media_id] = {
-                currentTime: Number(row.current_time),
-                duration: Number(row.duration),
-                season: row.season,
-                episode: row.episode,
-                show_progress: row.show_progress,
-                type: row.media_type
-              };
+              const prev = loadedProgress[row.media_id];
+              const prevTime = prev?.currentTime || 0;
+              const curTime = Number(row.current_time) || 0;
+              if (!prev || curTime >= prevTime) {
+                loadedProgress[row.media_id] = {
+                  currentTime: curTime,
+                  duration: Number(row.duration) || 0,
+                  season: row.season,
+                  episode: row.episode,
+                  show_progress: row.show_progress,
+                  type: row.media_type,
+                  updated_at: row.updated_at
+                };
+              }
             });
           }
         } catch {}
       }
 
-      if (Object.keys(loadedProgress).length === 0) {
-        const localProg = 
-          localStorage.getItem(profileKey) ||
-          localStorage.getItem(userKey) ||
-          (emailKey ? localStorage.getItem(emailKey) : null) ||
-          localStorage.getItem("classico_progress");
-        if (localProg) {
-          try { loadedProgress = JSON.parse(localProg) || {}; } catch {}
-        }
+      // 4.3 Merge with local storage (e.g. from previous preview session or device)
+      const localProg = 
+        localStorage.getItem(profileKey) ||
+        localStorage.getItem(userKey) ||
+        (emailKey ? localStorage.getItem(emailKey) : null) ||
+        localStorage.getItem("classico_progress");
+
+      if (localProg) {
+        try {
+          const parsed = JSON.parse(localProg) || {};
+          let hasLocalNewer = false;
+          for (const [mId, pData] of Object.entries(parsed)) {
+            const p = pData as any;
+            if (!loadedProgress[mId]) {
+              loadedProgress[mId] = p;
+              hasLocalNewer = true;
+            } else {
+              const cloudTime = loadedProgress[mId]?.currentTime || 0;
+              const localTime = p?.currentTime || 0;
+              const cloudUpdated = new Date(loadedProgress[mId]?.updated_at || 0).getTime();
+              const localUpdated = new Date(p?.updated_at || 0).getTime();
+              if (localUpdated > cloudUpdated || (localTime > cloudTime && localUpdated >= cloudUpdated)) {
+                loadedProgress[mId] = p;
+                hasLocalNewer = true;
+              }
+            }
+          }
+          // If local has newer or extra items, push immediately to Supabase Cloud!
+          if (hasLocalNewer) {
+            queueCloudSync("progress", loadedProgress, true);
+          }
+        } catch {}
       }
 
       if (isMounted) {
@@ -455,8 +561,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     loadProfileData();
 
-    // Listen to video player updates during streaming to persist directly to user account
-    const handleProgressUpdate = () => {
+    // Listen to video player updates during streaming to persist directly to user account and cloud
+    const handleProgressUpdate = (event?: any) => {
       try {
         const cleanEmail = user.email ? user.email.toLowerCase().trim() : "";
         const userKey = `classico_user_progress_${userId}`;
@@ -470,6 +576,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem(userKey, currentRaw);
           if (emailKey) localStorage.setItem(emailKey, currentRaw);
           setPlaybackProgress(currentParsed);
+
+          // INTERPLATFORM CLOUD SYNC:
+          // Debounce video updates; flush immediately if player closed / paused
+          const isImmediate = !!(event?.detail?.flush);
+          queueCloudSync("progress", currentParsed, isImmediate);
 
           if (isTablesReady) {
             Object.entries(currentParsed).forEach(([mId, pData]: [string, any]) => {
@@ -504,6 +615,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem(`classico_user_history_${userId}`, histRaw);
           if (cleanEmail) localStorage.setItem(`classico_email_history_${cleanEmail}`, histRaw);
           setWatchHistory(histParsed);
+          queueCloudSync("history", histParsed, false);
 
           if (isTablesReady && Array.isArray(histParsed)) {
             histParsed.slice(0, 10).forEach(mId => {
@@ -529,7 +641,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isMounted = false;
       window.removeEventListener("classico_progress_updated", handleProgressUpdate);
     };
-  }, [user, activeProfile, isTablesReady]);
+  }, [user, activeProfile, isTablesReady, queueCloudSync]);
+
+  // Background Interplatform Tab Synchronization & Unload Flush
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible" && user) {
+        // Tab became visible again: refresh user metadata from Supabase in background
+        try {
+          const { data: { user: freshUser }, error } = await supabase.auth.getUser();
+          if (!error && freshUser) {
+            setUser(freshUser);
+            const remoteProgress = freshUser.user_metadata?.classico_playback_progress;
+            if (remoteProgress && Object.keys(remoteProgress).length > 0) {
+              setPlaybackProgress(prev => {
+                const merged = { ...prev, ...remoteProgress };
+                localStorage.setItem("classico_progress", JSON.stringify(merged));
+                return merged;
+              });
+              window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+            }
+          }
+        } catch (e) {}
+      } else if (document.visibilityState === "hidden") {
+        // Tab is hidden / user switched apps or tabs: flush pending progress immediately!
+        flushCloudSync();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      flushCloudSync();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [user, flushCloudSync]);
 
   // Auth Operations
   const signUp = async (email: string, password: string, fullName?: string, avatarUrl?: string, favoriteGenre?: string) => {
@@ -621,6 +774,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       if (user) {
+        await flushCloudSync();
         const curProg = localStorage.getItem("classico_progress");
         if (curProg) {
           localStorage.setItem(`classico_user_progress_${user.id}`, curProg);
@@ -672,6 +826,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveProfile(profile);
     localStorage.setItem("classico_active_profile_id", profile.id);
     setIsProfileSelectorOpen(false);
+    if (user) {
+      queueCloudSync("activeProfileId", profile.id, true);
+    }
   };
 
   const createProfile = async (name: string, avatarUrl: string, isKids: boolean = false) => {
@@ -701,9 +858,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const next = [...profiles, newProf];
         setProfiles(next);
         selectProfile(newProf);
+        queueCloudSync("profiles", next, true);
         return { profile: newProf };
       } else {
-        // Local fallback
+        // Cloud & local fallback
         const newProf: Profile = {
           id: `profile-${Date.now()}-${user.id.slice(0, 4)}`,
           user_id: user.id,
@@ -717,6 +875,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfiles(next);
         localStorage.setItem(`classico_profiles_${user.id}`, JSON.stringify(next));
         selectProfile(newProf);
+        queueCloudSync("profiles", next, true);
         return { profile: newProf };
       }
     } catch (e: any) {
@@ -739,13 +898,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error) throw error;
       }
 
-      setProfiles(prev => {
-        const updated = prev.map(p => p.id === profileId ? { ...p, ...updates } : p);
-        if (!isTablesReady) {
-          localStorage.setItem(`classico_profiles_${user.id}`, JSON.stringify(updated));
-        }
-        return updated;
-      });
+      const updated = profiles.map(p => p.id === profileId ? { ...p, ...updates } : p);
+      setProfiles(updated);
+      localStorage.setItem(`classico_profiles_${user.id}`, JSON.stringify(updated));
+      queueCloudSync("profiles", updated, true);
 
       if (activeProfile?.id === profileId) {
         setActiveProfile(prev => prev ? { ...prev, ...updates } : null);
@@ -775,9 +931,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const updated = profiles.filter(p => p.id !== profileId);
       setProfiles(updated);
-      if (!isTablesReady) {
-        localStorage.setItem(`classico_profiles_${user.id}`, JSON.stringify(updated));
-      }
+      localStorage.setItem(`classico_profiles_${user.id}`, JSON.stringify(updated));
+      queueCloudSync("profiles", updated, true);
 
       if (activeProfile?.id === profileId) {
         const next = updated[0];
@@ -795,7 +950,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!cleanId) return;
 
     // Optimistic update
-    setWatchHistory(prev => [cleanId, ...prev.filter(id => id !== cleanId)].slice(0, 50));
+    const updatedHistory = [cleanId, ...watchHistory.filter(id => id !== cleanId)].slice(0, 50);
+    setWatchHistory(updatedHistory);
 
     if (!user || !activeProfile) {
       // Guest update
@@ -813,6 +969,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const existing = JSON.parse(localStorage.getItem(storageKey) || "[]");
     const updated = [cleanId, ...existing.filter((id: string) => id !== cleanId)].slice(0, 50);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+    localStorage.setItem(`classico_user_history_${userId}`, JSON.stringify(updated));
+    queueCloudSync("history", updated, false);
 
     if (isTablesReady) {
       try {
@@ -833,7 +991,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const removeFromHistory = async (movieId: string) => {
     const cleanId = String(movieId || "");
-    setWatchHistory(prev => prev.filter(id => id !== cleanId));
+    const updatedHistory = watchHistory.filter(id => id !== cleanId);
+    setWatchHistory(updatedHistory);
 
     if (!user || !activeProfile) {
       const existing = JSON.parse(localStorage.getItem("classico_history") || "[]");
@@ -845,7 +1004,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const profileId = activeProfile.id;
     const storageKey = getStorageKey(userId, profileId, "history");
     const existing = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    localStorage.setItem(storageKey, JSON.stringify(existing.filter((id: string) => id !== cleanId)));
+    const updated = existing.filter((id: string) => id !== cleanId);
+    localStorage.setItem(storageKey, JSON.stringify(updated));
+    localStorage.setItem(`classico_user_history_${userId}`, JSON.stringify(updated));
+    queueCloudSync("history", updated, true);
 
     if (isTablesReady) {
       try {
@@ -869,6 +1031,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = user.id;
     const profileId = activeProfile.id;
     localStorage.removeItem(getStorageKey(userId, profileId, "history"));
+    localStorage.removeItem(`classico_user_history_${userId}`);
+    queueCloudSync("history", [], true);
 
     if (isTablesReady) {
       try {
@@ -901,6 +1065,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = user.id;
     const profileId = activeProfile.id;
     localStorage.setItem(getStorageKey(userId, profileId, "favorites"), JSON.stringify(updated));
+    localStorage.setItem(`classico_user_favorites_${userId}`, JSON.stringify(updated));
+    queueCloudSync("favorites", updated, true);
 
     if (isTablesReady) {
       try {
@@ -945,6 +1111,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userId = user.id;
     const profileId = activeProfile.id;
     localStorage.setItem(getStorageKey(userId, profileId, "watchlist"), JSON.stringify(updated));
+    localStorage.setItem(`classico_user_watchlist_${userId}`, JSON.stringify(updated));
+    queueCloudSync("watchlist", updated, true);
 
     if (isTablesReady) {
       try {
@@ -993,11 +1161,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (episode !== undefined) itemData.episode = episode;
     if (showProgress) itemData.show_progress = showProgress;
 
-    setPlaybackProgress(prev => {
-      const next = { ...prev, [cleanId]: itemData };
-      localStorage.setItem("classico_progress", JSON.stringify(next));
-      return next;
-    });
+    const nextProgress = { ...playbackProgress, [cleanId]: itemData };
+    setPlaybackProgress(nextProgress);
+    localStorage.setItem("classico_progress", JSON.stringify(nextProgress));
 
     if (!user || !activeProfile) return;
 
@@ -1011,6 +1177,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user.email) {
       localStorage.setItem(`classico_email_progress_${user.email.toLowerCase().trim()}`, JSON.stringify(local));
     }
+
+    // Interplatform cloud queue
+    queueCloudSync("progress", nextProgress, false);
 
     if (isTablesReady) {
       try {

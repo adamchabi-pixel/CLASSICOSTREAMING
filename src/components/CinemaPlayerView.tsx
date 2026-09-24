@@ -882,8 +882,12 @@ export default function CinemaPlayerView({
                  restoredTime = epProg.progress.watched;
              }
           }
-        } else if (saved[movieId] && saved[movieId].currentTime > 0) {
-           restoredTime = saved[movieId].currentTime;
+        } else {
+          const cleanBase = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+          const mData = saved[movieId] || saved[cleanBase] || saved[`${cleanBase}-tv`];
+          if (mData && mData.currentTime > 0) {
+            restoredTime = mData.currentTime;
+          }
         }
         if (restoredTime > 0) {
            savedRestoreTimeRef.current = restoredTime;
@@ -898,7 +902,7 @@ export default function CinemaPlayerView({
     return () => {
       logMissingEvents("Rechargement du composant ou fermeture du lecteur");
       try {
-        window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+        window.dispatchEvent(new CustomEvent("classico_progress_updated", { detail: { flush: true } }));
       } catch(e) {}
     };
   }, []);
@@ -962,7 +966,7 @@ export default function CinemaPlayerView({
 
   const handleClosePlayer = () => {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-    window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+    window.dispatchEvent(new CustomEvent("classico_progress_updated", { detail: { flush: true } }));
     onClose();
   };
 

@@ -7,7 +7,9 @@ import {
   Film, 
   Bookmark, 
   History, 
-  Heart
+  Heart,
+  LogIn,
+  UserPlus
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import AvatarPickerModal from "./AvatarPickerModal";
@@ -40,139 +42,209 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 1. When NOT connected: JUST a profile icon (no circle frame, just like the search icon)
-  if (!user) {
-    return (
-      <div className="flex items-center">
-        <button
-          onClick={() => openAuthModal("login")}
-          aria-label="Sign In"
-          title="Sign In"
-          className="p-2 text-zinc-300 hover:text-amber-400 transition-colors flex items-center justify-center cursor-pointer group focus:outline-none"
-        >
-          <UserIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
-        </button>
-      </div>
-    );
-  }
+  // Listen to close event from mobile drawer or other menus
+  useEffect(() => {
+    const handleCloseMenu = () => setIsOpen(false);
+    window.addEventListener("close-nav-dropdowns", handleCloseMenu);
+    return () => window.removeEventListener("close-nav-dropdowns", handleCloseMenu);
+  }, []);
 
-  // 2. When CONNECTED: sleek avatar icon in top right
+  const handleToggle = () => {
+    // Notify other menus to close
+    window.dispatchEvent(new CustomEvent("close-mobile-drawer"));
+    setIsOpen(prev => !prev);
+  };
+
   const avatarUrl = activeProfile?.avatar_url || DEFAULT_AVATARS[0].url;
   const currentAvatarInfo = DEFAULT_AVATARS.find(a => a.url === avatarUrl);
 
   return (
     <>
       <div className="relative flex items-center" ref={menuRef}>
+        {/* Profile / Avatar Trigger Button */}
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="My Account"
-          title={activeProfile?.name || "My Account"}
-          className="relative w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full overflow-hidden hover:opacity-90 transition-all hover:scale-105 active:scale-95 cursor-pointer block group focus:outline-none border border-amber-400/40 hover:border-amber-400"
+          onClick={handleToggle}
+          aria-label={user ? (activeProfile?.name || "Mon Compte") : "Connexion"}
+          title={user ? (activeProfile?.name || "Mon Compte") : "Connexion"}
+          className={`relative flex items-center justify-center transition-all cursor-pointer group focus:outline-none ${
+            user
+              ? "w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full overflow-hidden border border-amber-400/40 hover:border-amber-400 hover:scale-105 active:scale-95 shadow-md"
+              : "p-2 text-zinc-300 hover:text-amber-400"
+          }`}
         >
-          <img
-            src={avatarUrl}
-            alt={activeProfile?.name || "Profile"}
-            className="w-full h-full object-cover"
-          />
+          {user ? (
+            <img
+              src={avatarUrl}
+              alt={activeProfile?.name || "Profile"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <UserIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
+          )}
         </button>
 
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu - EXACT SAME ANIMATION & ANCHORING AS THE 3-DOTS DRAWER */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.96 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute right-0 mt-2 w-64 bg-neutral-950/95 backdrop-blur-xl border border-neutral-800 rounded-2xl p-2 shadow-2xl z-[150] text-left divide-y divide-neutral-900"
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute top-[calc(100%+0.5rem)] right-0 w-64 max-w-[calc(100vw-2rem)] bg-neutral-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-[150] text-left divide-y divide-neutral-900 origin-top-right"
             >
-              {/* Account summary with current avatar */}
-              <div className="p-3 space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-amber-400/80 shadow-md shrink-0">
-                    <img
-                      src={avatarUrl}
-                      alt={activeProfile?.name || "Avatar"}
-                      className="w-full h-full object-cover"
-                    />
+              {user ? (
+                /* ================= LOGGED IN VIEW ================= */
+                <>
+                  {/* Account summary with current avatar */}
+                  <div className="p-3 space-y-2.5">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-amber-400/80 shadow-md shrink-0">
+                        <img
+                          src={avatarUrl}
+                          alt={activeProfile?.name || "Avatar"}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-xs font-bold text-white truncate font-cinzel">
+                          {activeProfile?.name || "Mon Profil"}
+                        </h4>
+                        {currentAvatarInfo && (
+                          <p className="text-[10px] text-amber-400 font-semibold truncate">
+                            {currentAvatarInfo.character}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-zinc-400 truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Change Avatar Button */}
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        setShowAvatarPicker(true);
+                      }}
+                      className="w-full mt-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-all cursor-pointer group shadow-sm"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
+                      <span>Changer d'avatar</span>
+                    </button>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-bold text-white truncate font-cinzel">
-                      {activeProfile?.name || "My Account"}
-                    </h4>
-                    {currentAvatarInfo && (
-                      <p className="text-[10px] text-amber-400 font-semibold truncate">
-                        {currentAvatarInfo.name} ({currentAvatarInfo.character})
-                      </p>
-                    )}
-                    <p className="text-[10px] text-zinc-400 truncate">
-                      {user.email}
+
+                  {/* Navigation links */}
+                  <div className="p-2 space-y-0.5">
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onNavigateToProfileTab) onNavigateToProfileTab();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                    >
+                      <Film className="w-4 h-4 text-zinc-400" />
+                      <span>Mon Profil & Historique</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onNavigateToProfileTab) onNavigateToProfileTab();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                    >
+                      <Bookmark className="w-4 h-4 text-zinc-400" />
+                      <span>Ma Liste</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onNavigateToProfileTab) onNavigateToProfileTab();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                    >
+                      <Heart className="w-4 h-4 text-zinc-400" />
+                      <span>Mes Favoris</span>
+                    </button>
+                  </div>
+
+                  {/* Sign out */}
+                  <div className="p-2">
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        signOut();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer font-medium"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Se déconnecter</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* ================= NOT LOGGED IN VIEW ================= */
+                <>
+                  <div className="p-3 space-y-2 text-center">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Espace Personnel</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 font-sans leading-relaxed">
+                      Connectez-vous pour choisir votre avatar culte et synchroniser vos favoris.
                     </p>
+                    <div className="space-y-1.5 pt-1">
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
+                          openAuthModal("login");
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer font-['Montserrat',sans-serif]"
+                      >
+                        <LogIn className="w-3.5 h-3.5" />
+                        <span>Se connecter</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
+                          openAuthModal("signup");
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-zinc-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
+                      >
+                        <UserPlus className="w-3.5 h-3.5 text-zinc-400" />
+                        <span>Créer un compte</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Change Avatar Button */}
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    setShowAvatarPicker(true);
-                  }}
-                  className="w-full mt-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-all cursor-pointer group"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
-                  <span>Choose Character Avatar</span>
-                </button>
-              </div>
-
-              {/* Navigation links */}
-              <div className="p-2 space-y-0.5">
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    if (onNavigateToProfileTab) onNavigateToProfileTab();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
-                >
-                  <Film className="w-4 h-4 text-zinc-400" />
-                  <span>My Profile & History</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    if (onNavigateToProfileTab) onNavigateToProfileTab();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
-                >
-                  <Bookmark className="w-4 h-4 text-zinc-400" />
-                  <span>My Watchlist</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    if (onNavigateToProfileTab) onNavigateToProfileTab();
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
-                >
-                  <Heart className="w-4 h-4 text-zinc-400" />
-                  <span>My Favorites</span>
-                </button>
-              </div>
-
-              {/* Sign out */}
-              <div className="p-2">
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    signOut();
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer font-medium"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
+                  <div className="p-2 space-y-0.5">
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onNavigateToProfileTab) onNavigateToProfileTab();
+                        else openAuthModal("login");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                    >
+                      <Film className="w-4 h-4 text-zinc-500" />
+                      <span>Mon Profil & Historique</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onNavigateToProfileTab) onNavigateToProfileTab();
+                        else openAuthModal("login");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                    >
+                      <Bookmark className="w-4 h-4 text-zinc-500" />
+                      <span>Ma Liste</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

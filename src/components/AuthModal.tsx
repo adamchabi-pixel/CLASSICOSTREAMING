@@ -40,7 +40,8 @@ export default function AuthModal() {
     authModalInitialMode,
     signIn, 
     signUp,
-    loginInstantaneously
+    loginInstantaneously,
+    user
   } = useAuth();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -60,16 +61,49 @@ export default function AuthModal() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
 
+  // Clear all fields on logout so previous emails are never remembered
+  useEffect(() => {
+    if (!user) {
+      setEmail("");
+      setPassword("");
+      setUsername("");
+    }
+  }, [user]);
+
+  // Reset fields on modal open
   useEffect(() => {
     if (isAuthModalOpen) {
       setMode(authModalInitialMode);
       setSignupStep("form");
+      setEmail("");
+      setPassword("");
+      setUsername("");
       setErrorMsg(null);
       setSuccessMsg(null);
       setIsRateLimited(false);
       setSelectedAvatarUrl(DEFAULT_AVATARS[0].url);
     }
   }, [isAuthModalOpen, authModalInitialMode]);
+
+  const handleClose = () => {
+    setEmail("");
+    setPassword("");
+    setUsername("");
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsRateLimited(false);
+    closeAuthModal();
+  };
+
+  const switchMode = (newMode: "login" | "signup") => {
+    setMode(newMode);
+    setSignupStep("form");
+    setEmail("");
+    setPassword("");
+    setUsername("");
+    setErrorMsg(null);
+    setSuccessMsg(null);
+  };
 
   if (!isAuthModalOpen) return null;
 
@@ -117,7 +151,7 @@ export default function AuthModal() {
         } else {
           setSuccessMsg("Signed in successfully! Welcome back.");
           setTimeout(() => {
-            closeAuthModal();
+            handleClose();
           }, 600);
         }
       } else {
@@ -144,7 +178,7 @@ export default function AuthModal() {
         } else {
           setSuccessMsg(`Welcome to Classico, ${username.trim() || 'Cinephile'}! Your profile is ready.`);
           setTimeout(() => {
-            closeAuthModal();
+            handleClose();
           }, 800);
         }
       }
@@ -164,34 +198,33 @@ export default function AuthModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[999] flex items-start justify-center pt-20 sm:pt-24 pb-10 px-4 sm:px-6 overflow-y-auto custom-scrollbar">
-        {/* Backdrop */}
+      {/* Container strictly below the navbar so it NEVER touches or covers the navbar */}
+      <div className="fixed top-16 sm:top-20 inset-x-0 bottom-0 z-[500] flex items-center justify-center p-3 sm:p-5 overflow-y-auto custom-scrollbar">
+        {/* Backdrop strictly below navbar */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeAuthModal}
-          className="fixed inset-0 bg-black/85 backdrop-blur-md"
+          onClick={handleClose}
+          className="fixed top-16 sm:top-20 inset-x-0 bottom-0 bg-black/80 backdrop-blur-sm"
         />
 
-        {/* Modal Card */}
+        {/* Modal Card - Compact smaller rectangle */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          initial={{ opacity: 0, scale: 0.96, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
-          className={`relative w-full ${
-            mode === "signup" && signupStep === "avatar" ? "max-w-3xl" : "max-w-lg"
-          } bg-[#0c0c0e]/95 border border-zinc-800/80 rounded-3xl p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_30px_rgba(245,158,11,0.06)] overflow-hidden z-10 max-h-[86vh] overflow-y-auto custom-scrollbar backdrop-blur-2xl transition-all duration-300`}
+          exit={{ opacity: 0, scale: 0.96, y: 10 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="relative w-full max-w-[460px] sm:max-w-[490px] bg-[#0c0c0e]/95 border border-zinc-800/90 rounded-3xl p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.95),0_0_30px_rgba(245,158,11,0.06)] overflow-hidden z-10 max-h-[78vh] overflow-y-auto custom-scrollbar backdrop-blur-2xl"
         >
           {/* Subtle Golden Top Hairline & Ambient Glow */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-48 bg-amber-500/10 blur-[100px] pointer-events-none" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-80 h-40 bg-amber-500/10 blur-[100px] pointer-events-none" />
 
           {/* Close button */}
           <button
-            onClick={closeAuthModal}
-            className="absolute top-5 right-5 p-2 rounded-full text-zinc-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer z-20"
+            onClick={handleClose}
+            className="absolute top-4 right-4 p-2 rounded-full text-zinc-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer z-20"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -199,10 +232,10 @@ export default function AuthModal() {
 
           {/* Mode Tabs (Only visible when NOT in the avatar popup step) */}
           {!(mode === "signup" && signupStep === "avatar") && (
-            <div className="flex items-center justify-center gap-8 sm:gap-12 border-b border-zinc-800/80 mb-6 pt-2">
+            <div className="flex items-center justify-center gap-8 sm:gap-12 border-b border-zinc-800/80 mb-5 pt-1">
               <button
                 type="button"
-                onClick={() => { setMode("login"); setSignupStep("form"); setErrorMsg(null); setSuccessMsg(null); }}
+                onClick={() => switchMode("login")}
                 className={`relative pb-3 px-3 font-['Montserrat',sans-serif] text-xs sm:text-sm font-bold tracking-[0.25em] uppercase transition-all duration-200 cursor-pointer ${
                   mode === "login" 
                     ? "text-white" 
@@ -217,7 +250,7 @@ export default function AuthModal() {
 
               <button
                 type="button"
-                onClick={() => { setMode("signup"); setSignupStep("form"); setErrorMsg(null); setSuccessMsg(null); }}
+                onClick={() => switchMode("signup")}
                 className={`relative pb-3 px-3 font-['Montserrat',sans-serif] text-xs sm:text-sm font-bold tracking-[0.25em] uppercase transition-all duration-200 cursor-pointer ${
                   mode === "signup" 
                     ? "text-white" 
@@ -261,7 +294,7 @@ export default function AuthModal() {
                   );
                   setSuccessMsg(`Welcome, ${username.trim() || 'Alex'}! Profile created.`);
                   setTimeout(() => {
-                    closeAuthModal();
+                    handleClose();
                   }, 800);
                 }}
                 className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-500/20 active:scale-95"
@@ -282,7 +315,7 @@ export default function AuthModal() {
           {/* VIEW 1: SIGN IN */}
           {mode === "login" && (
             <div>
-              <p className="text-xs text-zinc-400 font-sans text-center mb-6 max-w-sm mx-auto">
+              <p className="text-xs text-zinc-400 font-sans text-center mb-5 max-w-sm mx-auto">
                 Access your personal watch history, resume playback, and manage favorites.
               </p>
 
@@ -299,6 +332,11 @@ export default function AuthModal() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      data-lpignore="true"
                       className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
                     />
                   </div>
@@ -316,6 +354,8 @@ export default function AuthModal() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
+                      autoComplete="current-password"
+                      data-lpignore="true"
                       className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
                     />
                     <button
@@ -332,7 +372,7 @@ export default function AuthModal() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-3 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-bold text-xs sm:text-sm tracking-[0.18em] uppercase transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                  className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-bold text-xs sm:text-sm tracking-[0.18em] uppercase transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <>
@@ -345,12 +385,12 @@ export default function AuthModal() {
                 </button>
               </form>
 
-              <div className="mt-6 pt-4 border-t border-zinc-900 text-center text-xs text-zinc-500">
+              <div className="mt-5 pt-3.5 border-t border-zinc-900 text-center text-xs text-zinc-500">
                 <p>
                   Don't have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => { setMode("signup"); setSignupStep("form"); setErrorMsg(null); setSuccessMsg(null); }}
+                    onClick={() => switchMode("signup")}
                     className="text-amber-400 hover:underline font-semibold cursor-pointer ml-1"
                   >
                     Sign up
@@ -360,16 +400,16 @@ export default function AuthModal() {
             </div>
           )}
 
-          {/* VIEW 2: SIGN UP - STEP 1 (Username, Email, Password, Favorite Genre) - NO AVATARS SHOWN HERE */}
+          {/* VIEW 2: SIGN UP - STEP 1 (Username, Email, Password, Favorite Genre) */}
           {mode === "signup" && signupStep === "form" && (
             <div>
-              <p className="text-xs text-zinc-400 font-sans text-center mb-6 max-w-sm mx-auto">
-                Create your Classico account. You'll choose your cult character avatar on the next step.
+              <p className="text-xs text-zinc-400 font-sans text-center mb-5 max-w-sm mx-auto">
+                Create your account. You'll choose your character avatar on the next step.
               </p>
 
-              <form onSubmit={handleProceedToAvatar} className="space-y-4">
+              <form onSubmit={handleProceedToAvatar} className="space-y-3.5">
                 {/* 1. Username */}
-                <div className="space-y-1.5 text-left">
+                <div className="space-y-1 text-left">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-300 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
                     <UserIcon className="w-3.5 h-3.5 text-amber-400" />
                     <span>Username</span>
@@ -380,14 +420,19 @@ export default function AuthModal() {
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="e.g. TonyMontana, Cinephile99"
-                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
+                      placeholder="e.g. TonyMontana"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      data-lpignore="true"
+                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-3.5 py-2 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
                     />
                   </div>
                 </div>
 
                 {/* 2. Email Address */}
-                <div className="space-y-1.5 text-left">
+                <div className="space-y-1 text-left">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-300 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
                     <Mail className="w-3.5 h-3.5 text-amber-400" />
                     <span>Email Address</span>
@@ -399,13 +444,18 @@ export default function AuthModal() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
-                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      data-lpignore="true"
+                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-3.5 py-2 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
                     />
                   </div>
                 </div>
 
                 {/* 3. Password */}
-                <div className="space-y-1.5 text-left">
+                <div className="space-y-1 text-left">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-300 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
                     <Lock className="w-3.5 h-3.5 text-amber-400" />
                     <span>Password</span>
@@ -417,22 +467,24 @@ export default function AuthModal() {
                       minLength={6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="•••••••• (min 6 characters)"
-                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl pl-4 pr-10 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
+                      placeholder="•••••••• (min 6 chars)"
+                      autoComplete="new-password"
+                      data-lpignore="true"
+                      className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl pl-3.5 pr-9 py-2 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
                       aria-label="Toggle password visibility"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
 
                 {/* 4. Favorite Movie Genre */}
-                <div className="space-y-1.5 text-left">
+                <div className="space-y-1 text-left">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-300 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
                     <Clapperboard className="w-3.5 h-3.5 text-amber-400" />
                     <span>Favorite Movie Genre</span>
@@ -441,7 +493,7 @@ export default function AuthModal() {
                     <select
                       value={favoriteGenre}
                       onChange={(e) => setFavoriteGenre(e.target.value)}
-                      className="w-full appearance-none bg-neutral-900/90 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-4 py-2.5 text-sm text-white outline-none transition-all cursor-pointer font-medium"
+                      className="w-full appearance-none bg-neutral-900/90 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl px-3.5 py-2 text-sm text-white outline-none transition-all cursor-pointer font-medium"
                     >
                       {MOVIE_GENRES.map((g) => (
                         <option key={g} value={g} className="bg-neutral-900 text-white py-1">
@@ -456,19 +508,19 @@ export default function AuthModal() {
                 {/* Next Step Button */}
                 <button
                   type="submit"
-                  className="w-full mt-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-bold text-xs sm:text-sm tracking-[0.18em] uppercase transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                  className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-bold text-xs tracking-[0.16em] uppercase transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                 >
-                  <span>NEXT: CHOOSE YOUR AVATAR</span>
+                  <span>NEXT: CHOOSE AVATAR</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
 
-              <div className="mt-6 pt-4 border-t border-zinc-900 text-center text-xs text-zinc-500">
+              <div className="mt-4 pt-3 border-t border-zinc-900 text-center text-xs text-zinc-500">
                 <p>
                   Already have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => { setMode("login"); setErrorMsg(null); setSuccessMsg(null); }}
+                    onClick={() => switchMode("login")}
                     className="text-amber-400 hover:underline font-semibold cursor-pointer ml-1"
                   >
                     Sign in
@@ -478,39 +530,37 @@ export default function AuthModal() {
             </div>
           )}
 
-          {/* VIEW 3: SIGN UP - STEP 2 (The Dedicated Cult Avatar Popup) */}
+          {/* VIEW 3: SIGN UP - STEP 2 (The Dedicated Cult Avatar Popup - Smaller Rectangle) */}
           {mode === "signup" && signupStep === "avatar" && (
-            <div className="animate-in fade-in duration-300 space-y-4">
+            <div className="animate-in fade-in duration-300 space-y-3.5">
               {/* Header with back button */}
-              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
                 <button
                   type="button"
                   onClick={() => setSignupStep("form")}
                   className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-amber-400 transition-colors cursor-pointer group"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-                  <span>Back to details</span>
+                  <span>Back</span>
                 </button>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                    Step 2 of 2
-                  </span>
-                </div>
+                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  Step 2 of 2
+                </span>
               </div>
 
-              {/* Title & subtitle */}
+              {/* Title */}
               <div className="text-center">
-                <h3 className="font-['Montserrat',sans-serif] text-lg sm:text-xl font-black text-white tracking-wider uppercase">
-                  Choose Your Cult Character
+                <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-white tracking-wide uppercase">
+                  Choose Your Avatar
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1">
-                  Scroll below to discover all 25 iconic legends and select your avatar.
+                <p className="text-[11px] text-zinc-400 mt-0.5">
+                  Select your cult icon (scroll to browse all {DEFAULT_AVATARS.length})
                 </p>
               </div>
 
-              {/* Active Selection Hero Ribbon */}
-              <div className="p-3 sm:p-4 rounded-2xl bg-neutral-900/80 border border-amber-500/40 flex items-center gap-3.5 sm:gap-4 shadow-lg shadow-black/50">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)] shrink-0">
+              {/* Active Selection Hero Ribbon - Compact */}
+              <div className="p-2.5 rounded-xl bg-neutral-900/80 border border-amber-500/40 flex items-center gap-3 shadow-md">
+                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.35)] shrink-0">
                   <img
                     src={selectedAvatarUrl}
                     alt={selectedAvatarInfo.character}
@@ -518,69 +568,66 @@ export default function AuthModal() {
                   />
                 </div>
                 <div className="min-w-0 flex-1 text-left">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                      Selected Avatar:
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-white font-cinzel truncate">
+                      {selectedAvatarInfo.character}
                     </span>
-                    <span className="text-[10px] font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-md">
+                    <span className="text-[9px] font-medium bg-amber-400/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.2 rounded">
                       {favoriteGenre}
                     </span>
                   </div>
-                  <h4 className="text-base sm:text-lg font-bold text-white truncate font-cinzel mt-0.5">
-                    {selectedAvatarInfo.character}
-                  </h4>
-                  <p className="text-xs text-zinc-400 truncate">
-                    {selectedAvatarInfo.name} • {selectedAvatarInfo.category === "Movie" ? "Cult Movie" : "Cult Series"}
+                  <p className="text-[10px] text-zinc-400 truncate mt-0.5">
+                    {selectedAvatarInfo.name} • {selectedAvatarInfo.category}
                   </p>
                 </div>
               </div>
 
               {/* Filter tabs (All, Movies, Series) */}
-              <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 font-['Montserrat',sans-serif]">
-                  25 Legendary Characters
+              <div className="flex items-center justify-between px-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+                  Icons ({DEFAULT_AVATARS.length})
                 </span>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setAvatarFilter("all")}
-                    className={`px-3 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer ${
                       avatarFilter === "all"
-                        ? "bg-amber-400 text-black shadow-sm shadow-amber-500/30 font-bold"
+                        ? "bg-amber-400 text-black font-bold shadow-sm"
                         : "bg-neutral-900 text-zinc-400 hover:text-white border border-neutral-800"
                     }`}
                   >
-                    All ({DEFAULT_AVATARS.length})
+                    All
                   </button>
                   <button
                     type="button"
                     onClick={() => setAvatarFilter("Movie")}
-                    className={`px-3 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
                       avatarFilter === "Movie"
-                        ? "bg-amber-400 text-black shadow-sm shadow-amber-500/30 font-bold"
+                        ? "bg-amber-400 text-black font-bold shadow-sm"
                         : "bg-neutral-900 text-zinc-400 hover:text-white border border-neutral-800"
                     }`}
                   >
-                    <Clapperboard className="w-3 h-3" />
+                    <Clapperboard className="w-2.5 h-2.5" />
                     <span>Movies</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setAvatarFilter("Series")}
-                    className={`px-3 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
                       avatarFilter === "Series"
-                        ? "bg-amber-400 text-black shadow-sm shadow-amber-500/30 font-bold"
+                        ? "bg-amber-400 text-black font-bold shadow-sm"
                         : "bg-neutral-900 text-zinc-400 hover:text-white border border-neutral-800"
                     }`}
                   >
-                    <Tv className="w-3 h-3" />
+                    <Tv className="w-2.5 h-2.5" />
                     <span>Series</span>
                   </button>
                 </div>
               </div>
 
-              {/* Spacious, Beautifully Designed & Scrollable Avatar Grid */}
-              <div className="grid grid-cols-2 min-[440px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-3.5 max-h-[360px] sm:max-h-[420px] overflow-y-auto custom-scrollbar p-3 bg-black/60 rounded-2xl border border-neutral-800/90 shadow-inner">
+              {/* Scrollable Avatar Grid - Compact 3-columns in a smaller rectangle */}
+              <div className="grid grid-cols-3 gap-2.5 max-h-56 sm:max-h-60 overflow-y-auto custom-scrollbar p-2 bg-black/60 rounded-2xl border border-neutral-800 shadow-inner">
                 {filteredAvatars.map((avatar) => {
                   const isSelected = selectedAvatarUrl === avatar.url;
                   return (
@@ -588,15 +635,15 @@ export default function AuthModal() {
                       key={avatar.id}
                       type="button"
                       onClick={() => setSelectedAvatarUrl(avatar.url)}
-                      className={`group relative flex flex-col items-center p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer text-center ${
+                      className={`group relative flex flex-col items-center p-2 rounded-xl border transition-all duration-200 cursor-pointer text-center ${
                         isSelected
-                          ? "border-amber-400 bg-amber-500/15 ring-2 ring-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.35)] scale-[1.02] z-10"
-                          : "border-neutral-800/90 bg-neutral-900/50 hover:border-zinc-500 hover:bg-neutral-850/80"
+                          ? "border-amber-400 bg-amber-500/15 ring-2 ring-amber-400/50 shadow-md scale-[1.02] z-10"
+                          : "border-neutral-800/90 bg-neutral-900/60 hover:border-zinc-500 hover:bg-neutral-850"
                       }`}
                     >
                       {/* Round Portrait */}
-                      <div className={`relative w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden mb-2 border transition-all ${
-                        isSelected ? "border-amber-400 ring-2 ring-amber-400/40" : "border-neutral-700/80 group-hover:border-zinc-400"
+                      <div className={`relative w-12 h-12 sm:w-13 sm:h-13 rounded-full overflow-hidden mb-1.5 border transition-all ${
+                        isSelected ? "border-amber-400 ring-1 ring-amber-400/40" : "border-neutral-700/80 group-hover:border-zinc-400"
                       }`}>
                         <img
                           src={avatar.url}
@@ -608,18 +655,18 @@ export default function AuthModal() {
 
                       {/* Selected check badge */}
                       {isSelected && (
-                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-amber-400 text-black flex items-center justify-center shadow-md">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-black stroke-[3]" />
+                        <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center shadow-md">
+                          <CheckCircle2 className="w-3 h-3 text-black stroke-[3]" />
                         </div>
                       )}
 
                       {/* Character Name */}
-                      <span className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors truncate w-full text-center">
+                      <span className="text-[11px] font-bold text-white group-hover:text-amber-300 transition-colors truncate w-full text-center">
                         {avatar.character}
                       </span>
 
                       {/* Film / Series */}
-                      <span className="text-[10px] text-zinc-400 truncate w-full text-center mt-0.5">
+                      <span className="text-[9px] text-zinc-400 truncate w-full text-center mt-0.5">
                         {avatar.name}
                       </span>
                     </button>
@@ -632,7 +679,7 @@ export default function AuthModal() {
                 type="button"
                 onClick={() => handleFinalSubmit()}
                 disabled={isLoading}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-black text-xs sm:text-sm tracking-[0.18em] uppercase transition-all duration-200 shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-['Montserrat',sans-serif] font-bold text-xs tracking-wider uppercase transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
               >
                 {isLoading ? (
                   <>

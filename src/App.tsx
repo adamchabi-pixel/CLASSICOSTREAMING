@@ -793,6 +793,61 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
+  // Auto-collapse search into loupe icon when user finishes typing
+  const searchCollapseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  const clearAutoCollapseTimer = () => {
+    if (searchCollapseTimerRef.current) {
+      clearTimeout(searchCollapseTimerRef.current);
+      searchCollapseTimerRef.current = null;
+    }
+  };
+
+  const triggerAutoCollapse = (text: string) => {
+    clearAutoCollapseTimer();
+    if (!text || text.trim() === "") {
+      searchCollapseTimerRef.current = setTimeout(() => {
+        setIsSearchOpen(false);
+      }, 1500);
+      return;
+    }
+    // When user finishes typing (2.2s of inactivity), automatically collapse back to the loupe icon
+    searchCollapseTimerRef.current = setTimeout(() => {
+      setIsSearchOpen(false);
+      setSearchQuery(text.trim());
+    }, 2200);
+  };
+
+  useEffect(() => {
+    return () => {
+      clearAutoCollapseTimer();
+    };
+  }, []);
+
+  // Close search when clicking outside
+  useEffect(() => {
+    const handleSearchClickOutside = (e: MouseEvent) => {
+      if (
+        isSearchOpen &&
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target as Node)
+      ) {
+        clearAutoCollapseTimer();
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleSearchClickOutside);
+    return () => document.removeEventListener("mousedown", handleSearchClickOutside);
+  }, [isSearchOpen]);
+
+  // Sync mobile drawer close event from profile dropdown
+  useEffect(() => {
+    const handleCloseMobileDrawer = () => setIsMobileMenuOpen(false);
+    window.addEventListener("close-mobile-drawer", handleCloseMobileDrawer);
+    return () => window.removeEventListener("close-mobile-drawer", handleCloseMobileDrawer);
+  }, []);
+
   // Library specific states
   const [librarySearch, setLibrarySearch] = useState("");
   const [libraryGenre, setLibraryGenre] = useState<string>("All");
@@ -825,6 +880,10 @@ export default function App() {
   useEffect(() => {
     setHistory(authWatchHistory || []);
   }, [authWatchHistory]);
+
+  useEffect(() => {
+    loadProgress();
+  }, [authPlaybackProgress]);
 
   useEffect(() => {
     if (!user) {
@@ -2317,60 +2376,88 @@ export default function App() {
           {/* Desktop Search & Nav (hidden on mobile), Mobile Action Buttons */}
           <div className="flex items-center gap-3 justify-end">
             
-            {/* Search: Just a magnifying glass icon, expandable on click */}
-            <div className="relative flex items-center">
-              {isSearchOpen ? (
-                <div className="relative flex items-center w-48 sm:w-64 md:w-72 lg:w-80 transition-all duration-200">
-                  <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-amber-400">
-                    <Search className="w-4 h-4" />
-                  </span>
-                  <input
-                    id="global-search-input"
-                    type="text"
-                    autoFocus
-                    placeholder="Search movie, director..."
-                    value={searchInput}
-                    onChange={(e) => {
-                      setSearchInput(e.target.value);
-                      setSearchQuery(e.target.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        setSearchQuery(searchInput);
-                      }
-                      if (e.key === "Escape") {
-                        e.preventDefault();
+            {/* Search: Just a magnifying glass icon, expandable on click, auto-collapses back to loupe icon when user finishes typing */}
+            <div className="relative flex items-center" ref={searchContainerRef}>
+              <AnimatePresence initial={false} mode="wait">
+                {isSearchOpen ? (
+                  <motion.div
+                    key="search-input-box"
+                    initial={{ width: 44, opacity: 0 }}
+                    animate={{ width: "auto", opacity: 1 }}
+                    exit={{ width: 44, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="relative flex items-center w-48 sm:w-64 md:w-72 lg:w-80"
+                  >
+                    <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-amber-400">
+                      <Search className="w-4 h-4" />
+                    </span>
+                    <input
+                      id="global-search-input"
+                      type="text"
+                      autoFocus
+                      placeholder="Search movie, director..."
+                      value={searchInput}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSearchInput(val);
+                        setSearchQuery(val);
+                        triggerAutoCollapse(val);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          clearAutoCollapseTimer();
+                          setSearchQuery(searchInput);
+                          setIsSearchOpen(false); // Collapses back to loupe immediately!
+                        }
+                        if (e.key === "Escape") {
+                          e.preventDefault();
+                          clearAutoCollapseTimer();
+                          setSearchQuery("");
+                          setSearchInput("");
+                          setIsSearchOpen(false);
+                        }
+                      }}
+                      className="w-full bg-neutral-900 border border-neutral-700 text-stone-100 placeholder-zinc-500 text-xs pl-9 pr-8 py-1.5 md:py-2 rounded-full focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-xl font-sans"
+                    />
+                    <button
+                      id="close-search-btn"
+                      onClick={() => {
+                        clearAutoCollapseTimer();
                         setSearchQuery("");
                         setSearchInput("");
                         setIsSearchOpen(false);
-                      }
-                    }}
-                    className="w-full bg-neutral-900 border border-neutral-700 text-stone-100 placeholder-zinc-500 text-xs pl-9 pr-8 py-1.5 md:py-2 rounded-full focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-xl font-sans"
-                  />
-                  <button
-                    id="close-search-btn"
+                      }}
+                      className="absolute inset-y-0 right-2.5 flex items-center text-zinc-400 hover:text-white cursor-pointer"
+                      title="Clear search"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    key="search-icon-btn"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.15 }}
+                    id="nav-search-icon-btn"
                     onClick={() => {
-                      setSearchQuery("");
-                      setSearchInput("");
-                      setIsSearchOpen(false);
+                      clearAutoCollapseTimer();
+                      setIsSearchOpen(true);
                     }}
-                    className="absolute inset-y-0 right-2.5 flex items-center text-zinc-400 hover:text-white"
-                    title="Close"
+                    className={`relative p-2 transition-colors flex items-center justify-center cursor-pointer group focus:outline-none ${
+                      searchQuery.trim() !== "" ? "text-amber-400" : "text-zinc-300 hover:text-amber-400"
+                    }`}
+                    title={searchQuery.trim() !== "" ? `Search: "${searchQuery}" (Click to edit)` : "Search"}
                   >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  id="nav-search-icon-btn"
-                  onClick={() => setIsSearchOpen(true)}
-                  className="p-2 text-zinc-300 hover:text-amber-400 transition-colors flex items-center justify-center cursor-pointer"
-                  title="Search"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-              )}
+                    <Search className="w-5 h-5 transition-transform group-hover:scale-110" />
+                    {searchQuery.trim() !== "" && (
+                      <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
+                    )}
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Mobile Actions: Notifications & Profile & Hamburger (hidden on md) */}
@@ -2378,8 +2465,13 @@ export default function App() {
               <NotificationDropdown />
               <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} />
               <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("close-nav-dropdowns"));
+                  setIsMobileMenuOpen(!isMobileMenuOpen);
+                }}
                 className="p-2 text-zinc-300 hover:text-amber-400 transition-colors z-50 relative"
+                aria-label="Menu"
+                title="Menu"
               >
                 {isMobileMenuOpen ? <X strokeWidth={1.5} className="w-7 h-7" /> : <Menu strokeWidth={1.5} className="w-7 h-7" />}
               </button>

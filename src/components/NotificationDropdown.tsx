@@ -95,8 +95,8 @@ export default function NotificationDropdown() {
         onClick={() => {
           setIsOpen(!isOpen);
         }}
-        aria-label="Updates & Announcements"
-        title="Updates & Announcements"
+        aria-label="News & Announcements"
+        title="News & Announcements"
         className="relative p-2 text-zinc-300 hover:text-amber-400 transition-colors flex items-center justify-center cursor-pointer group focus:outline-none"
       >
         <Bell className="w-5 h-5 transition-transform group-hover:rotate-12" />
@@ -130,10 +130,10 @@ export default function NotificationDropdown() {
                 </div>
                 <div>
                   <h3 className="text-xs sm:text-sm font-bold font-['Montserrat',sans-serif] tracking-wider uppercase text-white">
-                    Updates & News
+                    News & Announcements
                   </h3>
                   <p className="text-[10px] text-zinc-400">
-                    {unreadCount > 0 ? `${unreadCount} unread update${unreadCount > 1 ? 's' : ''}` : "All updates caught up"}
+                    {unreadCount > 0 ? `${unreadCount} unread announcement${unreadCount > 1 ? 's' : ''}` : "All announcements are read"}
                   </p>
                 </div>
               </div>
@@ -146,7 +146,7 @@ export default function NotificationDropdown() {
                     className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 text-[10px] text-zinc-300 hover:text-amber-400 transition-colors cursor-pointer border border-zinc-700/50"
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
-                    <span>Read all</span>
+                    <span>Mark all read</span>
                   </button>
                 )}
                 <button
@@ -217,7 +217,7 @@ export default function NotificationDropdown() {
                           {notif.actionType === "open_signup" ? (
                             <>
                               <UserPlus className="w-3 h-3 text-amber-400" />
-                              <span>{user ? "View Account" : notif.link.label}</span>
+                              <span>{user ? "View my account" : notif.link.label}</span>
                             </>
                           ) : (
                             <>

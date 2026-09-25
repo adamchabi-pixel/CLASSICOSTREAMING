@@ -1,0 +1,3472 @@
+[
+  {
+    "id": "trending-now",
+    "title": "TRENDING NOW",
+    "description": "The most watched and highly acclaimed movies right now, updated daily.",
+    "movies": [
+      {
+        "id": "238",
+        "tmdbId": "238",
+        "imdbId": "tt0068646",
+        "title": "The Godfather",
+        "originalTitle": "The Godfather",
+        "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
+        "year": 1972,
+        "duration": "175 min",
+        "rating": "8.7",
+        "voteAverage": 8.687,
+        "director": "Francis Ford Coppola",
+        "cast": [
+          "Marlon Brando",
+          "Al Pacino",
+          "James Caan",
+          "Robert Duvall"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "An offer you can't refuse."
+      },
+      {
+        "id": "1032863",
+        "tmdbId": "1032863",
+        "imdbId": "tt22526100",
+        "title": "The Love Hypothesis",
+        "originalTitle": "The Love Hypothesis",
+        "description": "Olive Smith, a biology PhD candidate, and Dr. Adam Carlsen, a hotshot professor and well-known tyrant, enter into a fake relationship, seeing each of their carefully calculated theories on love get thrown into chaos.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vfZxVHextAGC70zrNhS8lsROqP1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/o7Oy9Gbx1CCyaweL8xUhtMW4Puq.jpg",
+        "year": 2026,
+        "duration": "112 min",
+        "rating": "8.1",
+        "voteAverage": 8.1,
+        "director": "Claire Scanlon",
+        "cast": [
+          "Lili Reinhart",
+          "Tom Bateman",
+          "Rachel Marsh",
+          "Jaboukie Young-White"
+        ],
+        "genre": [
+          "Romance",
+          "Comedy"
+        ],
+        "tagline": "Fake dating. Real chemistry."
+      },
+      {
+        "id": "1423191",
+        "tmdbId": "1423191",
+        "imdbId": "tt35538033",
+        "title": "Resident Evil",
+        "originalTitle": "Resident Evil",
+        "description": "Medical courier Bryan unwittingly finds himself fighting for survival as one fateful, horrifying night collapses around him in chaos.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/i7UyjfPio0VFHB9rBUZSFyhOoM8.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/3icyRAqgakNcQn6aDVz9libFmBA.jpg",
+        "year": 2026,
+        "duration": "95 min",
+        "rating": "7.3",
+        "voteAverage": 7.28,
+        "director": "Zach Cregger",
+        "cast": [
+          "Austin Abrams",
+          "Paul Walter Hauser",
+          "Kali Reis",
+          "Zach Cherry"
+        ],
+        "genre": [
+          "Horror",
+          "Science Fiction",
+          "Adventure"
+        ],
+        "tagline": "A new era of evil."
+      },
+      {
+        "id": "1084244",
+        "tmdbId": "1084244",
+        "imdbId": "tt29355505",
+        "title": "Toy Story 5",
+        "originalTitle": "Toy Story 5",
+        "description": "When Bonnie receives a Lilypad tablet as a gift and becomes obsessed, Buzz, Woody, Jessie and the rest of the gang's jobs become exponentially harder when they have to go head to head with the all-new threat to playtime.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/qjTqY5coNiz6sVtPng40IzltsoN.jpg",
+        "year": 2026,
+        "duration": "102 min",
+        "rating": "8.3",
+        "voteAverage": 8.348,
+        "director": "Andrew Stanton",
+        "cast": [
+          "Joan Cusack",
+          "Tom Hanks",
+          "Tim Allen",
+          "Conan O'Brien"
+        ],
+        "genre": [
+          "Animation",
+          "Family",
+          "Comedy",
+          "Adventure"
+        ],
+        "tagline": "It's on."
+      },
+      {
+        "id": "969681",
+        "tmdbId": "969681",
+        "imdbId": "tt22084616",
+        "title": "Spider-Man: Brand New Day",
+        "originalTitle": "Spider-Man: Brand New Day",
+        "description": "Fighting crime full-time as Spider-Man in a world that doesn't remember him—and the pressure of seeing his old friends move on without him—sparks a change in Peter Parker he may not have the power to control. But that transformation might also be the only thing that can stop a shocking new threat to the city and those he loves - a powerful villain no one can even see.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/bjiS5ipwxb9JFy3XRRN4OAilSeX.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/qeQJx07rK2xm8SD2sJxFKhE7gs0.jpg",
+        "year": 2026,
+        "duration": "145 min",
+        "rating": "7.9",
+        "voteAverage": 7.864,
+        "director": "Destin Daniel Cretton",
+        "cast": [
+          "Tom Holland",
+          "Zendaya",
+          "Mark Ruffalo",
+          "Jon Bernthal"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Action",
+          "Adventure"
+        ],
+        "tagline": "A brand new day starts now."
+      },
+      {
+        "id": "1083381",
+        "tmdbId": "1083381",
+        "imdbId": "tt26657236",
+        "title": "Backrooms",
+        "originalTitle": "Backrooms",
+        "description": "A strange doorway appears in the basement of a furniture showroom.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/dqmMWNWfLnExDRpMtIMqI97GQFR.jpg",
+        "year": 2026,
+        "duration": "111 min",
+        "rating": "7.0",
+        "voteAverage": 7.029,
+        "director": "Kane Parsons",
+        "cast": [
+          "Chiwetel Ejiofor",
+          "Renate Reinsve",
+          "Finn Bennett",
+          "Lukita Maxwell"
+        ],
+        "genre": [
+          "Horror",
+          "Mystery",
+          "Science Fiction"
+        ],
+        "tagline": "See how far it goes."
+      },
+      {
+        "id": "1339713",
+        "tmdbId": "1339713",
+        "imdbId": "tt37287335",
+        "title": "Obsession",
+        "originalTitle": "Obsession",
+        "description": "After breaking the mysterious \"One Wish Willow\" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rZfmzpixLKLR3Hg2u0WgC7XLFl8.jpg",
+        "year": 2026,
+        "duration": "109 min",
+        "rating": "8.2",
+        "voteAverage": 8.194,
+        "director": "Curry Barker",
+        "cast": [
+          "Michael Johnston",
+          "Inde Navarrette",
+          "Cooper Tomlinson",
+          "Megan Lawless"
+        ],
+        "genre": [
+          "Horror",
+          "Thriller"
+        ],
+        "tagline": "Be careful who you wish for…"
+      },
+      {
+        "id": "1368337",
+        "tmdbId": "1368337",
+        "imdbId": "tt33764258",
+        "title": "The Odyssey",
+        "originalTitle": "The Odyssey",
+        "description": "Odysseus, the legendary King of Ithaca, embarks on a long and perilous journey home following the Trojan War. Throughout his voyage, he is forced to confront the whims of gods, mythological monsters, and trials that stretch both his cunning and his humanity to the breaking point.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iuylzRSllrGn7YB322kwKoOVMcq.jpg",
+        "year": 2026,
+        "duration": "173 min",
+        "rating": "8.0",
+        "voteAverage": 8.02,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Matt Damon",
+          "Tom Holland",
+          "Anne Hathaway",
+          "Robert Pattinson"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Fantasy"
+        ],
+        "tagline": "Defy the gods."
+      },
+      {
+        "id": "1240889",
+        "tmdbId": "1240889",
+        "imdbId": "tt35298123",
+        "title": "Teenage Sex and Death at Camp Miasma",
+        "originalTitle": "Teenage Sex and Death at Camp Miasma",
+        "description": "After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original’s star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/6Q6Zo6GNXMLP600OJSh6MhW21um.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/d1n2ySWSanU34eEsluRjfrjRq52.jpg",
+        "year": 2026,
+        "duration": "112 min",
+        "rating": "6.4",
+        "voteAverage": 6.4,
+        "director": "Jane Schoenbrun",
+        "cast": [
+          "Hannah Einbinder",
+          "Gillian Anderson",
+          "Amanda Fix",
+          "Arthur Conti"
+        ],
+        "genre": [
+          "Comedy",
+          "Horror",
+          "Romance"
+        ],
+        "tagline": "Blood. Lust."
+      },
+      {
+        "id": "1101383",
+        "tmdbId": "1101383",
+        "imdbId": "tt27165187",
+        "title": "The End of Oak Street",
+        "originalTitle": "The End of Oak Street",
+        "description": "After a mysterious cosmic event rips Oak Street from suburbia and transports their neighborhood to someplace unknown, the Platt family soon discovers that their very survival depends on them sticking together as they navigate their now unrecognizable surroundings.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fYXqpgPmHMphSF2W30GbTeJVIa5.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/b9q9VmbXDvJmTziRqkwdEmFdwhr.jpg",
+        "year": 2026,
+        "duration": "100 min",
+        "rating": "7.0",
+        "voteAverage": 6.997,
+        "director": "David Robert Mitchell",
+        "cast": [
+          "Anne Hathaway",
+          "Ewan McGregor",
+          "Maisy Stella",
+          "Christian Convery"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Mystery",
+          "Thriller"
+        ],
+        "tagline": "Where goes the neighborhood."
+      }
+    ]
+  },
+  {
+    "id": "godzilla",
+    "title": "Godzilla",
+    "description": "The King of the Monsters. Epic destruction and awe-inspiring creature features.",
+    "movies": [
+      {
+        "id": "940721",
+        "tmdbId": "940721",
+        "imdbId": "tt23289160",
+        "title": "Godzilla Minus One",
+        "originalTitle": "ゴジラ-1.0",
+        "description": "In postwar Japan, Godzilla brings new devastation to an already scorched landscape. With no military intervention or government help in sight, the survivors must join together in the face of despair and fight back against an unrelenting horror.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2E2WTX0TJEflAged6kzErwqX1kt.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/oHBhHoNe59VH6bUMazDtJmWOFSS.jpg",
+        "year": 2023,
+        "duration": "125 min",
+        "rating": "7.6",
+        "voteAverage": 7.603,
+        "director": "Takashi Yamazaki",
+        "cast": [
+          "Ryunosuke Kamiki",
+          "Minami Hamabe",
+          "Yuki Yamada",
+          "Munetaka Aoki"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Horror",
+          "Action"
+        ],
+        "tagline": "Live and Fight. Survive and Resist."
+      },
+      {
+        "id": "823464",
+        "tmdbId": "823464",
+        "imdbId": "tt14539740",
+        "title": "Godzilla x Kong: The New Empire",
+        "originalTitle": "Godzilla x Kong: The New Empire",
+        "description": "Following their explosive showdown, Godzilla and Kong must reunite against a colossal undiscovered threat hidden within our world, challenging their very existence – and our own.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/z1p34vh7dEOnLDmyCrlUVLuoDzd.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gvLG3Fnznkxl4SmYfcK8gUuqxM8.jpg",
+        "year": 2024,
+        "duration": "115 min",
+        "rating": "7.0",
+        "voteAverage": 7,
+        "director": "Adam Wingard",
+        "cast": [
+          "Rebecca Hall",
+          "Brian Tyree Henry",
+          "Dan Stevens",
+          "Kaylee Hottle"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Science Fiction"
+        ],
+        "tagline": "Rise together or fall alone."
+      },
+      {
+        "id": "399566",
+        "tmdbId": "399566",
+        "imdbId": "tt5034838",
+        "title": "Godzilla vs. Kong",
+        "originalTitle": "Godzilla vs. Kong",
+        "description": "In a time when monsters walk the Earth, humanity’s fight for its future sets Godzilla and Kong on a collision course that will see the two most powerful forces of nature on the planet collide in a spectacular battle for the ages.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/pgqgaUx1cJb5oZQQ5v0tNARCeBp.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/wWqTMWkEw6HouLd1zPZbZWxtAPr.jpg",
+        "year": 2021,
+        "duration": "114 min",
+        "rating": "7.5",
+        "voteAverage": 7.52,
+        "director": "Adam Wingard",
+        "cast": [
+          "Alexander Skarsgård",
+          "Rebecca Hall",
+          "Kaylee Hottle",
+          "Brian Tyree Henry"
+        ],
+        "genre": [
+          "Action",
+          "Science Fiction",
+          "Adventure"
+        ],
+        "tagline": "One will fall."
+      },
+      {
+        "id": "373571",
+        "tmdbId": "373571",
+        "imdbId": "tt3741700",
+        "title": "Godzilla: King of the Monsters",
+        "originalTitle": "Godzilla: King of the Monsters",
+        "description": "Follows the heroic efforts of the crypto-zoological agency Monarch as its members face off against a battery of god-sized monsters, including the mighty Godzilla, who collides with Mothra, Rodan, and his ultimate nemesis, the three-headed King Ghidorah. When these ancient super-species, thought to be mere myths, rise again, they all vie for supremacy, leaving humanity's very existence hanging in the balance.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mzOHg7Q5q9yUmY0b9Esu8Qe6Nnm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uovH5k4BAEPqXqxgwVrTtqH169g.jpg",
+        "year": 2019,
+        "duration": "132 min",
+        "rating": "6.7",
+        "voteAverage": 6.683,
+        "director": "Michael Dougherty",
+        "cast": [
+          "Kyle Chandler",
+          "Vera Farmiga",
+          "Millie Bobby Brown",
+          "Ken Watanabe"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Action"
+        ],
+        "tagline": "Long live the king."
+      },
+      {
+        "id": "315011",
+        "tmdbId": "315011",
+        "imdbId": "tt4262980",
+        "title": "Shin Godzilla",
+        "originalTitle": "シン・ゴジラ",
+        "description": "When a massive, gilled monster emerges from the deep and tears through the city, the government scrambles to save its citizens.  A rag-tag team of volunteers cuts through a web of red tape to uncover the monster's weakness and its mysterious ties to a foreign superpower.  But time is not on their side - the greatest catastrophe to ever befall the world is about to evolve right before their very eyes.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jPNShaWZMpVF0iQ7j1dvTuZLD20.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/tb0uo01w2kDHiQwTszsLlSusAm4.jpg",
+        "year": 2016,
+        "duration": "120 min",
+        "rating": "7.2",
+        "voteAverage": 7.249,
+        "director": "Shinji Higuchi",
+        "cast": [
+          "Hiroki Hasegawa",
+          "Yutaka Takenouchi",
+          "Satomi Ishihara",
+          "Kengo Kora"
+        ],
+        "genre": [
+          "Action",
+          "Science Fiction",
+          "Horror"
+        ],
+        "tagline": "A god incarnate. A city doomed."
+      },
+      {
+        "id": "124905",
+        "tmdbId": "124905",
+        "imdbId": "tt0831387",
+        "title": "Godzilla",
+        "originalTitle": "Godzilla",
+        "description": "Ford Brody, a Navy bomb expert, has just reunited with his family in San Francisco when he is forced to go to Japan to help his estranged father, Joe. Soon, both men are swept up in an escalating crisis when an ancient alpha predator arises from the sea to combat malevolent adversaries that threaten the survival of humanity. The creatures leave colossal destruction in their wake, as they make their way toward their final battleground: San Francisco.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tphkjmQq8WebuVwNXelmjLUXuPJ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/6CLNOzMXO9bvapDD8gsdwkJU4wN.jpg",
+        "year": 2014,
+        "duration": "123 min",
+        "rating": "6.4",
+        "voteAverage": 6.367,
+        "director": "Gareth Edwards",
+        "cast": [
+          "Aaron Taylor-Johnson",
+          "Elizabeth Olsen",
+          "Juliette Binoche",
+          "Bryan Cranston"
+        ],
+        "genre": [
+          "Action",
+          "Drama",
+          "Science Fiction"
+        ],
+        "tagline": "The world ends, Godzilla begins."
+      },
+      {
+        "id": "1678",
+        "tmdbId": "1678",
+        "imdbId": "tt0047034",
+        "title": "Godzilla",
+        "originalTitle": "ゴジラ",
+        "description": "Japan is thrown into a panic after several ships are sunk near Odo Island. An expedition to the island led by Dr. Kyohei Yamane soon discover something far more devastating than imagined in the form of a 50 meter tall monster whom the natives call Gojira. Now the monster begins a rampage that threatens to destroy not only Japan, but the rest of the world as well.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2W0Yw0qrgVMgdsSCZRKtfvaAh0i.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ub1sIbdSrokPZawY2ljExXZov2j.jpg",
+        "year": 1954,
+        "duration": "96 min",
+        "rating": "7.6",
+        "voteAverage": 7.627,
+        "director": "Ishirō Honda",
+        "cast": [
+          "Akira Takarada",
+          "Momoko Kôchi",
+          "Akihiko Hirata",
+          "Takashi Shimura"
+        ],
+        "genre": [
+          "Thriller",
+          "Horror",
+          "Science Fiction"
+        ],
+        "tagline": "Godzilla, a weapon of science, a great battle of wonder and terror!"
+      },
+      {
+        "id": "10643",
+        "tmdbId": "10643",
+        "imdbId": "tt0188640",
+        "title": "Godzilla 2000: Millennium",
+        "originalTitle": "ゴジラ2000 ミレニアム",
+        "description": "An independent group of researchers called the Godzilla Prediction Network (GPN) actively track Godzilla as he makes landfall in Nemuro.  Matters are further complicated when a giant meteor is discovered in the Ibaragi Prefecture. The mysterious rock begins to levitate as it's true intentions for the world and Godzilla are revealed.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/7BrjFxV0j5VzZRfVYeYbFXMUweB.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/nv60CvL3fjosoJytnBcdJcF5l0L.jpg",
+        "year": 1999,
+        "duration": "107 min",
+        "rating": "6.9",
+        "voteAverage": 6.884,
+        "director": "Takao Okawara",
+        "cast": [
+          "Takehiro Murata",
+          "Hiroshi Abe",
+          "Naomi Nishida",
+          "Mayu Suzuki"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Science Fiction"
+        ],
+        "tagline": "Witness! A new era of Godzilla!"
+      },
+      {
+        "id": "15767",
+        "tmdbId": "15767",
+        "imdbId": "tt0399102",
+        "title": "Godzilla: Final Wars",
+        "originalTitle": "ゴジラ ファイナルウォーズ",
+        "description": "Humanity finally rids themselves of Godzilla, imprisoning him in an icy tomb in the South Pole. All is peaceful until various monsters emerge to lay waste to Earth's cities. Overwhelmed, humanity is seemingly saved by a race of benevolent aliens known as Xiliens. But not all is what it seems with these bizarre visitors. If humanity wishes to survive, they must reluctantly resurrect their most hated enemy, Godzilla.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/21lWA4YyYppVnwAPOiBkGrt2FGr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/irLLP6uZRB10P4bCGZMzlGB5p6c.jpg",
+        "year": 2004,
+        "duration": "125 min",
+        "rating": "7.1",
+        "voteAverage": 7.1,
+        "director": "Ryuhei Kitamura",
+        "cast": [
+          "Masahiro Matsuoka",
+          "Rei Kikukawa",
+          "Don Frye",
+          "Maki Mizuno"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Science Fiction",
+          "Fantasy",
+          "Thriller"
+        ],
+        "tagline": "Farewell, Godzilla."
+      },
+      {
+        "id": "12636",
+        "tmdbId": "12636",
+        "imdbId": "tt0314111",
+        "title": "Godzilla Against MechaGodzilla",
+        "originalTitle": "ゴジラ×メカゴジラ",
+        "description": "JSDF pilot Akane has a fateful encounter when a new Godzilla emerges in Tateyama. As a countermeasure, a cyborg named Kiryu is constructed from the remains of the original. The machine is discovered to harbor the restless soul of the original monster as Akane must learn to find value in her own life as well.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/Kg6J3qyf80cwnKkv1YorSjkNaK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/fDkwRFthToJTJN1rhf9zAAA1fcF.jpg",
+        "year": 2002,
+        "duration": "88 min",
+        "rating": "7.5",
+        "voteAverage": 7.474,
+        "director": "Masaaki Tezuka",
+        "cast": [
+          "Yumiko Shaku",
+          "Shin Takuma",
+          "Kana Onodera",
+          "Koh Takasugi"
+        ],
+        "genre": [
+          "Action",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "Startup - Resonance - Smashed Ice."
+      },
+      {
+        "id": "1682",
+        "tmdbId": "1682",
+        "imdbId": "tt0058379",
+        "title": "Mothra vs. Godzilla",
+        "originalTitle": "モスラ対ゴジラ",
+        "description": "Journalists Ichiro Sakai and Junko cover the wreckage of a typhoon when an enormous egg is found and claimed by greedy entrepreneurs. Mothra's fairies arrive and are aided by the journalists in a plea for its return. As their requests are denied, Godzilla arises near Nagoya and the people of Infant Island must decide if they are willing to answer Japan's own pleas for help.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/y49vvM03gpuyhpyMc1f55VrNkP3.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/dKMpMwJB9Aq1fflGAcVfagfG0R5.jpg",
+        "year": 1964,
+        "duration": "89 min",
+        "rating": "7.0",
+        "voteAverage": 7,
+        "director": "Ishirō Honda",
+        "cast": [
+          "Akira Takarada",
+          "Yuriko Hoshi",
+          "Hiroshi Koizumi",
+          "Yū Fujiki"
+        ],
+        "genre": [
+          "Drama",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "A massive Mach 3 moth! The heavy missile tank Godzilla! The sky, sea, and land quake in the fierce battle of the century!"
+      }
+    ]
+  },
+  {
+    "id": "mafia-movies",
+    "title": "Mafia & Gangster Classics",
+    "description": "The finest organized crime sagas, Italian-American syndicates, and mob masterpieces.",
+    "movies": [
+      {
+        "id": "238",
+        "tmdbId": "238",
+        "imdbId": "tt0068646",
+        "title": "The Godfather",
+        "originalTitle": "The Godfather",
+        "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
+        "year": 1972,
+        "duration": "175 min",
+        "rating": "8.7",
+        "voteAverage": 8.687,
+        "director": "Francis Ford Coppola",
+        "cast": [
+          "Marlon Brando",
+          "Al Pacino",
+          "James Caan",
+          "Robert Duvall"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "An offer you can't refuse."
+      },
+      {
+        "id": "240",
+        "tmdbId": "240",
+        "imdbId": "tt0071562",
+        "title": "The Godfather Part II",
+        "originalTitle": "The Godfather Part II",
+        "description": "In the continuing saga of the Corleone crime family, a young Vito Corleone grows up in Sicily and in 1910s New York. In the 1950s, Michael Corleone attempts to expand the family business into Las Vegas, Hollywood and Cuba.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8a1lJs7mFyGhGhZZDT1azJUoQiZ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/kGzFbGhp99zva6oZODW5atUtnqi.jpg",
+        "year": 1974,
+        "duration": "202 min",
+        "rating": "8.6",
+        "voteAverage": 8.572,
+        "director": "Francis Ford Coppola",
+        "cast": [
+          "Al Pacino",
+          "Robert Duvall",
+          "Diane Keaton",
+          "Robert De Niro"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "The rise and fall of the Corleone empire."
+      },
+      {
+        "id": "769",
+        "tmdbId": "769",
+        "imdbId": "tt0099685",
+        "title": "GoodFellas",
+        "originalTitle": "GoodFellas",
+        "description": "The true story of Henry Hill, a half-Irish, half-Sicilian Brooklyn kid who is adopted by neighbourhood gangsters at an early age and climbs the ranks of a Mafia family under the guidance of Jimmy Conway.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/9OkCLM73MIU2CrKZbqiT8Ln1wY2.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gILte6Zd7m1YneIr6MVhh30S9pr.jpg",
+        "year": 1990,
+        "duration": "145 min",
+        "rating": "8.5",
+        "voteAverage": 8.451,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Ray Liotta",
+          "Joe Pesci",
+          "Lorraine Bracco"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "Three decades of life in the mafia."
+      },
+      {
+        "id": "524",
+        "tmdbId": "524",
+        "imdbId": "tt0112641",
+        "title": "Casino",
+        "originalTitle": "Casino",
+        "description": "In Las Vegas, two best friends--a casino executive and a Mafia enforcer--compete for a gambling empire and a fast-living, fast-loving socialite.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/gziIkUSnYuj9ChCi8qOu2ZunpSC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iZGiMD0p1M2AOmzKknFo5bkuz94.jpg",
+        "year": 1995,
+        "duration": "179 min",
+        "rating": "8.0",
+        "voteAverage": 7.998,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Sharon Stone",
+          "Joe Pesci",
+          "James Woods"
+        ],
+        "genre": [
+          "Crime",
+          "Drama"
+        ],
+        "tagline": "No one stays at the top forever."
+      },
+      {
+        "id": "111",
+        "tmdbId": "111",
+        "imdbId": "tt0086250",
+        "title": "Scarface",
+        "originalTitle": "Scarface",
+        "description": "After getting a green card in exchange for assassinating a Cuban government official, Tony Montana stakes a claim on the drug trade in Miami. Viciously murdering anyone who stands in his way, Tony eventually becomes the biggest drug lord in the state, controlling nearly all the cocaine that comes through Miami. But increased pressure from the police, wars with Colombian drug cartels and his own drug-fueled paranoia serve to fuel the flames of his eventual downfall.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iQ5ztdjvteGeboxtmRdXEChJOHh.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/cCvp5Sni75agCtyJkNOMapORUQV.jpg",
+        "year": 1983,
+        "duration": "170 min",
+        "rating": "8.2",
+        "voteAverage": 8.152,
+        "director": "Brian De Palma",
+        "cast": [
+          "Al Pacino",
+          "Steven Bauer",
+          "Michelle Pfeiffer",
+          "Mary Elizabeth Mastrantonio"
+        ],
+        "genre": [
+          "Action",
+          "Crime",
+          "Drama"
+        ],
+        "tagline": "He loved the American Dream. With a vengeance."
+      },
+      {
+        "id": "1422",
+        "tmdbId": "1422",
+        "imdbId": "tt0407887",
+        "title": "The Departed",
+        "originalTitle": "The Departed",
+        "description": "To take down South Boston's Irish Mafia, the police send in one of their own to infiltrate the underworld, not realizing the syndicate has done likewise. While an undercover cop curries favor with the mob kingpin, a career criminal rises through the police ranks. But both sides soon discover there's a mole among them.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nT97ifVT2J1yMQmeq20Qblg61T.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/6WRrGYalXXveItfpnipYdayFkQB.jpg",
+        "year": 2006,
+        "duration": "151 min",
+        "rating": "8.2",
+        "voteAverage": 8.158,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Matt Damon",
+          "Jack Nicholson",
+          "Mark Wahlberg"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "Crime"
+        ],
+        "tagline": "Cops or criminals. When you’re facing a loaded gun, what’s the difference?"
+      },
+      {
+        "id": "311",
+        "tmdbId": "311",
+        "imdbId": "tt0087843",
+        "title": "Once Upon a Time in America",
+        "originalTitle": "Once Upon a Time in America",
+        "description": "A former Prohibition-era Jewish gangster returns to the Lower East Side of Manhattan over thirty years later, where he once again must confront the ghosts and regrets of his old life.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/i0enkzsL5dPeneWnjl1fCWm6L7k.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/xlDUjb0Q5Dv6jPQRF5VE4IMjIy.jpg",
+        "year": 1984,
+        "duration": "139 min",
+        "rating": "8.4",
+        "voteAverage": 8.369,
+        "director": "Sergio Leone",
+        "cast": [
+          "Robert De Niro",
+          "James Woods",
+          "Elizabeth McGovern",
+          "Joe Pesci"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "Crime, passion and lust for power."
+      },
+      {
+        "id": "10474",
+        "tmdbId": "10474",
+        "imdbId": "tt0112461",
+        "title": "The Basketball Diaries",
+        "originalTitle": "The Basketball Diaries",
+        "description": "A high school basketball player’s life turns upside down after free-falling into the harrowing world of drug addiction.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/AhvO1GGDPIgN0hOqZEgaFCbswMK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/oDdRrwTCgaDzAshScrFO09qWqPB.jpg",
+        "year": 1995,
+        "duration": "102 min",
+        "rating": "7.4",
+        "voteAverage": 7.402,
+        "director": "Scott Kalvert",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Bruno Kirby",
+          "Lorraine Bracco",
+          "Ernie Hudson"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "The true story of the death of innocence and the birth of an artist."
+      },
+      {
+        "id": "949",
+        "tmdbId": "949",
+        "imdbId": "tt0113277",
+        "title": "Heat",
+        "originalTitle": "Heat",
+        "description": "Obsessive master thief Neil McCauley leads a top-notch crew on various daring heists throughout Los Angeles while determined detective Vincent Hanna pursues him without rest. Each man recognizes and respects the ability and the dedication of the other even though they are aware their cat-and-mouse game may end in violence.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/umSVjVdbVwtx5ryCA2QXL44Durm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uI22JkEMediWyiRqhllNqeeGtW0.jpg",
+        "year": 1995,
+        "duration": "170 min",
+        "rating": "7.9",
+        "voteAverage": 7.944,
+        "director": "Michael Mann",
+        "cast": [
+          "Al Pacino",
+          "Robert De Niro",
+          "Val Kilmer",
+          "Jon Voight"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "Action"
+        ],
+        "tagline": "A Los Angeles crime saga."
+      },
+      {
+        "id": "9366",
+        "tmdbId": "9366",
+        "imdbId": "tt0119008",
+        "title": "Donnie Brasco",
+        "originalTitle": "Donnie Brasco",
+        "description": "An FBI undercover agent infiltrates the mob and identifies more with the mafia life at the expense of his regular one.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xtKLvpOfARi1XVm8u2FTdhY5Piq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gXWzBnxUfLCT0w0WzAmJ5wF37hC.jpg",
+        "year": 1997,
+        "duration": "127 min",
+        "rating": "7.5",
+        "voteAverage": 7.534,
+        "director": "Mike Newell",
+        "cast": [
+          "Johnny Depp",
+          "Al Pacino",
+          "Michael Madsen",
+          "Bruno Kirby"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "In 1978, the US government waged a war against organized crime. One man was left behind the lines."
+      },
+      {
+        "id": "2734",
+        "tmdbId": "2734",
+        "imdbId": "tt0118933",
+        "title": "David",
+        "originalTitle": "David",
+        "description": "A distinguished military leader whose reign was touched by great scandal, shocking betrayals and rousing victories. A simple shepherd boy chosen to be king, under the watchful eyes of prophet Samuel.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2g0M8OAAOevrCAPKfBVUBR9Woxx.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/qKiozNdotJKrfP7KZ6D0lRl3TMG.jpg",
+        "year": 1997,
+        "duration": "173 min",
+        "rating": "6.6",
+        "voteAverage": 6.619,
+        "director": "Robert Markowitz",
+        "cast": [
+          "Nathaniel Parker",
+          "Jonathan Pryce",
+          "Leonard Nimoy",
+          "Sheryl Lee"
+        ],
+        "genre": [
+          "Adventure",
+          "Drama",
+          "TV Movie"
+        ],
+        "tagline": ""
+      },
+      {
+        "id": "398978",
+        "tmdbId": "398978",
+        "imdbId": "tt1302006",
+        "title": "The Irishman",
+        "originalTitle": "The Irishman",
+        "description": "Pennsylvania, 1956. Frank Sheeran, a war veteran of Irish origin who works as a truck driver, accidentally meets mobster Russell Bufalino. Once Frank becomes his trusted man, Bufalino sends him to Chicago with the task of helping Jimmy Hoffa, a powerful union leader related to organized crime, with whom Frank will maintain a close friendship for nearly twenty years.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mbm8k3GFhXS0ROd9AD1gqYbIFbM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/1RDto0tLo8Fhq7OcwgDaM7nECb7.jpg",
+        "year": 2019,
+        "duration": "209 min",
+        "rating": "7.6",
+        "voteAverage": 7.569,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Al Pacino",
+          "Joe Pesci",
+          "Harvey Keitel"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "History"
+        ],
+        "tagline": "His story changed history."
+      },
+      {
+        "id": "4982",
+        "tmdbId": "4982",
+        "imdbId": "tt0765429",
+        "title": "American Gangster",
+        "originalTitle": "American Gangster",
+        "description": "Loosely based on the criminal career of Frank Lucas, a gangster from La Grange, North Carolina, who smuggled heroin into the United States on American service planes returning from the Vietnam War, before being detained by a task force led by Newark Detective Richie Roberts.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sX9idXDqRUxE5ffww3n3RV5gL55.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/dLL90vskYFn1S89RZp5TUguK9wl.jpg",
+        "year": 2007,
+        "duration": "157 min",
+        "rating": "7.6",
+        "voteAverage": 7.595,
+        "director": "Ridley Scott",
+        "cast": [
+          "Denzel Washington",
+          "Russell Crowe",
+          "Josh Brolin",
+          "Chiwetel Ejiofor"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "There are two sides to the American dream."
+      },
+      {
+        "id": "2856",
+        "tmdbId": "2856",
+        "imdbId": "tt1533792",
+        "title": "Half Past Ten",
+        "originalTitle": "Half Past Ten",
+        "description": "An alcoholic married man discovers he has fallen out of love with his moody wife.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/kJVjieC4T5NgLNjh38q1ILoiMxY.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/kJVjieC4T5NgLNjh38q1ILoiMxY.jpg",
+        "year": 2008,
+        "duration": "60 min",
+        "rating": "3.3",
+        "voteAverage": 3.3,
+        "director": "Sascha Bachmann",
+        "cast": [
+          "Michael F. Stoerzer",
+          "Kerstin Linnartz",
+          "André Schneider",
+          "Sascia Haj"
+        ],
+        "genre": [
+          "Drama"
+        ],
+        "tagline": ""
+      },
+      {
+        "id": "598",
+        "tmdbId": "598",
+        "imdbId": "tt0317248",
+        "title": "City of God",
+        "originalTitle": "Cidade de Deus",
+        "description": "In the poverty-stricken favelas of Rio de Janeiro in the 1970s, two young men choose different paths. Rocket is a budding photographer who documents the increasing drug-related violence of his neighborhood, while José “Zé” Pequeno is an ambitious drug dealer diving into a dangerous life of crime.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/k7eYdWvhYQyRQoU2TB2A2Xu2TfD.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uvitbjFU4JqvMwIkMWHp69bmUzG.jpg",
+        "year": 2002,
+        "duration": "129 min",
+        "rating": "8.4",
+        "voteAverage": 8.427,
+        "director": "Fernando Meirelles",
+        "cast": [
+          "Alexandre Rodrigues",
+          "Leandro Firmino",
+          "Phellipe Haagensen",
+          "Douglas Silva"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "If you run, the beast catches you; if you stay, the beast eats you."
+      }
+    ]
+  },
+  {
+    "id": "christopher-nolan",
+    "title": "Christopher Nolan",
+    "description": "Mind-bending non-linear narratives, practical spectacle, and philosophical epics.",
+    "movies": [
+      {
+        "id": "157336",
+        "tmdbId": "157336",
+        "imdbId": "tt0816692",
+        "title": "Interstellar",
+        "originalTitle": "Interstellar",
+        "description": "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8sNiAPPYU14PUepFNeSNGUTiHW.jpg",
+        "year": 2014,
+        "duration": "169 min",
+        "rating": "8.5",
+        "voteAverage": 8.488,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Matthew McConaughey",
+          "Anne Hathaway",
+          "Michael Caine",
+          "Jessica Chastain"
+        ],
+        "genre": [
+          "Adventure",
+          "Drama",
+          "Science Fiction"
+        ],
+        "tagline": "Mankind was born on Earth. It was never meant to die here."
+      },
+      {
+        "id": "27205",
+        "tmdbId": "27205",
+        "imdbId": "tt1375666",
+        "title": "Inception",
+        "originalTitle": "Inception",
+        "description": "Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: \"inception\", the implantation of another person's idea into a target's subconscious.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
+        "year": 2010,
+        "duration": "148 min",
+        "rating": "8.4",
+        "voteAverage": 8.374,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Joseph Gordon-Levitt",
+          "Ken Watanabe",
+          "Tom Hardy"
+        ],
+        "genre": [
+          "Action",
+          "Science Fiction",
+          "Adventure"
+        ],
+        "tagline": "Your mind is the scene of the crime."
+      },
+      {
+        "id": "155",
+        "tmdbId": "155",
+        "imdbId": "tt0468569",
+        "title": "The Dark Knight",
+        "originalTitle": "The Dark Knight",
+        "description": "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets. The partnership proves to be effective, but they soon find themselves prey to a reign of chaos unleashed by a rising criminal mastermind known to the terrified citizens of Gotham as the Joker.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9FE5eD92WfVCiivM9Pq9GVSrlWk.jpg",
+        "year": 2008,
+        "duration": "152 min",
+        "rating": "8.5",
+        "voteAverage": 8.536,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Heath Ledger",
+          "Aaron Eckhart",
+          "Michael Caine"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Crime"
+        ],
+        "tagline": "Some men just want to watch the world burn."
+      },
+      {
+        "id": "872585",
+        "tmdbId": "872585",
+        "imdbId": "tt15398776",
+        "title": "Oppenheimer",
+        "originalTitle": "Oppenheimer",
+        "description": "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/neeNHeXjMF5fXoCJRsOmkNGC7q.jpg",
+        "year": 2023,
+        "duration": "181 min",
+        "rating": "8.0",
+        "voteAverage": 8.023,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Cillian Murphy",
+          "Emily Blunt",
+          "Matt Damon",
+          "Robert Downey Jr."
+        ],
+        "genre": [
+          "Drama",
+          "History"
+        ],
+        "tagline": "The world forever changes."
+      },
+      {
+        "id": "1124",
+        "tmdbId": "1124",
+        "imdbId": "tt0482571",
+        "title": "The Prestige",
+        "originalTitle": "The Prestige",
+        "description": "A mysterious story of two magicians whose intense rivalry leads them on a life-long battle for supremacy -- full of obsession, deceit and jealousy with dangerous and deadly consequences.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/yaExZh6qE2cfyK3o4kAMEq0mkgy.jpg",
+        "year": 2006,
+        "duration": "130 min",
+        "rating": "8.2",
+        "voteAverage": 8.2,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Hugh Jackman",
+          "Christian Bale",
+          "Michael Caine",
+          "Piper Perabo"
+        ],
+        "genre": [
+          "Drama",
+          "Mystery",
+          "Science Fiction"
+        ],
+        "tagline": "Are you watching closely?"
+      },
+      {
+        "id": "77",
+        "tmdbId": "77",
+        "imdbId": "tt0209144",
+        "title": "Memento",
+        "originalTitle": "Memento",
+        "description": "Leonard Shelby is tracking down the man who raped and murdered his wife. The difficulty of locating his wife's killer, however, is compounded by the fact that he suffers from a rare, untreatable form of short-term memory loss. Although he can recall details of life before his accident, Leonard cannot remember what happened fifteen minutes ago, where he's going, or why.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nzlv62aC0octS5AklAiWpXLX9Z0.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/7Wev9JMo6R5XAfz2KDvXb7oPMmy.jpg",
+        "year": 2000,
+        "duration": "113 min",
+        "rating": "8.2",
+        "voteAverage": 8.173,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Guy Pearce",
+          "Carrie-Anne Moss",
+          "Joe Pantoliano",
+          "Mark Boone Junior"
+        ],
+        "genre": [
+          "Mystery",
+          "Thriller"
+        ],
+        "tagline": "Some memories are best forgotten."
+      },
+      {
+        "id": "272",
+        "tmdbId": "272",
+        "imdbId": "tt0372784",
+        "title": "Batman Begins",
+        "originalTitle": "Batman Begins",
+        "description": "Driven by tragedy, billionaire Bruce Wayne dedicates his life to uncovering and defeating the corruption that plagues his home, Gotham City.  Unable to work within the system, he instead creates a new identity, a symbol of fear for the criminal underworld - The Batman.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sPX89Td70IDDjVr85jdSBb4rWGr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9IIBboV7MCT0bTxzXHmWK1Hq558.jpg",
+        "year": 2005,
+        "duration": "140 min",
+        "rating": "7.7",
+        "voteAverage": 7.73,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Michael Caine",
+          "Liam Neeson",
+          "Katie Holmes"
+        ],
+        "genre": [
+          "Drama",
+          "Crime",
+          "Action"
+        ],
+        "tagline": "Evil fears the knight."
+      },
+      {
+        "id": "49026",
+        "tmdbId": "49026",
+        "imdbId": "tt1345836",
+        "title": "The Dark Knight Rises",
+        "originalTitle": "The Dark Knight Rises",
+        "description": "Following the death of District Attorney Harvey Dent, Batman assumes responsibility for Dent's crimes to protect the late attorney's reputation and is subsequently hunted by the Gotham City Police Department. Eight years later, Batman encounters the mysterious Selina Kyle and the villainous Bane, a new terrorist leader who overwhelms Gotham's finest. The Dark Knight resurfaces to protect a city that has branded him an enemy.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/hr0L2aueqlP2BYUblTTjmtn0hw4.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/c3OHQncTAnKFhdOTX7D3LTW6son.jpg",
+        "year": 2012,
+        "duration": "165 min",
+        "rating": "7.8",
+        "voteAverage": 7.798,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Gary Oldman",
+          "Tom Hardy",
+          "Joseph Gordon-Levitt"
+        ],
+        "genre": [
+          "Action",
+          "Crime",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "The legend ends."
+      },
+      {
+        "id": "374720",
+        "tmdbId": "374720",
+        "imdbId": "tt5013056",
+        "title": "Dunkirk",
+        "originalTitle": "Dunkirk",
+        "description": "The story of the miraculous evacuation of Allied soldiers from Belgium, Britain, Canada and France, who were cut off and surrounded by the German army from the beaches and harbour of Dunkirk between May 26th and June 4th 1940 during World War II.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/b4Oe15CGLL61Ped0RAS9JpqdmCt.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ddIkmH3TpR6XSc47jj0BrGK5Rbz.jpg",
+        "year": 2017,
+        "duration": "107 min",
+        "rating": "7.5",
+        "voteAverage": 7.45,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Fionn Whitehead",
+          "Tom Hardy",
+          "Mark Rylance",
+          "Kenneth Branagh"
+        ],
+        "genre": [
+          "War",
+          "Action",
+          "Drama"
+        ],
+        "tagline": "When 400,000 men couldn't get home, home came for them."
+      },
+      {
+        "id": "577922",
+        "tmdbId": "577922",
+        "imdbId": "tt6723592",
+        "title": "Tenet",
+        "originalTitle": "Tenet",
+        "description": "Armed with only one word - Tenet - and fighting for the survival of the entire world, the Protagonist journeys through a twilight world of international espionage on a mission that will unfold in something beyond real time.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/mQOUyqDybTqxl73hO5LujCZsM1o.jpg",
+        "year": 2020,
+        "duration": "150 min",
+        "rating": "7.2",
+        "voteAverage": 7.171,
+        "director": "Christopher Nolan",
+        "cast": [
+          "John David Washington",
+          "Robert Pattinson",
+          "Elizabeth Debicki",
+          "Kenneth Branagh"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Science Fiction"
+        ],
+        "tagline": "Time runs out."
+      }
+    ]
+  },
+  {
+    "id": "tarantino-collection",
+    "title": "Quentin Tarantino",
+    "description": "Stylized violence, razor-sharp dialogue, cinematic homages, and non-stop tension.",
+    "movies": [
+      {
+        "id": "680",
+        "tmdbId": "680",
+        "imdbId": "tt0110912",
+        "title": "Pulp Fiction",
+        "originalTitle": "Pulp Fiction",
+        "description": "A burger-loving hit man, his philosophical partner, a drug-addled gangster's moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/suaEOtk1N1sgg2MTM7oZd2cfVp3.jpg",
+        "year": 1994,
+        "duration": "154 min",
+        "rating": "8.5",
+        "voteAverage": 8.48,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "John Travolta",
+          "Samuel L. Jackson",
+          "Uma Thurman",
+          "Bruce Willis"
+        ],
+        "genre": [
+          "Thriller",
+          "Crime",
+          "Comedy"
+        ],
+        "tagline": "You won’t know the facts until you’ve seen the fiction."
+      },
+      {
+        "id": "68718",
+        "tmdbId": "68718",
+        "imdbId": "tt1853728",
+        "title": "Django Unchained",
+        "originalTitle": "Django Unchained",
+        "description": "With the help of a German bounty hunter, a freed slave sets out to rescue his wife from a brutal Mississippi plantation owner.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/2oZklIzUbvZXXzIFzv7Hi68d6xf.jpg",
+        "year": 2012,
+        "duration": "165 min",
+        "rating": "8.2",
+        "voteAverage": 8.192,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Jamie Foxx",
+          "Christoph Waltz",
+          "Leonardo DiCaprio",
+          "Kerry Washington"
+        ],
+        "genre": [
+          "Drama",
+          "Western"
+        ],
+        "tagline": "Life, liberty, and the pursuit of vengeance."
+      },
+      {
+        "id": "16869",
+        "tmdbId": "16869",
+        "imdbId": "tt0361748",
+        "title": "Inglourious Basterds",
+        "originalTitle": "Inglourious Basterds",
+        "description": "In Nazi-occupied France during World War II, a group of Jewish-American soldiers known as \"The Basterds\" are chosen specifically to spread fear throughout the Third Reich by scalping and brutally killing Nazis. The Basterds, lead by Lt. Aldo Raine soon cross paths with a French-Jewish teenage girl who runs a movie theater in Paris which is targeted by the soldiers.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/aupnPtagH9JVBuMrGEanf4iqXEQ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/hwNtEmmugU5Yd7hpfprNWI0DGIn.jpg",
+        "year": 2009,
+        "duration": "153 min",
+        "rating": "8.2",
+        "voteAverage": 8.217,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Brad Pitt",
+          "Mélanie Laurent",
+          "Christoph Waltz",
+          "Eli Roth"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "War"
+        ],
+        "tagline": "Once upon a time in Nazi occupied France..."
+      },
+      {
+        "id": "24",
+        "tmdbId": "24",
+        "imdbId": "tt0266697",
+        "title": "Kill Bill: Vol. 1",
+        "originalTitle": "Kill Bill: Vol. 1",
+        "description": "An assassin is shot by her ruthless employer, Bill, and other members of their assassination circle – but she lives to plot her vengeance.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/v7TaX8kXMXs5yFFGR41guUDNcnB.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iffzIhuLAO38Po6sh1s6ZEVwlNL.jpg",
+        "year": 2003,
+        "duration": "111 min",
+        "rating": "8.0",
+        "voteAverage": 7.97,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Uma Thurman",
+          "Lucy Liu",
+          "Vivica A. Fox",
+          "Daryl Hannah"
+        ],
+        "genre": [
+          "Action",
+          "Crime"
+        ],
+        "tagline": "Here comes the bride."
+      },
+      {
+        "id": "393",
+        "tmdbId": "393",
+        "imdbId": "tt0378194",
+        "title": "Kill Bill: Vol. 2",
+        "originalTitle": "Kill Bill: Vol. 2",
+        "description": "The Bride unwaveringly continues on her roaring rampage of revenge against the band of assassins who had tried to kill her and her unborn child. She visits each of her former associates one-by-one, checking off the victims on her Death List Five until there's nothing left to do … but kill Bill.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2yhg0mZQMhDyvUQ4rG1IZ4oIA8L.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/pgG6tzJzC8mjGqhaT8IWwEk00xf.jpg",
+        "year": 2004,
+        "duration": "136 min",
+        "rating": "7.9",
+        "voteAverage": 7.873,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Uma Thurman",
+          "David Carradine",
+          "Daryl Hannah",
+          "Michael Madsen"
+        ],
+        "genre": [
+          "Action",
+          "Crime",
+          "Thriller"
+        ],
+        "tagline": "The bride is back for the final cut."
+      },
+      {
+        "id": "500",
+        "tmdbId": "500",
+        "imdbId": "tt0105236",
+        "title": "Reservoir Dogs",
+        "originalTitle": "Reservoir Dogs",
+        "description": "A botched robbery indicates a police informant, and the pressure mounts in the aftermath at a warehouse. Crime begets violence as the survivors -- veteran Mr. White, newcomer Mr. Orange, psychopathic parolee Mr. Blonde, bickering weasel Mr. Pink and Nice Guy Eddie -- unravel.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xi8Iu6qyTfyZVDVy60raIOYJJmk.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/jwt159hXWA9Q5xpBo8hWb3zwLi7.jpg",
+        "year": 1992,
+        "duration": "99 min",
+        "rating": "8.1",
+        "voteAverage": 8.11,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Harvey Keitel",
+          "Tim Roth",
+          "Michael Madsen",
+          "Chris Penn"
+        ],
+        "genre": [
+          "Crime",
+          "Thriller"
+        ],
+        "tagline": "Every dog has his day."
+      },
+      {
+        "id": "273248",
+        "tmdbId": "273248",
+        "imdbId": "tt3460252",
+        "title": "The Hateful Eight",
+        "originalTitle": "The Hateful Eight",
+        "description": "Bounty hunters seek shelter from a raging blizzard and get caught up in a plot of betrayal and deception.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jIywvdPjia2t3eKYbjVTcwBQlG8.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/7g1zO5t0bd27Iqn5ZUDJmksOGPJ.jpg",
+        "year": 2015,
+        "duration": "188 min",
+        "rating": "7.8",
+        "voteAverage": 7.756,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Samuel L. Jackson",
+          "Kurt Russell",
+          "Jennifer Jason Leigh",
+          "Walton Goggins"
+        ],
+        "genre": [
+          "Drama",
+          "Mystery",
+          "Western"
+        ],
+        "tagline": "No one comes up here without a damn good reason."
+      },
+      {
+        "id": "466272",
+        "tmdbId": "466272",
+        "imdbId": "tt7131622",
+        "title": "Once Upon a Time... in Hollywood",
+        "originalTitle": "Once Upon a Time... in Hollywood",
+        "description": "Los Angeles, 1969. TV star Rick Dalton, a struggling actor specializing in westerns, and stuntman Cliff Booth, his best friend, try to survive in a constantly changing movie industry. Dalton is the neighbor of the young and promising actress and model Sharon Tate, who has just married the prestigious Polish director Roman Polanski…",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8j58iEBw9pOXFD2L0nt0ZXeHviB.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/kKTPv9LKKs5L3oO1y5FNObxAPWI.jpg",
+        "year": 2019,
+        "duration": "162 min",
+        "rating": "7.4",
+        "voteAverage": 7.419,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Brad Pitt",
+          "Margot Robbie",
+          "Emile Hirsch"
+        ],
+        "genre": [
+          "Comedy",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "In this town, it can all change… Like that."
+      },
+      {
+        "id": "184",
+        "tmdbId": "184",
+        "imdbId": "tt0119396",
+        "title": "Jackie Brown",
+        "originalTitle": "Jackie Brown",
+        "description": "Jackie Brown is a flight attendant who gets caught in the middle of smuggling cash into the country for her gunrunner boss. When the cops try to use Jackie to get to her boss, she hatches a plan — with help from a bail bondsman — to keep the money for herself.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/rOUx7qg4KmEh1juEDwqzbDSL1Nr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gvaeY5kz3wHrMU6xLdnybziwYXw.jpg",
+        "year": 1997,
+        "duration": "154 min",
+        "rating": "7.4",
+        "voteAverage": 7.358,
+        "director": "Quentin Tarantino",
+        "cast": [
+          "Pam Grier",
+          "Samuel L. Jackson",
+          "Robert De Niro",
+          "Bridget Fonda"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "This Christmas, Santa's got a brand new bag."
+      }
+    ]
+  },
+  {
+    "id": "martin-scorsese",
+    "title": "Martin Scorsese",
+    "description": "Gritty urban drama, kinetic editing, anti-heroes, and masterclass American cinema.",
+    "movies": [
+      {
+        "id": "769",
+        "tmdbId": "769",
+        "imdbId": "tt0099685",
+        "title": "GoodFellas",
+        "originalTitle": "GoodFellas",
+        "description": "The true story of Henry Hill, a half-Irish, half-Sicilian Brooklyn kid who is adopted by neighbourhood gangsters at an early age and climbs the ranks of a Mafia family under the guidance of Jimmy Conway.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/9OkCLM73MIU2CrKZbqiT8Ln1wY2.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gILte6Zd7m1YneIr6MVhh30S9pr.jpg",
+        "year": 1990,
+        "duration": "145 min",
+        "rating": "8.5",
+        "voteAverage": 8.451,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Ray Liotta",
+          "Joe Pesci",
+          "Lorraine Bracco"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "Three decades of life in the mafia."
+      },
+      {
+        "id": "106646",
+        "tmdbId": "106646",
+        "imdbId": "tt0993846",
+        "title": "The Wolf of Wall Street",
+        "originalTitle": "The Wolf of Wall Street",
+        "description": "A New York stockbroker refuses to cooperate in a large securities fraud case involving corruption on Wall Street, corporate banking world and mob infiltration. Based on Jordan Belfort's autobiography.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/kW9LmvYHAaS9iA0tHmZVq8hQYoq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/7Nwnmyzrtd0FkcRyPqmdzTPppQa.jpg",
+        "year": 2013,
+        "duration": "180 min",
+        "rating": "8.0",
+        "voteAverage": 8.027,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Jonah Hill",
+          "Margot Robbie",
+          "Matthew McConaughey"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "Comedy"
+        ],
+        "tagline": "Earn. Spend. Party."
+      },
+      {
+        "id": "103",
+        "tmdbId": "103",
+        "imdbId": "tt0075314",
+        "title": "Taxi Driver",
+        "originalTitle": "Taxi Driver",
+        "description": "Suffering from insomnia, disturbed loner Travis Bickle takes a job as a New York City cabbie, haunting the streets nightly, growing increasingly detached from reality as he dreams of cleaning up the filthy city.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ekstpH614fwDX8DUln1a2Opz0N8.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9uddYYTNcLWpzUkl5iw1RUYhLhY.jpg",
+        "year": 1976,
+        "duration": "114 min",
+        "rating": "8.1",
+        "voteAverage": 8.121,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Jodie Foster",
+          "Cybill Shepherd",
+          "Harvey Keitel"
+        ],
+        "genre": [
+          "Crime",
+          "Drama"
+        ],
+        "tagline": "On every street in every city in this country, there's a nobody who dreams of being somebody. He's a lonely forgotten man desperate to prove that he's alive."
+      },
+      {
+        "id": "1422",
+        "tmdbId": "1422",
+        "imdbId": "tt0407887",
+        "title": "The Departed",
+        "originalTitle": "The Departed",
+        "description": "To take down South Boston's Irish Mafia, the police send in one of their own to infiltrate the underworld, not realizing the syndicate has done likewise. While an undercover cop curries favor with the mob kingpin, a career criminal rises through the police ranks. But both sides soon discover there's a mole among them.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nT97ifVT2J1yMQmeq20Qblg61T.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/6WRrGYalXXveItfpnipYdayFkQB.jpg",
+        "year": 2006,
+        "duration": "151 min",
+        "rating": "8.2",
+        "voteAverage": 8.158,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Matt Damon",
+          "Jack Nicholson",
+          "Mark Wahlberg"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "Crime"
+        ],
+        "tagline": "Cops or criminals. When you’re facing a loaded gun, what’s the difference?"
+      },
+      {
+        "id": "524",
+        "tmdbId": "524",
+        "imdbId": "tt0112641",
+        "title": "Casino",
+        "originalTitle": "Casino",
+        "description": "In Las Vegas, two best friends--a casino executive and a Mafia enforcer--compete for a gambling empire and a fast-living, fast-loving socialite.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/gziIkUSnYuj9ChCi8qOu2ZunpSC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iZGiMD0p1M2AOmzKknFo5bkuz94.jpg",
+        "year": 1995,
+        "duration": "179 min",
+        "rating": "8.0",
+        "voteAverage": 7.998,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Sharon Stone",
+          "Joe Pesci",
+          "James Woods"
+        ],
+        "genre": [
+          "Crime",
+          "Drama"
+        ],
+        "tagline": "No one stays at the top forever."
+      },
+      {
+        "id": "11324",
+        "tmdbId": "11324",
+        "imdbId": "tt1130884",
+        "title": "Shutter Island",
+        "originalTitle": "Shutter Island",
+        "description": "World War II soldier-turned-U.S. Marshal Teddy Daniels investigates the disappearance of a patient from a hospital for the criminally insane, but his efforts are compromised by troubling visions and a mysterious doctor.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rbZvGN1A1QyZuoKzhCw8QPmf2q0.jpg",
+        "year": 2010,
+        "duration": "138 min",
+        "rating": "8.2",
+        "voteAverage": 8.197,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Mark Ruffalo",
+          "Ben Kingsley",
+          "Max von Sydow"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "Mystery"
+        ],
+        "tagline": "Someone is missing."
+      },
+      {
+        "id": "1578",
+        "tmdbId": "1578",
+        "imdbId": "tt0081398",
+        "title": "Raging Bull",
+        "originalTitle": "Raging Bull",
+        "description": "The life of boxer Jake LaMotta, whose violence and temper that led him to the top in the ring destroyed his life outside of it.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1WV7WlTS8LI1L5NkCgjWT9GSW3O.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/tvNuhRlpRozDgsX1zR9gQ2aHv1X.jpg",
+        "year": 1980,
+        "duration": "129 min",
+        "rating": "7.9",
+        "voteAverage": 7.896,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Cathy Moriarty",
+          "Joe Pesci",
+          "Frank Vincent"
+        ],
+        "genre": [
+          "Drama",
+          "History"
+        ],
+        "tagline": "I don’t go down for nobody."
+      },
+      {
+        "id": "398978",
+        "tmdbId": "398978",
+        "imdbId": "tt1302006",
+        "title": "The Irishman",
+        "originalTitle": "The Irishman",
+        "description": "Pennsylvania, 1956. Frank Sheeran, a war veteran of Irish origin who works as a truck driver, accidentally meets mobster Russell Bufalino. Once Frank becomes his trusted man, Bufalino sends him to Chicago with the task of helping Jimmy Hoffa, a powerful union leader related to organized crime, with whom Frank will maintain a close friendship for nearly twenty years.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mbm8k3GFhXS0ROd9AD1gqYbIFbM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/1RDto0tLo8Fhq7OcwgDaM7nECb7.jpg",
+        "year": 2019,
+        "duration": "209 min",
+        "rating": "7.6",
+        "voteAverage": 7.569,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Al Pacino",
+          "Joe Pesci",
+          "Harvey Keitel"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "History"
+        ],
+        "tagline": "His story changed history."
+      },
+      {
+        "id": "466420",
+        "tmdbId": "466420",
+        "imdbId": "tt5537002",
+        "title": "Killers of the Flower Moon",
+        "originalTitle": "Killers of the Flower Moon",
+        "description": "When oil is discovered in 1920s Oklahoma under Osage Nation land, the Osage people are murdered one by one—until the FBI steps in to unravel the mystery.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/dB6Krk806zeqd0YNp2ngQ9zXteH.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/acvE3RWjDLgvbL2RtcyzkrsAyNV.jpg",
+        "year": 2023,
+        "duration": "206 min",
+        "rating": "7.4",
+        "voteAverage": 7.391,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Robert De Niro",
+          "Lily Gladstone",
+          "Jesse Plemons"
+        ],
+        "genre": [
+          "Crime",
+          "History",
+          "Drama"
+        ],
+        "tagline": "Can you find the wolves in this picture?"
+      },
+      {
+        "id": "1598",
+        "tmdbId": "1598",
+        "imdbId": "tt0101540",
+        "title": "Cape Fear",
+        "originalTitle": "Cape Fear",
+        "description": "Sam Bowden is a small-town corporate attorney. Max Cady is a tattooed, cigar-smoking, Bible-quoting, psychotic rapist. What do they have in common? 14 years ago, Sam was a public defender assigned to Max Cady's rape trial, and he made a serious error: he hid a document from his illiterate client that could have gotten him acquitted. Now, the cagey Cady has been released, and he intends to teach Sam Bowden and his family a thing or two about loss.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/meJZAAuVcjic2ipvbOPz5UlE4P9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ntgpger7OwFNlEldxuvvFHDKzjW.jpg",
+        "year": 1991,
+        "duration": "128 min",
+        "rating": "7.3",
+        "voteAverage": 7.259,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Robert De Niro",
+          "Nick Nolte",
+          "Jessica Lange",
+          "Juliette Lewis"
+        ],
+        "genre": [
+          "Drama",
+          "Crime",
+          "Thriller"
+        ],
+        "tagline": "Sam Bowden has always provided for his family's future. But the past is coming back to haunt them."
+      }
+    ]
+  },
+  {
+    "id": "frank-darabont",
+    "title": "Frank Darabont",
+    "description": "Unforgettable Stephen King adaptations, human resilience, and emotional masterworks.",
+    "movies": [
+      {
+        "id": "278",
+        "tmdbId": "278",
+        "imdbId": "tt0111161",
+        "title": "The Shawshank Redemption",
+        "originalTitle": "The Shawshank Redemption",
+        "description": "Imprisoned in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison, where he puts his accounting skills to work for an amoral warden. During his long stretch in prison, Dufresne comes to be admired by the other inmates -- including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/pNjh59JSxChQktamG3LMp9ZoQzp.jpg",
+        "year": 1994,
+        "duration": "142 min",
+        "rating": "8.7",
+        "voteAverage": 8.73,
+        "director": "Frank Darabont",
+        "cast": [
+          "Tim Robbins",
+          "Morgan Freeman",
+          "Bob Gunton",
+          "William Sadler"
+        ],
+        "genre": [
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "Fear can hold you prisoner. Hope can set you free."
+      },
+      {
+        "id": "497",
+        "tmdbId": "497",
+        "imdbId": "tt0120689",
+        "title": "The Green Mile",
+        "originalTitle": "The Green Mile",
+        "description": "A supernatural tale set on death row in a Southern prison, where gentle giant John Coffey possesses the mysterious power to heal people's ailments. When the cell block's head guard, Paul Edgecomb, recognizes Coffey's miraculous gift, he tries desperately to help stave off the condemned man's execution.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8VG8fDNiy50H4FedGwdSVUPoaJe.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/amZavErrjrdgDwhsIdpWxHNenIx.jpg",
+        "year": 1999,
+        "duration": "189 min",
+        "rating": "8.5",
+        "voteAverage": 8.506,
+        "director": "Frank Darabont",
+        "cast": [
+          "Tom Hanks",
+          "David Morse",
+          "Bonnie Hunt",
+          "Michael Clarke Duncan"
+        ],
+        "genre": [
+          "Fantasy",
+          "Drama",
+          "Crime"
+        ],
+        "tagline": "Paul Edgecomb didn't believe in miracles. Until the day he met one."
+      },
+      {
+        "id": "5876",
+        "tmdbId": "5876",
+        "imdbId": "tt0884328",
+        "title": "The Mist",
+        "originalTitle": "The Mist",
+        "description": "After a violent storm, a dense cloud of mist envelops a small Maine town, trapping David Drayton and his five-year-old son in a local grocery store with other local residents. They soon discover that the mist conceals deadly horrors that threaten their lives, and worse, their sanity.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/c4UgUKZjM0Qzy5t4hAXSOFHYsnb.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/76J14zgwVWyOciri7X7F3DGP3TA.jpg",
+        "year": 2007,
+        "duration": "126 min",
+        "rating": "7.0",
+        "voteAverage": 6.953,
+        "director": "Frank Darabont",
+        "cast": [
+          "Thomas Jane",
+          "Laurie Holden",
+          "Toby Jones",
+          "Marcia Gay Harden"
+        ],
+        "genre": [
+          "Horror",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "Fear changes everything."
+      },
+      {
+        "id": "11086",
+        "tmdbId": "11086",
+        "imdbId": "tt0268995",
+        "title": "The Majestic",
+        "originalTitle": "The Majestic",
+        "description": "Set in 1951, a blacklisted Hollywood writer gets into a car accident, loses his memory and settles down in a small town where he is mistaken for a long-lost son.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/m9WrB91B8ghxIZhyFugkoSleBE7.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/pDd6GRNOIO9yOtRqtwbG5wrIjnl.jpg",
+        "year": 2001,
+        "duration": "153 min",
+        "rating": "6.8",
+        "voteAverage": 6.763,
+        "director": "Frank Darabont",
+        "cast": [
+          "Jim Carrey",
+          "Martin Landau",
+          "Laurie Holden",
+          "Gerry Black"
+        ],
+        "genre": [
+          "Drama",
+          "Romance"
+        ],
+        "tagline": "Sometimes your life comes into focus one frame at a time."
+      }
+    ]
+  },
+  {
+    "id": "comedy-gold",
+    "title": "Best Comedy Gold",
+    "description": "The most hilarious, iconic, and rewatchable comedy masterpieces of all time.",
+    "movies": [
+      {
+        "id": "8363",
+        "tmdbId": "8363",
+        "imdbId": "tt0829482",
+        "title": "Superbad",
+        "originalTitle": "Superbad",
+        "description": "Two co-dependent high school seniors are forced to deal with separation anxiety after their plan to stage a booze-soaked party goes awry.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/coru98UcFBzJIU7bxZguxaePgu0.jpg",
+        "year": 2007,
+        "duration": "113 min",
+        "rating": "7.3",
+        "voteAverage": 7.274,
+        "director": "Greg Mottola",
+        "cast": [
+          "Jonah Hill",
+          "Michael Cera",
+          "Christopher Mintz-Plasse",
+          "Bill Hader"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "Come and get some!"
+      },
+      {
+        "id": "64688",
+        "tmdbId": "64688",
+        "imdbId": "tt1232829",
+        "title": "21 Jump Street",
+        "originalTitle": "21 Jump Street",
+        "description": "When cops Schmidt and Jenko join the secret Jump Street unit, they use their youthful appearances to go undercover as high school students. They trade in their guns and badges for backpacks, and set out to shut down a dangerous drug ring. But, as time goes on, Schmidt and Jenko discover that high school is nothing like it was just a few years earlier -- and, what's more, they must again confront the teenage terror and anxiety they thought they had left behind.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/8v3Sqv9UcIUC4ebmpKWROqPBINZ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rXrpYOveFl76ivMmyb2612T7Q8w.jpg",
+        "year": 2012,
+        "duration": "109 min",
+        "rating": "6.9",
+        "voteAverage": 6.883,
+        "director": "Phil Lord",
+        "cast": [
+          "Jonah Hill",
+          "Channing Tatum",
+          "Brie Larson",
+          "Dave Franco"
+        ],
+        "genre": [
+          "Action",
+          "Comedy",
+          "Crime"
+        ],
+        "tagline": "The only thing getting blown tonight is their cover."
+      },
+      {
+        "id": "187017",
+        "tmdbId": "187017",
+        "imdbId": "tt2294449",
+        "title": "22 Jump Street",
+        "originalTitle": "22 Jump Street",
+        "description": "After making their way through high school (twice), big changes are in store for officers Schmidt and Jenko when they go deep undercover at a local college. But when Jenko meets a kindred spirit on the football team, and Schmidt infiltrates the bohemian art major scene, they begin to question their partnership. Now they don't have to just crack the case - they have to figure out if they can have a mature relationship. If these two overgrown adolescents can grow from freshmen into real men, college might be the best thing that ever happened to them.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/850chzYHYbT3IISl6Q7dbBuFP2B.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/kdyYOwpKvvD2fSbwfnMM2YPAzfq.jpg",
+        "year": 2014,
+        "duration": "112 min",
+        "rating": "6.8",
+        "voteAverage": 6.825,
+        "director": "Phil Lord",
+        "cast": [
+          "Jonah Hill",
+          "Channing Tatum",
+          "Peter Stormare",
+          "Wyatt Russell"
+        ],
+        "genre": [
+          "Crime",
+          "Comedy",
+          "Action"
+        ],
+        "tagline": "They're not 21 anymore."
+      },
+      {
+        "id": "18785",
+        "tmdbId": "18785",
+        "imdbId": "tt1119646",
+        "title": "The Hangover",
+        "originalTitle": "The Hangover",
+        "description": "When three friends finally come to after a raucous night of bachelor-party revelry, they find a baby in the closet and a tiger in the bathroom. But they can't seem to locate their best friend, Doug – who's supposed to be tying the knot. Launching a frantic search for Doug, the trio perseveres through a nasty hangover to try to make it to the church on time.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/A0uS9rHR56FeBtpjVki16M5xxSW.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iuRVt8tFiXDPGgzavhuSa3QHRxD.jpg",
+        "year": 2009,
+        "duration": "100 min",
+        "rating": "7.3",
+        "voteAverage": 7.337,
+        "director": "Todd Phillips",
+        "cast": [
+          "Bradley Cooper",
+          "Ed Helms",
+          "Zach Galifianakis",
+          "Justin Bartha"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "Some guys just can't handle Vegas."
+      },
+      {
+        "id": "12133",
+        "tmdbId": "12133",
+        "imdbId": "tt0838283",
+        "title": "Step Brothers",
+        "originalTitle": "Step Brothers",
+        "description": "Brennan Huff and Dale Doback might be grown men. But that doesn't stop them from living at home and turning into jealous, competitive stepbrothers when their single parents marry. Brennan's constant competition with Dale strains his mom's marriage to Dale's dad, leaving everyone to wonder whether they'll ever see eye to eye.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nvggBbEraUTAVR6ffP3AaBUWSHs.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/247H2jS9Te9TTmKDcAMg3LN5gmI.jpg",
+        "year": 2008,
+        "duration": "98 min",
+        "rating": "6.6",
+        "voteAverage": 6.561,
+        "director": "Adam McKay",
+        "cast": [
+          "Will Ferrell",
+          "John C. Reilly",
+          "Richard Jenkins",
+          "Mary Steenburgen"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "They grow up so fast."
+      },
+      {
+        "id": "7446",
+        "tmdbId": "7446",
+        "imdbId": "tt0942385",
+        "title": "Tropic Thunder",
+        "originalTitle": "Tropic Thunder",
+        "description": "A group of self-absorbed actors set out to make the most expensive war film ever. After ballooning costs force the studio to cancel the movie, the frustrated director refuses to stop shooting, leading his cast into the jungles of Southeast Asia, where they encounter real bad guys.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/zAurB9mNxfYRoVrVjAJJwGV3sPg.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/4pLi4QMm0MZ9TSoF3l8qQmY9HNO.jpg",
+        "year": 2008,
+        "duration": "107 min",
+        "rating": "6.7",
+        "voteAverage": 6.728,
+        "director": "Ben Stiller",
+        "cast": [
+          "Ben Stiller",
+          "Robert Downey Jr.",
+          "Jack Black",
+          "Jay Baruchel"
+        ],
+        "genre": [
+          "Action",
+          "Comedy",
+          "War"
+        ],
+        "tagline": "Get some."
+      },
+      {
+        "id": "8699",
+        "tmdbId": "8699",
+        "imdbId": "tt0357413",
+        "title": "Anchorman: The Legend of Ron Burgundy",
+        "originalTitle": "Anchorman: The Legend of Ron Burgundy",
+        "description": "It's the 1970s and San Diego anchorman Ron Burgundy is the top dog in local TV, but that's all about to change when ambitious reporter Veronica Corningstone arrives as a new employee at his station.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/mhZIcRePT7U8viFQVjt1ZjYIsR4.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/qWSI9Lpq8K4o1n9ZD9zUVD4Gds1.jpg",
+        "year": 2004,
+        "duration": "95 min",
+        "rating": "6.7",
+        "voteAverage": 6.702,
+        "director": "Adam McKay",
+        "cast": [
+          "Will Ferrell",
+          "Christina Applegate",
+          "Paul Rudd",
+          "Steve Carell"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "They bring you the news so you don't have to get it yourself."
+      },
+      {
+        "id": "38365",
+        "tmdbId": "38365",
+        "imdbId": "tt1375670",
+        "title": "Grown Ups",
+        "originalTitle": "Grown Ups",
+        "description": "After their high school basketball coach passes away, five good friends and former teammates reunite for a Fourth of July holiday weekend.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/cQGM5k1NtU85n4TUlrOrwijSCcm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/kARonxQpuSZdFraTKlCThWOBCtu.jpg",
+        "year": 2010,
+        "duration": "102 min",
+        "rating": "6.4",
+        "voteAverage": 6.437,
+        "director": "Dennis Dugan",
+        "cast": [
+          "Adam Sandler",
+          "Kevin James",
+          "Chris Rock",
+          "David Spade"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "Boys will be boys. . . some longer than others."
+      },
+      {
+        "id": "11635",
+        "tmdbId": "11635",
+        "imdbId": "tt0302886",
+        "title": "Old School",
+        "originalTitle": "Old School",
+        "description": "Three friends attempt to recapture their glory days by opening up a fraternity near their alma mater.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nYtuwNHpEoIbTgS3aFPSEwZNN6l.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/2tZVYiosztNM1DAYUF59VPsNp9L.jpg",
+        "year": 2003,
+        "duration": "92 min",
+        "rating": "6.6",
+        "voteAverage": 6.628,
+        "director": "Todd Phillips",
+        "cast": [
+          "Luke Wilson",
+          "Will Ferrell",
+          "Vince Vaughn",
+          "Jeremy Piven"
+        ],
+        "genre": [
+          "Comedy"
+        ],
+        "tagline": "All the fun of college. None of the education."
+      }
+    ]
+  },
+  {
+    "id": "indiana-jones",
+    "title": "Indiana Jones",
+    "description": "The legendary archeologist in timeless globetrotting adventures against impossible odds.",
+    "movies": [
+      {
+        "id": "85",
+        "tmdbId": "85",
+        "imdbId": "tt0082971",
+        "title": "Raiders of the Lost Ark",
+        "originalTitle": "Raiders of the Lost Ark",
+        "description": "When Dr. Indiana Jones – the tweed-suited professor who just happens to be a celebrated archaeologist – is hired by the government to locate the legendary Ark of the Covenant, he finds himself up against the entire Nazi regime.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ceG9VzoRAVGwivFU403Wc3AHRys.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/zPACwR32amTNvzId9qyapCWXYDJ.jpg",
+        "year": 1981,
+        "duration": "115 min",
+        "rating": "7.9",
+        "voteAverage": 7.927,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Harrison Ford",
+          "Karen Allen",
+          "Paul Freeman",
+          "John Rhys-Davies"
+        ],
+        "genre": [
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "The return of the great adventure."
+      },
+      {
+        "id": "89",
+        "tmdbId": "89",
+        "imdbId": "tt0097576",
+        "title": "Indiana Jones and the Last Crusade",
+        "originalTitle": "Indiana Jones and the Last Crusade",
+        "description": "In 1938, an art collector appeals to eminent archaeologist Dr. Indiana Jones to embark on a search for the Holy Grail. Indy learns that a medieval historian has vanished while searching for it, and the missing man is his own father, Dr. Henry Jones Sr.. He sets out to rescue his father by following clues in the old man's notebook, which his father had mailed to him before he went missing. Indy arrives in Venice, where he enlists the help of a beautiful academic, Dr. Elsa Schneider, along with Marcus Brody and Sallah. Together they must stop the Nazis from recovering the power of eternal life and taking over the world!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sizg1AU8f8JDZX4QIgE4pjUMBvx.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/7KGdTzKux4fp5sW7hUM33NWqBU1.jpg",
+        "year": 1989,
+        "duration": "127 min",
+        "rating": "7.9",
+        "voteAverage": 7.856,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Harrison Ford",
+          "Sean Connery",
+          "Denholm Elliott",
+          "Alison Doody"
+        ],
+        "genre": [
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "Have the adventure of your life keeping up with the Joneses."
+      },
+      {
+        "id": "87",
+        "tmdbId": "87",
+        "imdbId": "tt0087469",
+        "title": "Indiana Jones and the Temple of Doom",
+        "originalTitle": "Indiana Jones and the Temple of Doom",
+        "description": "After arriving in India, Indiana Jones is asked by a desperate village to find a mystical stone. He agrees – and stumbles upon a secret cult plotting a terrible plan in the catacombs of an ancient palace.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/gpdVNUaa4LhRMLfJOPj1AZdhAZ3.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/f133nWlU6yUkZqqwcCXCbTEJWHr.jpg",
+        "year": 1984,
+        "duration": "118 min",
+        "rating": "7.3",
+        "voteAverage": 7.309,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Harrison Ford",
+          "Kate Capshaw",
+          "Ke Huy Quan",
+          "Amrish Puri"
+        ],
+        "genre": [
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "If adventure has a name... it must be Indiana Jones."
+      },
+      {
+        "id": "335977",
+        "tmdbId": "335977",
+        "imdbId": "tt1462764",
+        "title": "Indiana Jones and the Dial of Destiny",
+        "originalTitle": "Indiana Jones and the Dial of Destiny",
+        "description": "Finding himself in a new era, and approaching retirement, Indy wrestles with fitting into a world that seems to have outgrown him. But as the tentacles of an all-too-familiar evil return in the form of an old rival, Indy must don his hat and pick up his whip once more to make sure an ancient and powerful artifact doesn't fall into the wrong hands.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/Af4bXE63pVsb2FtbW8uYIyPBadD.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/57JocxmicOoAMhkUSmdKBlpZWMT.jpg",
+        "year": 2023,
+        "duration": "155 min",
+        "rating": "6.5",
+        "voteAverage": 6.5,
+        "director": "James Mangold",
+        "cast": [
+          "Harrison Ford",
+          "Phoebe Waller-Bridge",
+          "Mads Mikkelsen",
+          "Boyd Holbrook"
+        ],
+        "genre": [
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "A legend will face his destiny."
+      },
+      {
+        "id": "217",
+        "tmdbId": "217",
+        "imdbId": "tt0367882",
+        "title": "Indiana Jones and the Kingdom of the Crystal Skull",
+        "originalTitle": "Indiana Jones and the Kingdom of the Crystal Skull",
+        "description": "Set during the Cold War, the Soviets—led by sword-wielding Irina Spalko—are in search of a crystal skull which has supernatural powers related to a mystical Lost City of Gold. Indy is coerced to head to Peru at the behest of a young man whose friend—and Indy's colleague—Professor Oxley has been captured for his knowledge of the skull's whereabouts.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/56As6XEM1flWvprX4LgkPl8ii4K.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/p96949hcwUG2BwE6MgKmw0uYNCx.jpg",
+        "year": 2008,
+        "duration": "122 min",
+        "rating": "6.0",
+        "voteAverage": 6.024,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Harrison Ford",
+          "Cate Blanchett",
+          "Karen Allen",
+          "Shia LaBeouf"
+        ],
+        "genre": [
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "The adventure continues..."
+      }
+    ]
+  },
+  {
+    "id": "star-wars",
+    "title": "Star Wars",
+    "description": "The epic galactic space opera spanning the Force, Jedi, Sith, and the Empire.",
+    "movies": [
+      {
+        "id": "11",
+        "tmdbId": "11",
+        "imdbId": "tt0076759",
+        "title": "Star Wars",
+        "originalTitle": "Star Wars",
+        "description": "Princess Leia is captured and held hostage by the evil Imperial forces in their effort to take over the galactic Empire. Venturesome Luke Skywalker and dashing captain Han Solo team together with the loveable robot duo R2-D2 and C-3PO to rescue the beautiful princess and restore peace and justice in the Empire.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fai0rspsNeJCS69wHNjOdWxcI7P.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/zqkmTXzjkAgXmEWLRsY4UpTWCeo.jpg",
+        "year": 1977,
+        "duration": "121 min",
+        "rating": "8.2",
+        "voteAverage": 8.207,
+        "director": "George Lucas",
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Peter Cushing"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "A long time ago in a galaxy far, far away..."
+      },
+      {
+        "id": "1891",
+        "tmdbId": "1891",
+        "imdbId": "tt0080684",
+        "title": "The Empire Strikes Back",
+        "originalTitle": "The Empire Strikes Back",
+        "description": "The epic saga continues as Luke Skywalker, in hopes of defeating the evil Galactic Empire, learns the ways of the Jedi from aging master Yoda. But Darth Vader is more determined than ever to capture Luke. Meanwhile, rebel leader Princess Leia, cocky Han Solo, Chewbacca, and droids C-3PO and R2-D2 are thrown into various stages of capture, betrayal and despair.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/k9pshruhCpJAdH9RaGJO6jaWQ4X.jpg",
+        "year": 1980,
+        "duration": "124 min",
+        "rating": "8.4",
+        "voteAverage": 8.393,
+        "director": "Irvin Kershner",
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Billy Dee Williams"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "The Star Wars saga continues."
+      },
+      {
+        "id": "1892",
+        "tmdbId": "1892",
+        "imdbId": "tt0086190",
+        "title": "Return of the Jedi",
+        "originalTitle": "Return of the Jedi",
+        "description": "Luke Skywalker leads a mission to rescue his friend Han Solo from the clutches of Jabba the Hutt, the Emperor prepares to crush the Rebellion with a more powerful Death Star, and the Rebel fleet mounts a massive attack on the space station. Luke Skywalker confronts Darth Vader in a final climactic duel before the evil Emperor.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ziECpBRIyclmBNaFSWlvCfsKbMD.jpg",
+        "year": 1983,
+        "duration": "132 min",
+        "rating": "7.9",
+        "voteAverage": 7.912,
+        "director": "Richard Marquand",
+        "cast": [
+          "Mark Hamill",
+          "Harrison Ford",
+          "Carrie Fisher",
+          "Billy Dee Williams"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "Return to a galaxy far far away."
+      },
+      {
+        "id": "1895",
+        "tmdbId": "1895",
+        "imdbId": "tt0121766",
+        "title": "Star Wars: Episode III - Revenge of the Sith",
+        "originalTitle": "Star Wars: Episode III - Revenge of the Sith",
+        "description": "When the sinister Sith unveil a thousand-year-old plot to rule the galaxy, the Republic crumbles and from its ashes rises the evil Galactic Empire. Jedi hero Anakin Skywalker must choose a side.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/5vDuLrjJXFS9PTF7Q1xzobmYKR9.jpg",
+        "year": 2005,
+        "duration": "140 min",
+        "rating": "7.5",
+        "voteAverage": 7.475,
+        "director": "George Lucas",
+        "cast": [
+          "Hayden Christensen",
+          "Ewan McGregor",
+          "Natalie Portman",
+          "Ian McDiarmid"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "Every story has a hero. Every hero has a destiny. Every saga has an end."
+      },
+      {
+        "id": "330459",
+        "tmdbId": "330459",
+        "imdbId": "tt3748528",
+        "title": "Rogue One: A Star Wars Story",
+        "originalTitle": "Rogue One: A Star Wars Story",
+        "description": "A rogue band of resistance fighters unite for a mission to steal the Death Star plans and bring a new hope to the galaxy.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/i0yw1mFbB7sNGHCs7EXZPzFkdA1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/6t8ES1d12OzWyCGxBeDYLHoaDrT.jpg",
+        "year": 2016,
+        "duration": "133 min",
+        "rating": "7.5",
+        "voteAverage": 7.51,
+        "director": "Gareth Edwards",
+        "cast": [
+          "Felicity Jones",
+          "Diego Luna",
+          "Alan Tudyk",
+          "Donnie Yen"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Science Fiction"
+        ],
+        "tagline": "Empires are built on fear. Rebellions are built on hope."
+      },
+      {
+        "id": "140607",
+        "tmdbId": "140607",
+        "imdbId": "tt2488496",
+        "title": "Star Wars: The Force Awakens",
+        "originalTitle": "Star Wars: The Force Awakens",
+        "description": "Thirty years after defeating the Galactic Empire, Han Solo and his allies face a new threat from the evil Kylo Ren and his army of Stormtroopers.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/wqnLdwVXoBjKibFRR5U3y0aDUhs.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8BTsTfln4jlQrLXUBquXJ0ASQy9.jpg",
+        "year": 2015,
+        "duration": "136 min",
+        "rating": "7.2",
+        "voteAverage": 7.241,
+        "director": "J.J. Abrams",
+        "cast": [
+          "Daisy Ridley",
+          "John Boyega",
+          "Oscar Isaac",
+          "Adam Driver"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "Every generation has a story."
+      }
+    ]
+  },
+  {
+    "id": "the-batman",
+    "title": "The Batman Saga",
+    "description": "Gotham's Dark Knight through decades of legendary cinematic interpretations.",
+    "movies": [
+      {
+        "id": "155",
+        "tmdbId": "155",
+        "imdbId": "tt0468569",
+        "title": "The Dark Knight",
+        "originalTitle": "The Dark Knight",
+        "description": "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets. The partnership proves to be effective, but they soon find themselves prey to a reign of chaos unleashed by a rising criminal mastermind known to the terrified citizens of Gotham as the Joker.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9FE5eD92WfVCiivM9Pq9GVSrlWk.jpg",
+        "year": 2008,
+        "duration": "152 min",
+        "rating": "8.5",
+        "voteAverage": 8.536,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Heath Ledger",
+          "Aaron Eckhart",
+          "Michael Caine"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Crime"
+        ],
+        "tagline": "Some men just want to watch the world burn."
+      },
+      {
+        "id": "414906",
+        "tmdbId": "414906",
+        "imdbId": "tt1877830",
+        "title": "The Batman",
+        "originalTitle": "The Batman",
+        "description": "In his second year of fighting crime, Batman uncovers corruption in Gotham City that connects to his own family while facing a serial killer known as the Riddler.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rvtdN5XkWAfGX6xDuPL6yYS2seK.jpg",
+        "year": 2022,
+        "duration": "177 min",
+        "rating": "7.7",
+        "voteAverage": 7.67,
+        "director": "Matt Reeves",
+        "cast": [
+          "Robert Pattinson",
+          "Zoë Kravitz",
+          "Jeffrey Wright",
+          "Colin Farrell"
+        ],
+        "genre": [
+          "Crime",
+          "Mystery",
+          "Thriller"
+        ],
+        "tagline": "Unmask the truth."
+      },
+      {
+        "id": "272",
+        "tmdbId": "272",
+        "imdbId": "tt0372784",
+        "title": "Batman Begins",
+        "originalTitle": "Batman Begins",
+        "description": "Driven by tragedy, billionaire Bruce Wayne dedicates his life to uncovering and defeating the corruption that plagues his home, Gotham City.  Unable to work within the system, he instead creates a new identity, a symbol of fear for the criminal underworld - The Batman.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/sPX89Td70IDDjVr85jdSBb4rWGr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9IIBboV7MCT0bTxzXHmWK1Hq558.jpg",
+        "year": 2005,
+        "duration": "140 min",
+        "rating": "7.7",
+        "voteAverage": 7.73,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Michael Caine",
+          "Liam Neeson",
+          "Katie Holmes"
+        ],
+        "genre": [
+          "Drama",
+          "Crime",
+          "Action"
+        ],
+        "tagline": "Evil fears the knight."
+      },
+      {
+        "id": "49026",
+        "tmdbId": "49026",
+        "imdbId": "tt1345836",
+        "title": "The Dark Knight Rises",
+        "originalTitle": "The Dark Knight Rises",
+        "description": "Following the death of District Attorney Harvey Dent, Batman assumes responsibility for Dent's crimes to protect the late attorney's reputation and is subsequently hunted by the Gotham City Police Department. Eight years later, Batman encounters the mysterious Selina Kyle and the villainous Bane, a new terrorist leader who overwhelms Gotham's finest. The Dark Knight resurfaces to protect a city that has branded him an enemy.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/hr0L2aueqlP2BYUblTTjmtn0hw4.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/c3OHQncTAnKFhdOTX7D3LTW6son.jpg",
+        "year": 2012,
+        "duration": "165 min",
+        "rating": "7.8",
+        "voteAverage": 7.798,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Christian Bale",
+          "Gary Oldman",
+          "Tom Hardy",
+          "Joseph Gordon-Levitt"
+        ],
+        "genre": [
+          "Action",
+          "Crime",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "The legend ends."
+      },
+      {
+        "id": "268",
+        "tmdbId": "268",
+        "imdbId": "tt0096895",
+        "title": "Batman",
+        "originalTitle": "Batman",
+        "description": "Having witnessed his parents' brutal murder as a child, millionaire philanthropist Bruce Wayne fights crime in Gotham City disguised as Batman, a costumed hero who strikes fear into the hearts of villains. But when a deformed madman known as 'The Joker' seizes control of Gotham's criminal underworld, Batman must face his most ruthless nemesis ever while protecting both his identity and his love interest, reporter Vicki Vale.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/cij4dd21v2Rk2YtUQbV5kW69WB2.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rhc7OF7tC9HPu0X8DBKQJzaGRbu.jpg",
+        "year": 1989,
+        "duration": "126 min",
+        "rating": "7.2",
+        "voteAverage": 7.234,
+        "director": "Tim Burton",
+        "cast": [
+          "Michael Keaton",
+          "Jack Nicholson",
+          "Kim Basinger",
+          "Robert Wuhl"
+        ],
+        "genre": [
+          "Fantasy",
+          "Action",
+          "Crime"
+        ],
+        "tagline": "Justice is always darkest before the dawn."
+      },
+      {
+        "id": "364",
+        "tmdbId": "364",
+        "imdbId": "tt0103776",
+        "title": "Batman Returns",
+        "originalTitle": "Batman Returns",
+        "description": "The monstrous Penguin, who dwells in the sewers beneath Gotham, joins up with corrupt mayoral candidate Max Shreck to topple the Batman once and for all. But when Shreck's timid assistant Selina Kyle finds out, and Shreck tries to kill her, she's transformed into the sexy Catwoman. She teams up with the Penguin and Shreck to destroy Batman, but sparks fly unexpectedly when she confronts the caped crusader.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jKBjeXM7iBBV9UkUcOXx3m7FSHY.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/7x4SNxO5HWArighxxFeet5sn3il.jpg",
+        "year": 1992,
+        "duration": "126 min",
+        "rating": "7.0",
+        "voteAverage": 6.952,
+        "director": "Tim Burton",
+        "cast": [
+          "Michael Keaton",
+          "Danny DeVito",
+          "Michelle Pfeiffer",
+          "Christopher Walken"
+        ],
+        "genre": [
+          "Action",
+          "Fantasy"
+        ],
+        "tagline": "The Bat. The Cat. The Penguin."
+      }
+    ]
+  },
+  {
+    "id": "jurassic-park",
+    "title": "Jurassic Park",
+    "description": "Genetically resurrected dinosaurs and breathtaking prehistoric wonders gone rogue.",
+    "movies": [
+      {
+        "id": "329",
+        "tmdbId": "329",
+        "imdbId": "tt0107290",
+        "title": "Jurassic Park",
+        "originalTitle": "Jurassic Park",
+        "description": "A wealthy entrepreneur secretly creates a theme park featuring living dinosaurs drawn from prehistoric DNA. Before opening day, he invites a team of experts and his two eager grandchildren to experience the park and help calm anxious investors. However, the park is anything but amusing as the security systems go off-line and the dinosaurs escape.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/d9mtMGQDLANKieb9PbD3yK7xxzo.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/4SyDTF02R5BepqSdQmOaNCHObzF.jpg",
+        "year": 1993,
+        "duration": "127 min",
+        "rating": "8.0",
+        "voteAverage": 7.975,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Sam Neill",
+          "Laura Dern",
+          "Jeff Goldblum",
+          "Richard Attenborough"
+        ],
+        "genre": [
+          "Adventure",
+          "Science Fiction"
+        ],
+        "tagline": "An adventure 65 million years in the making."
+      },
+      {
+        "id": "330",
+        "tmdbId": "330",
+        "imdbId": "tt0119567",
+        "title": "The Lost World: Jurassic Park",
+        "originalTitle": "The Lost World: Jurassic Park",
+        "description": "Four years after Jurassic Park's genetically bred dinosaurs ran amok, multimillionaire John Hammond shocks chaos theorist Ian Malcolm by revealing that he has been breeding more beasties at a secret location. Malcolm, his paleontologist ladylove and a wildlife videographer join an expedition to document the lethal lizards' natural behavior in this action-packed thriller.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/s4RkAQWI9hgzctXgNFos8sJUnXJ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/A4rYaPdzgocCjQ0n9LUSYUxyvpS.jpg",
+        "year": 1997,
+        "duration": "129 min",
+        "rating": "6.6",
+        "voteAverage": 6.564,
+        "director": "Steven Spielberg",
+        "cast": [
+          "Jeff Goldblum",
+          "Julianne Moore",
+          "Pete Postlethwaite",
+          "Arliss Howard"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Science Fiction"
+        ],
+        "tagline": "Something has survived."
+      },
+      {
+        "id": "135397",
+        "tmdbId": "135397",
+        "imdbId": "tt0369610",
+        "title": "Jurassic World",
+        "originalTitle": "Jurassic World",
+        "description": "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/rhr4y79GpxQF9IsfJItRXVaoGs4.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/dF6FjTZzRTENfB4R17HDN20jLT2.jpg",
+        "year": 2015,
+        "duration": "124 min",
+        "rating": "6.7",
+        "voteAverage": 6.702,
+        "director": "Colin Trevorrow",
+        "cast": [
+          "Chris Pratt",
+          "Bryce Dallas Howard",
+          "Irrfan Khan",
+          "Vincent D'Onofrio"
+        ],
+        "genre": [
+          "Adventure",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "The park is open."
+      },
+      {
+        "id": "331",
+        "tmdbId": "331",
+        "imdbId": "tt0163025",
+        "title": "Jurassic Park III",
+        "originalTitle": "Jurassic Park III",
+        "description": "In need of funds for research, Dr. Alan Grant accepts a large sum of money to accompany Paul and Amanda Kirby on an aerial tour of the infamous Isla Sorna. It isn't long before all hell breaks loose and the stranded wayfarers must fight for survival as a host of new -- and even more deadly -- dinosaurs try to make snacks of them.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/oQXj4NUfS3r3gHXtDOzcJgj1lLc.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8v8x4vVbRgrsdU3M4drnD7HQbfe.jpg",
+        "year": 2001,
+        "duration": "92 min",
+        "rating": "6.2",
+        "voteAverage": 6.177,
+        "director": "Joe Johnston",
+        "cast": [
+          "Sam Neill",
+          "William H. Macy",
+          "Téa Leoni",
+          "Alessandro Nivola"
+        ],
+        "genre": [
+          "Adventure",
+          "Thriller",
+          "Science Fiction",
+          "Action"
+        ],
+        "tagline": "This time, it's not just a walk in the park!"
+      },
+      {
+        "id": "351286",
+        "tmdbId": "351286",
+        "imdbId": "tt4881806",
+        "title": "Jurassic World: Fallen Kingdom",
+        "originalTitle": "Jurassic World: Fallen Kingdom",
+        "description": "Three years after Jurassic World was destroyed, Isla Nublar now sits abandoned. When the island's dormant volcano begins roaring to life, Owen and Claire mount a campaign to rescue the remaining dinosaurs from this extinction-level event.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/x2Us3jR6ToMJjbcPbLimYoxf6xr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/gBmrsugfWpiXRh13Vo3j0WW55qD.jpg",
+        "year": 2018,
+        "duration": "129 min",
+        "rating": "6.5",
+        "voteAverage": 6.523,
+        "director": "J. A. Bayona",
+        "cast": [
+          "Chris Pratt",
+          "Bryce Dallas Howard",
+          "Rafe Spall",
+          "Justice Smith"
+        ],
+        "genre": [
+          "Adventure",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "The park is gone."
+      },
+      {
+        "id": "507086",
+        "tmdbId": "507086",
+        "imdbId": "tt8041270",
+        "title": "Jurassic World Dominion",
+        "originalTitle": "Jurassic World Dominion",
+        "description": "Four years after Isla Nublar was destroyed, dinosaurs now live—and hunt—alongside humans all over the world. This fragile balance will reshape the future and determine, once and for all, whether human beings are to remain the apex predators on a planet they now share with history's most fearsome creatures.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jbAvCACjLf1ZG0unB2tdmx5HAf1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9hk5iiycq7ukRAAXQiJT9HZX3SX.jpg",
+        "year": 2022,
+        "duration": "147 min",
+        "rating": "6.6",
+        "voteAverage": 6.589,
+        "director": "Colin Trevorrow",
+        "cast": [
+          "Chris Pratt",
+          "Bryce Dallas Howard",
+          "Laura Dern",
+          "Sam Neill"
+        ],
+        "genre": [
+          "Adventure",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "The epic conclusion of the Jurassic era."
+      }
+    ]
+  },
+  {
+    "id": "mind-bending-mysteries",
+    "title": "Mind-Bending Mysteries",
+    "description": "Gripping thrillers with psychological twists, obsessed detectives, and shocking truths.",
+    "movies": [
+      {
+        "id": "11423",
+        "tmdbId": "11423",
+        "imdbId": "tt0353969",
+        "title": "Memories of Murder",
+        "originalTitle": "살인의 추억",
+        "description": "A sadistic serial rapist and murderer of young women terrorizes a small province in 1980s South Korea. To prevent further crimes, three increasingly desperate detectives with conflicting methods race against time to unravel the violent mind of the killer in a futile effort to solve the case.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jcgUjx1QcupGzjntTVlnQ15lHqy.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/6Kn6qW3an3DkPl3MahWemTzrjCt.jpg",
+        "year": 2003,
+        "duration": "131 min",
+        "rating": "8.1",
+        "voteAverage": 8.062,
+        "director": "Bong Joon Ho",
+        "cast": [
+          "Song Kang-ho",
+          "Kim Sang-kyung",
+          "Kim Roi-ha",
+          "Song Jae-ho"
+        ],
+        "genre": [
+          "Crime",
+          "Drama",
+          "Thriller"
+        ],
+        "tagline": "The worst of them will stay with you... forever."
+      },
+      {
+        "id": "807",
+        "tmdbId": "807",
+        "imdbId": "tt0114369",
+        "title": "Se7en",
+        "originalTitle": "Se7en",
+        "description": "Two homicide detectives are on a desperate hunt for a serial killer whose crimes are based on the \"seven deadly sins\" in this dark and haunting film that takes viewers from the tortured remains of one victim to the next. The seasoned Det. Somerset researches each sin in an effort to get inside the killer's mind, while his novice partner, Mills, scoffs at his efforts to unravel the case.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/i5H7zusQGsysGQ8i6P361Vnr0n2.jpg",
+        "year": 1995,
+        "duration": "127 min",
+        "rating": "8.4",
+        "voteAverage": 8.381,
+        "director": "David Fincher",
+        "cast": [
+          "Morgan Freeman",
+          "Brad Pitt",
+          "Gwyneth Paltrow",
+          "John Cassini"
+        ],
+        "genre": [
+          "Crime",
+          "Mystery",
+          "Thriller"
+        ],
+        "tagline": "Gluttony. Greed. Sloth. Envy. Wrath. Pride. Lust."
+      },
+      {
+        "id": "1949",
+        "tmdbId": "1949",
+        "imdbId": "tt0443706",
+        "title": "Zodiac",
+        "originalTitle": "Zodiac",
+        "description": "The story follows the manhunt for the Zodiac Killer, a serial killer who terrorized the San Francisco Bay Area during the late 1960s and early 1970s, taunting police with letters, bloodstained clothing, and ciphers mailed to newspapers.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/6YmeO4pB7XTh8P8F960O1uA14JO.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/3zCPI4JFc54xvLaJ71oI2KoP3az.jpg",
+        "year": 2007,
+        "duration": "157 min",
+        "rating": "7.5",
+        "voteAverage": 7.532,
+        "director": "David Fincher",
+        "cast": [
+          "Jake Gyllenhaal",
+          "Mark Ruffalo",
+          "Anthony Edwards",
+          "Robert Downey Jr."
+        ],
+        "genre": [
+          "Crime",
+          "Mystery",
+          "Thriller"
+        ],
+        "tagline": "There's more than one way to lose your life to a killer."
+      },
+      {
+        "id": "146233",
+        "tmdbId": "146233",
+        "imdbId": "tt1392214",
+        "title": "Prisoners",
+        "originalTitle": "Prisoners",
+        "description": "After his six-year-old daughter is abducted, a desperate father takes justice into his own hands when he loses faith in the detective leading the investigation, setting both men on a collision course as the search descends into obsession and moral compromise.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uhviyknTT5cEQXbn6vWIqfM4vGm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/3RFmTz5h2UuFWEV4oH00XICBR9y.jpg",
+        "year": 2013,
+        "duration": "153 min",
+        "rating": "8.1",
+        "voteAverage": 8.105,
+        "director": "Denis Villeneuve",
+        "cast": [
+          "Hugh Jackman",
+          "Jake Gyllenhaal",
+          "Viola Davis",
+          "Maria Bello"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "Crime"
+        ],
+        "tagline": "How far would you go to protect your child?"
+      },
+      {
+        "id": "11324",
+        "tmdbId": "11324",
+        "imdbId": "tt1130884",
+        "title": "Shutter Island",
+        "originalTitle": "Shutter Island",
+        "description": "World War II soldier-turned-U.S. Marshal Teddy Daniels investigates the disappearance of a patient from a hospital for the criminally insane, but his efforts are compromised by troubling visions and a mysterious doctor.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/rbZvGN1A1QyZuoKzhCw8QPmf2q0.jpg",
+        "year": 2010,
+        "duration": "138 min",
+        "rating": "8.2",
+        "voteAverage": 8.197,
+        "director": "Martin Scorsese",
+        "cast": [
+          "Leonardo DiCaprio",
+          "Mark Ruffalo",
+          "Ben Kingsley",
+          "Max von Sydow"
+        ],
+        "genre": [
+          "Drama",
+          "Thriller",
+          "Mystery"
+        ],
+        "tagline": "Someone is missing."
+      },
+      {
+        "id": "210577",
+        "tmdbId": "210577",
+        "imdbId": "tt2267998",
+        "title": "Gone Girl",
+        "originalTitle": "Gone Girl",
+        "description": "With his wife's disappearance having become the focus of an intense media circus, a man sees the spotlight turned on him when it's suspected that he may not be innocent.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ts996lKsxvjkO2yiYG0ht4qAicO.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/iWak7wT0j6ycCc8lKr4NBz9c7n5.jpg",
+        "year": 2014,
+        "duration": "149 min",
+        "rating": "7.9",
+        "voteAverage": 7.89,
+        "director": "David Fincher",
+        "cast": [
+          "Ben Affleck",
+          "Rosamund Pike",
+          "Neil Patrick Harris",
+          "Tyler Perry"
+        ],
+        "genre": [
+          "Mystery",
+          "Thriller",
+          "Drama"
+        ],
+        "tagline": "You don't know what you've got 'til it's..."
+      },
+      {
+        "id": "1124",
+        "tmdbId": "1124",
+        "imdbId": "tt0482571",
+        "title": "The Prestige",
+        "originalTitle": "The Prestige",
+        "description": "A mysterious story of two magicians whose intense rivalry leads them on a life-long battle for supremacy -- full of obsession, deceit and jealousy with dangerous and deadly consequences.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/yaExZh6qE2cfyK3o4kAMEq0mkgy.jpg",
+        "year": 2006,
+        "duration": "130 min",
+        "rating": "8.2",
+        "voteAverage": 8.2,
+        "director": "Christopher Nolan",
+        "cast": [
+          "Hugh Jackman",
+          "Christian Bale",
+          "Michael Caine",
+          "Piper Perabo"
+        ],
+        "genre": [
+          "Drama",
+          "Mystery",
+          "Science Fiction"
+        ],
+        "tagline": "Are you watching closely?"
+      }
+    ]
+  },
+  {
+    "id": "james-bond",
+    "title": "James Bond 007",
+    "description": "MI6's elite secret agent with a license to kill, high-stakes gadgets, and ruthless villains.",
+    "movies": [
+      {
+        "id": "36557",
+        "tmdbId": "36557",
+        "imdbId": "tt0381061",
+        "title": "Casino Royale",
+        "originalTitle": "Casino Royale",
+        "description": "Le Chiffre, a banker to the world's terrorists, is scheduled to participate in a high-stakes poker game in Montenegro, where he intends to use his winnings to establish his financial grip on the terrorist market. M sends Bond—on his maiden mission as a 00 Agent—to attend this game and prevent Le Chiffre from winning. With the help of Vesper Lynd and Felix Leiter, Bond enters the most important poker game in his already dangerous career.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/klJMCIblHLFwCuGjKz7tyOpekIC.jpg",
+        "year": 2006,
+        "duration": "144 min",
+        "rating": "7.6",
+        "voteAverage": 7.575,
+        "director": "Martin Campbell",
+        "cast": [
+          "Daniel Craig",
+          "Eva Green",
+          "Mads Mikkelsen",
+          "Judi Dench"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Thriller"
+        ],
+        "tagline": "Everyone has a past. Every legend has a beginning."
+      },
+      {
+        "id": "37724",
+        "tmdbId": "37724",
+        "imdbId": "tt1074638",
+        "title": "Skyfall",
+        "originalTitle": "Skyfall",
+        "description": "When Bond's latest assignment goes gravely wrong, agents around the world are exposed and MI6 headquarters is attacked. While M faces challenges to her authority and position from Gareth Mallory, the new Chairman of the Intelligence and Security Committee, it's up to Bond, aided only by field agent Eve, to locate the mastermind behind the attack.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/d0IVecFQvsGdSbnMAHqiYsNYaJT.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/wkA622CCN2X0uwpgqYEOnUYEDf5.jpg",
+        "year": 2012,
+        "duration": "143 min",
+        "rating": "7.3",
+        "voteAverage": 7.267,
+        "director": "Sam Mendes",
+        "cast": [
+          "Daniel Craig",
+          "Judi Dench",
+          "Javier Bardem",
+          "Ralph Fiennes"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Thriller"
+        ],
+        "tagline": "Think on your sins."
+      },
+      {
+        "id": "370172",
+        "tmdbId": "370172",
+        "imdbId": "tt2382320",
+        "title": "No Time to Die",
+        "originalTitle": "No Time to Die",
+        "description": "Bond has left active service and is enjoying a tranquil life in Jamaica. His peace is short-lived when his old friend Felix Leiter from the CIA turns up asking for help. The mission to rescue a kidnapped scientist turns out to be far more treacherous than expected, leading Bond onto the trail of a mysterious villain armed with dangerous new technology.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iUgygt3fscRoKWCV1d0C7FbM9TP.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/bz7pwNGCbV576COsDcYN9MbEACC.jpg",
+        "year": 2021,
+        "duration": "163 min",
+        "rating": "7.3",
+        "voteAverage": 7.338,
+        "director": "Cary Joji Fukunaga",
+        "cast": [
+          "Daniel Craig",
+          "Léa Seydoux",
+          "Rami Malek",
+          "Lashana Lynch"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Adventure"
+        ],
+        "tagline": "The mission that changes everything begins…"
+      },
+      {
+        "id": "206647",
+        "tmdbId": "206647",
+        "imdbId": "tt2379713",
+        "title": "Spectre",
+        "originalTitle": "Spectre",
+        "description": "A cryptic message from Bond’s past sends him on a trail to uncover a sinister organization. While M battles political forces to keep the secret service alive, Bond peels back the layers of deceit to reveal the terrible truth behind SPECTRE.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/zj8ongFhtWNsVlfjOGo8pSr7PQg.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/aP6Hzwi2hqPGvX9sF4GliCy55yA.jpg",
+        "year": 2015,
+        "duration": "148 min",
+        "rating": "6.6",
+        "voteAverage": 6.572,
+        "director": "Sam Mendes",
+        "cast": [
+          "Daniel Craig",
+          "Christoph Waltz",
+          "Léa Seydoux",
+          "Ralph Fiennes"
+        ],
+        "genre": [
+          "Action",
+          "Adventure",
+          "Thriller"
+        ],
+        "tagline": "The Dead Are Alive."
+      },
+      {
+        "id": "710",
+        "tmdbId": "710",
+        "imdbId": "tt0113189",
+        "title": "GoldenEye",
+        "originalTitle": "GoldenEye",
+        "description": "When a powerful secret defense system is stolen, James Bond is assigned to stop a Russian crime syndicate from using it.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/z0ljRnNxIO7CRBhLEO0DvLgAFPR.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/fIWsCpYR9iGDMSbMTSAzy8L7Kg5.jpg",
+        "year": 1995,
+        "duration": "130 min",
+        "rating": "6.9",
+        "voteAverage": 6.904,
+        "director": "Martin Campbell",
+        "cast": [
+          "Pierce Brosnan",
+          "Sean Bean",
+          "Izabella Scorupco",
+          "Famke Janssen"
+        ],
+        "genre": [
+          "Adventure",
+          "Action",
+          "Thriller"
+        ],
+        "tagline": "No limits. No fears. No substitutes."
+      }
+    ]
+  },
+  {
+    "id": "rocky",
+    "title": "Rocky & Creed",
+    "description": "Heart, grit, and triumph: the ultimate underdog boxing saga in cinema history.",
+    "movies": [
+      {
+        "id": "1366",
+        "tmdbId": "1366",
+        "imdbId": "tt0075148",
+        "title": "Rocky",
+        "originalTitle": "Rocky",
+        "description": "Rocky Balboa is a Philadelphia club fighter who seems to be going nowhere. But when a stroke of fate puts him in the ring with a world heavyweight champion, Rocky knows that it's his one shot at the big time — a once-in-a-lifetime opportunity to go the distance and come out a winner!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/xSI0dbKLDETwhiVUy6hGE8KXUln.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/bacOuUnRBoAO1NjMfsAGX2EKRrS.jpg",
+        "year": 1976,
+        "duration": "120 min",
+        "rating": "7.8",
+        "voteAverage": 7.798,
+        "director": "John G. Avildsen",
+        "cast": [
+          "Sylvester Stallone",
+          "Talia Shire",
+          "Burt Young",
+          "Carl Weathers"
+        ],
+        "genre": [
+          "Drama"
+        ],
+        "tagline": "His whole life was a million-to-one shot."
+      },
+      {
+        "id": "1367",
+        "tmdbId": "1367",
+        "imdbId": "tt0079817",
+        "title": "Rocky II",
+        "originalTitle": "Rocky II",
+        "description": "After Rocky goes the distance with champ Apollo Creed, both try to put the fight behind them and move on. Rocky settles down with Adrian but can't put his life together outside the ring, while Creed seeks a rematch to restore his reputation. Soon enough, the \"Master of Disaster\" and the \"Italian Stallion\" are set on a collision course for a climactic battle that is brutal and unforgettable.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/nMaiiu0CzT77U4JZkUYV7KqdAjK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/78jvhi792WFjk1zSwqpfDOudO78.jpg",
+        "year": 1979,
+        "duration": "119 min",
+        "rating": "7.3",
+        "voteAverage": 7.296,
+        "director": "Sylvester Stallone",
+        "cast": [
+          "Sylvester Stallone",
+          "Talia Shire",
+          "Burt Young",
+          "Carl Weathers"
+        ],
+        "genre": [
+          "Drama",
+          "Action"
+        ],
+        "tagline": "Once he fought for a dream. Now he's fighting for love!"
+      },
+      {
+        "id": "1371",
+        "tmdbId": "1371",
+        "imdbId": "tt0084602",
+        "title": "Rocky III",
+        "originalTitle": "Rocky III",
+        "description": "Following Rocky Balboa's intense battle with his most powerful adversary yet – the ferocious Clubber Lang – Rocky joins forces with former rival Apollo Creed in an effort to get back his fighting spirit.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uqw16i2kmwVqkJHzjzbDU4xZ0Pl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ljOHSIyTbxdkQFjcJyWKfGm2i2r.jpg",
+        "year": 1982,
+        "duration": "100 min",
+        "rating": "6.9",
+        "voteAverage": 6.907,
+        "director": "Sylvester Stallone",
+        "cast": [
+          "Sylvester Stallone",
+          "Talia Shire",
+          "Burt Young",
+          "Carl Weathers"
+        ],
+        "genre": [
+          "Drama",
+          "Action"
+        ],
+        "tagline": "The greatest challenge."
+      },
+      {
+        "id": "1374",
+        "tmdbId": "1374",
+        "imdbId": "tt0089927",
+        "title": "Rocky IV",
+        "originalTitle": "Rocky IV",
+        "description": "Rocky Balboa holds the world heavyweight championship, but a new challenger has stepped forward: Drago, a six-foot-four, 261-pound fighter who has the backing of the Soviet Union. This time, Rocky's training regimen takes him to Siberia, where he prepares for a globally televised match in the heart of Moscow. But nothing can truly prepare him for what he's about to face – a fight to the finish, in which he must defend not only himself, but also the honor of his country!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/2MHUit4H6OK5adcOjnCN6suCKOl.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uiUb4KJ6tadldqlJme49TW1r3jA.jpg",
+        "year": 1985,
+        "duration": "91 min",
+        "rating": "7.1",
+        "voteAverage": 7.1,
+        "director": "Sylvester Stallone",
+        "cast": [
+          "Sylvester Stallone",
+          "Dolph Lundgren",
+          "Carl Weathers",
+          "Talia Shire"
+        ],
+        "genre": [
+          "Drama",
+          "Action"
+        ],
+        "tagline": "He's facing the ultimate challenge. And fighting for his life."
+      },
+      {
+        "id": "27578",
+        "tmdbId": "27578",
+        "imdbId": "tt1320253",
+        "title": "The Expendables",
+        "originalTitle": "The Expendables",
+        "description": "Barney Ross leads a band of highly skilled mercenaries including knife enthusiast Lee Christmas, a martial arts expert Yin Yang, heavy weapons specialist Hale Caesar, demolitionist Toll Road, and a loose-cannon sniper Gunner Jensen. When the group is commissioned by the mysterious Mr. Church to assassinate the dictator of a small South American island, Barney and Lee visit the remote locale to scout out their opposition and discover the true nature of the conflict engulfing the city.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/j09ZkH6R4JWVylBcDai1laCmGw7.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/yBv9RxlWPXRCvjMFsrmB1pxwWo6.jpg",
+        "year": 2010,
+        "duration": "103 min",
+        "rating": "6.3",
+        "voteAverage": 6.251,
+        "director": "Sylvester Stallone",
+        "cast": [
+          "Sylvester Stallone",
+          "Jason Statham",
+          "Jet Li",
+          "Dolph Lundgren"
+        ],
+        "genre": [
+          "Thriller",
+          "Adventure",
+          "Action"
+        ],
+        "tagline": "Choose your weapon."
+      },
+      {
+        "id": "480530",
+        "tmdbId": "480530",
+        "imdbId": "tt6343314",
+        "title": "Creed II",
+        "originalTitle": "Creed II",
+        "description": "Between personal obligations and training for his next big fight against an opponent with ties to his family's past, Adonis Creed is up against the challenge of his life.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/v3QyboWRoA4O9RbcsqH8tJMe8EB.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9il7qNbeYnPMYlutsVYDsj4hRyb.jpg",
+        "year": 2018,
+        "duration": "130 min",
+        "rating": "7.0",
+        "voteAverage": 7.035,
+        "director": "Steven Caple Jr.",
+        "cast": [
+          "Michael B. Jordan",
+          "Sylvester Stallone",
+          "Tessa Thompson",
+          "Wood Harris"
+        ],
+        "genre": [
+          "Drama",
+          "Action"
+        ],
+        "tagline": "There's more to lose than a title."
+      },
+      {
+        "id": "1246",
+        "tmdbId": "1246",
+        "imdbId": "tt0479143",
+        "title": "Rocky Balboa",
+        "originalTitle": "Rocky Balboa",
+        "description": "When he loses a highly publicized virtual boxing match to ex-champ Rocky Balboa, reigning heavyweight titleholder Mason Dixon retaliates by challenging the Italian Stallion to a 10-round exhibition bout. To the surprise of his son and friends, Rocky agrees to come out of retirement and face an opponent who's faster, stronger and thirty years his junior. Rocky takes on Dixon in what will become the greatest fight in boxing history!",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/byBlJvZwCqgtIwrZNv0pyE974jC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/fsJn2mPXMhauXsEpNTtFqDdjSQt.jpg",
+        "year": 2006,
+        "duration": "102 min",
+        "rating": "6.9",
+        "voteAverage": 6.886,
+        "director": "Sylvester Stallone",
+        "cast": [
+          "Sylvester Stallone",
+          "Burt Young",
+          "Antonio Tarver",
+          "Geraldine Hughes"
+        ],
+        "genre": [
+          "Drama",
+          "Action"
+        ],
+        "tagline": "It ain't over 'til it's over."
+      }
+    ]
+  },
+  {
+    "id": "terminator",
+    "title": "Terminator",
+    "description": "The war between human resistance and the lethal cyborg assassins of Skynet.",
+    "movies": [
+      {
+        "id": "218",
+        "tmdbId": "218",
+        "imdbId": "tt0088247",
+        "title": "The Terminator",
+        "originalTitle": "The Terminator",
+        "description": "In the post-apocalyptic future, reigning tyrannical supercomputers teleport a cyborg assassin known as the \"Terminator\" back to 1984 to kill Sarah Connor, whose unborn son is destined to lead insurgents against 21st century mechanical hegemony. Meanwhile, the human-resistance movement dispatches a lone warrior to safeguard Sarah. Can he stop the virtually indestructible killing machine?",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qvktm0BHcnmDpul4Hz01GIazWPr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/ffdqHMWkh1h9MABwIfbfRJhgFW6.jpg",
+        "year": 1984,
+        "duration": "108 min",
+        "rating": "7.7",
+        "voteAverage": 7.695,
+        "director": "James Cameron",
+        "cast": [
+          "Arnold Schwarzenegger",
+          "Michael Biehn",
+          "Linda Hamilton",
+          "Paul Winfield"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Science Fiction"
+        ],
+        "tagline": "Your future is in its hands."
+      },
+      {
+        "id": "280",
+        "tmdbId": "280",
+        "imdbId": "tt0103064",
+        "title": "Terminator 2: Judgment Day",
+        "originalTitle": "Terminator 2: Judgment Day",
+        "description": "Ten years after the events of the original, a reprogrammed T-800 is sent back in time to protect young John Connor from the shape-shifting T-1000. Together with his mother Sarah, he fights to stop Skynet from triggering a nuclear apocalypse.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jFTVD4XoWQTcg7wdyJKa8PEds5q.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/izkMjmhauFx9DjoBQqM5sM5WAwE.jpg",
+        "year": 1991,
+        "duration": "137 min",
+        "rating": "8.2",
+        "voteAverage": 8.17,
+        "director": "James Cameron",
+        "cast": [
+          "Arnold Schwarzenegger",
+          "Linda Hamilton",
+          "Edward Furlong",
+          "Robert Patrick"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Science Fiction"
+        ],
+        "tagline": "It's nothing personal."
+      },
+      {
+        "id": "296",
+        "tmdbId": "296",
+        "imdbId": "tt0181852",
+        "title": "Terminator 3: Rise of the Machines",
+        "originalTitle": "Terminator 3: Rise of the Machines",
+        "description": "It's been 10 years since John Connor saved Earth from Judgment Day, and he's now living under the radar, steering clear of using anything Skynet can trace. That is, until he encounters T-X, a robotic assassin ordered to finish what T-1000 started. Good thing Connor's former nemesis, the Terminator, is back to aid the now-adult Connor … just like he promised.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vvevzdYIrk2636maNW4qeWmlPFG.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/voVkSwgFYv9GOpRNfUAwj6qYRTL.jpg",
+        "year": 2003,
+        "duration": "109 min",
+        "rating": "6.2",
+        "voteAverage": 6.203,
+        "director": "Jonathan Mostow",
+        "cast": [
+          "Arnold Schwarzenegger",
+          "Nick Stahl",
+          "Claire Danes",
+          "Kristanna Loken"
+        ],
+        "genre": [
+          "Action",
+          "Thriller",
+          "Science Fiction"
+        ],
+        "tagline": "The machines will rise."
+      },
+      {
+        "id": "534",
+        "tmdbId": "534",
+        "imdbId": "tt0438488",
+        "title": "Terminator Salvation",
+        "originalTitle": "Terminator Salvation",
+        "description": "All grown up in post-apocalyptic 2018, John Connor must lead the resistance of humans against the increasingly dominating militaristic robots. But when Marcus Wright appears, his existence confuses the mission as Connor tries to determine whether Wright has come from the future or the past -- and whether he's friend or foe.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/gw6JhlekZgtKUFlDTezq3j5JEPK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uifaXfJxjTMeNttw5u04nHx1G5w.jpg",
+        "year": 2009,
+        "duration": "115 min",
+        "rating": "6.1",
+        "voteAverage": 6.102,
+        "director": "McG",
+        "cast": [
+          "Christian Bale",
+          "Sam Worthington",
+          "Moon Bloodgood",
+          "Helena Bonham Carter"
+        ],
+        "genre": [
+          "Action",
+          "Science Fiction",
+          "Thriller"
+        ],
+        "tagline": "The end begins."
+      },
+      {
+        "id": "87101",
+        "tmdbId": "87101",
+        "imdbId": "tt1340138",
+        "title": "Terminator Genisys",
+        "originalTitle": "Terminator Genisys",
+        "description": "The year is 2029. John Connor, leader of the resistance continues the war against the machines. At the Los Angeles offensive, John's fears of the unknown future begin to emerge when TECOM spies reveal a new plot by SkyNet that will attack him from both fronts; past and future, and will ultimately change warfare forever.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/oZRVDpNtmHk8M1VYy1aeOWUXgbC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/wvlIoof1FnKPLv9jAYanuP31V0C.jpg",
+        "year": 2015,
+        "duration": "126 min",
+        "rating": "6.0",
+        "voteAverage": 5.96,
+        "director": "Alan Taylor",
+        "cast": [
+          "Arnold Schwarzenegger",
+          "Jason Clarke",
+          "Emilia Clarke",
+          "Jai Courtney"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Action",
+          "Thriller"
+        ],
+        "tagline": "Reset the future."
+      },
+      {
+        "id": "290859",
+        "tmdbId": "290859",
+        "imdbId": "tt6450804",
+        "title": "Terminator: Dark Fate",
+        "originalTitle": "Terminator: Dark Fate",
+        "description": "Decades after Sarah Connor prevented Judgment Day, a lethal new Terminator is sent to eliminate the future leader of the resistance. In a fight to save mankind, battle-hardened Sarah Connor teams up with an unexpected ally and an enhanced super soldier to stop the deadliest Terminator yet.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vqzNJRH4YyquRiWxCCOH0aXggHI.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/a6cDxdwaQIFjSkXf7uskg78ZyTq.jpg",
+        "year": 2019,
+        "duration": "128 min",
+        "rating": "6.4",
+        "voteAverage": 6.4,
+        "director": "Tim Miller",
+        "cast": [
+          "Linda Hamilton",
+          "Arnold Schwarzenegger",
+          "Mackenzie Davis",
+          "Natalia Reyes"
+        ],
+        "genre": [
+          "Science Fiction",
+          "Action",
+          "Adventure",
+          "Thriller"
+        ],
+        "tagline": "Welcome to the day after judgement day."
+      }
+    ]
+  }
+]

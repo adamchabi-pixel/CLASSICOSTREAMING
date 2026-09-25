@@ -17,50 +17,50 @@ export interface AppNotification {
 export const APP_NOTIFICATIONS: AppNotification[] = [
   {
     id: "notif-account-creation-20260923",
-    title: "Classico Accounts & Cult Avatars Now Live",
+    title: "Classico Accounts & Cult Avatars Available",
     date: "2026/09/23",
-    badge: "NEW FEATURE",
+    badge: "NEW",
     badgeColor: "amber",
-    content: "You can now create your Classico account in two simple steps! Enter your username, email, password, and favorite movie genre, then pick your legendary cult character avatar from 25 cinema and series icons (Tony Montana, Vito Corleone, Walter White, Thomas Shelby, etc.). Your watch history, watchlist, and resume progress sync automatically.",
-    author: "Classico team",
+    content: "You can now create your Classico account in two simple steps! Enter your username, email, password, and favorite genre, then pick your avatar from our 25 cult icons (Tony Montana, Vito Corleone, Walter White, Thomas Shelby...). Your watch history and playback progress are automatically saved.",
+    author: "The Classico Team",
     actionType: "open_signup",
     link: {
-      label: "Create My Account",
+      label: "Create my account",
       url: "#signup",
       external: false
     }
   },
   {
     id: "notif-animco-live-20260818",
-    title: "ANIMCO. IS OFFICIALLY LIVE",
+    title: "ANIMCO IS OFFICIALLY LIVE",
     date: "2026/08/18",
     badge: "RELEASE",
     badgeColor: "purple",
-    content: "After a lot of work behind the scenes, our brand-new anime streaming platform ANIMCO is live! Built to deliver a faster, smoother, and ad-free anime viewing experience. If you love anime, check it out and share your thoughts.",
-    author: "Classico team",
+    content: "After dedicated work behind the scenes, our brand new anime streaming platform ANIMCO has launched! Engineered for ultra-fast, smooth, uninterrupted playback.",
+    author: "The Classico Team",
     actionType: "open_link",
     link: {
-      label: "Watch on Animco",
+      label: "Discover Animco",
       url: "https://animcostreaming.com",
       external: true
     }
   },
   {
     id: "notif-browser-announcement-20260801",
-    title: "Browser Compatibility Recommendation",
+    title: "Browser Recommendations",
     date: "2026/08/01",
     badge: "ANNOUNCEMENT",
     badgeColor: "sky",
-    content: "For optimal playback and faster stream loading, please use Google Chrome on PC and Safari on iPhone / iPad. Microsoft Edge and Opera currently experience occasional playback issues—our team is working on full compatibility updates.",
-    author: "Classico team"
+    content: "For optimal loading speeds and smooth playback, we recommend Google Chrome on desktop and Safari on iPhone / iPad. Our video players perform best on them.",
+    author: "The Classico Team"
   },
   {
     id: "notif-website-update-20260720",
-    title: "New Website Update & French Server",
+    title: "Site Update & High-Speed Servers",
     date: "2026/07/20",
     badge: "UPDATE",
     badgeColor: "emerald",
-    content: "Rolled out a brand-new Server 1 (completely ad-free) and a dedicated French server for French-speaking cinephiles. The overall layout and player controls were also updated for a sleeker, cleaner experience.",
-    author: "Classico team"
+    content: "Deployment of a refreshed Player 1 (ad-free) and dedicated high-speed servers for movie lovers. Interface responsiveness and video playback controls have also been modernized.",
+    author: "The Classico Team"
   }
 ];

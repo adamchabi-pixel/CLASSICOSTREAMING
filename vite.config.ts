@@ -6,6 +6,9 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'lucide-react', 'motion', '@supabase/supabase-js'],
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

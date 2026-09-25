@@ -2519,13 +2519,13 @@ export default function CinemaPlayerView({
     return (
       <div className="absolute inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-6 text-center">
         <AlertCircle className="w-12 h-12 text-rose-500 mb-4" />
-        <h3 className="text-xl font-bold text-white mb-2">Error</h3>
+        <h3 className="text-xl font-bold text-white mb-2">Erreur</h3>
         <p className="text-zinc-400 max-w-md">{videoError}</p>
         <button
           onClick={handleClosePlayer}
-          className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+          className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors cursor-pointer"
         >
-          Go Back
+          Retour
         </button>
       </div>
     );
@@ -2578,15 +2578,15 @@ export default function CinemaPlayerView({
       {serverSelected && adClicks < 3 && (
         <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center pointer-events-auto">
           <div className="max-w-md w-full bg-neutral-900 border border-amber-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
-            <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Support Classico</h2>
+            <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Soutenir Classico</h2>
             <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
-              Classico is free and will stay that way, but our servers cost a lot to maintain. The only way we can compensate is by including three ads per movie.
+              Classico est 100% gratuit et le restera, mais la maintenance de nos serveurs a un coût élevé. Le seul moyen pour nous de compenser est d'inclure trois annonces par visionnage.
               <br /><br />
-              <strong className="text-white">Please disable your ad-blocker to support us.</strong> Thank you immensely!
+              <strong className="text-white">Veuillez désactiver votre bloqueur de publicité pour nous soutenir.</strong> Merci infiniment !
             </p>
             <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 w-full mb-6">
               <p className="text-rose-400 text-[11px] font-mono uppercase tracking-wider">
-                Don't click anything on the ads, just close the new tab.
+                Ne cliquez sur rien dans les publicités, fermez simplement le nouvel onglet ouvert.
               </p>
             </div>
             
@@ -2594,11 +2594,11 @@ export default function CinemaPlayerView({
               onClick={handleAdClick}
               className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4 cursor-pointer"
             >
-              <span className="font-sans text-base">Click Ad ({adClicks + 1}/3)</span>
+              <span className="font-sans text-base">Cliquer pour continuer ({adClicks + 1}/3)</span>
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-zinc-500 text-xs font-mono uppercase tracking-widest">Progress</span>
+              <span className="text-zinc-500 text-xs font-mono uppercase tracking-widest">Progression</span>
               <span className="text-amber-500 font-bold font-mono bg-amber-500/10 px-2 py-0.5 rounded">{adClicks}/3</span>
             </div>
           </div>
@@ -2619,10 +2619,10 @@ export default function CinemaPlayerView({
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={handleClosePlayer}
-            className="flex items-center gap-2 text-zinc-500 hover:text-amber-500 transition-colors font-sans text-sm uppercase tracking-wider"
-            title="Back"
+            className="flex items-center gap-2 text-zinc-500 hover:text-amber-500 transition-colors font-sans text-sm uppercase tracking-wider cursor-pointer"
+            title="Retour"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-4 h-4" /> Retour
           </button>
         </div>
 
@@ -2668,10 +2668,10 @@ export default function CinemaPlayerView({
             <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
               <h3 className="text-zinc-200 font-sans text-xs uppercase tracking-wider flex items-center gap-1.5 font-semibold">
                 <Users className="w-3.5 h-3.5 text-amber-400" />
-                Main Cast
+                Casting principal
               </h3>
               <span className="text-[10px] font-sans font-medium text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
-                {castDetails.length > 0 ? castDetails.length : cast.length} actors
+                {castDetails.length > 0 ? castDetails.length : cast.length} acteurs
               </span>
             </div>
             <div className="flex-1 min-h-0 flex flex-col gap-1 overflow-y-auto scrollbar-hide pr-0.5">
@@ -2712,7 +2712,7 @@ export default function CinemaPlayerView({
                 onClick={() => setShowAllCast(!showAllCast)}
                 className="w-full mt-auto py-1.5 px-2.5 text-[11px] font-sans font-medium text-amber-400/90 hover:text-amber-300 hover:bg-white/[0.05] rounded-lg transition-all text-center border border-white/5 flex items-center justify-center gap-1 cursor-pointer shrink-0"
               >
-                <span>{showAllCast ? "Show less" : "See more"}</span>
+                <span>{showAllCast ? "Afficher moins" : "Voir tout le casting"}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAllCast ? 'rotate-180' : ''}`} />
               </button>
             )}
@@ -2729,12 +2729,12 @@ export default function CinemaPlayerView({
                     <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mb-4 border border-white/5">
                       <Play className="w-6 h-6 text-zinc-600 ml-1" />
                     </div>
-                    <p className="text-zinc-500 font-sans text-sm">Select a source.</p>
+                    <p className="text-zinc-500 font-sans text-sm">Sélectionnez une source.</p>
                   </div>
                 ) : (isLoading || isStreamLoading || (playbackInfo?.isIframeEmbed && isIframeLoading)) ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-[45]">
                     <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
-                    <p className="text-amber-500/50 font-mono tracking-widest uppercase text-[10px]">Connecting...</p>
+                    <p className="text-amber-500/50 font-mono tracking-widest uppercase text-[10px]">Connexion en cours...</p>
                   </div>
                 ) : null}
 
@@ -3021,7 +3021,7 @@ export default function CinemaPlayerView({
                         : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent"
                     }`}
                   >
-                    <span>Overview & Details</span>
+                    <span>Synopsis & Détails</span>
                   </button>
 
                   <button
@@ -3034,7 +3034,7 @@ export default function CinemaPlayerView({
                     }`}
                   >
                     <Film className="w-3.5 h-3.5" />
-                    <span>More Like This</span>
+                    <span>Titres similaires</span>
                     {similarMovies.length > 0 && (
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${detailsTab === "similar" ? "bg-amber-400/20 text-amber-200" : "bg-white/10 text-zinc-400"}`}>
                         {similarMovies.length}
@@ -3051,7 +3051,7 @@ export default function CinemaPlayerView({
                         : "text-zinc-500 hover:text-zinc-300 border border-transparent"
                     }`}
                   >
-                    <span>View All</span>
+                    <span>Tout afficher</span>
                   </button>
                 </div>
 
@@ -3214,7 +3214,7 @@ export default function CinemaPlayerView({
                         <div className="flex items-center justify-between pb-2 border-b border-white/10">
                           <h3 className="text-zinc-200 font-cinzel text-xs uppercase tracking-[2px] font-bold flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(212,175,55,0.6)]"></span>
-                            Story & Synopsis
+                            Synopsis & Histoire
                           </h3>
                           {movieData?.tagline && (
                             <span className="text-xs text-amber-300/80 italic hidden sm:inline max-w-xs truncate font-sans">
@@ -3224,7 +3224,7 @@ export default function CinemaPlayerView({
                         </div>
                         
                         <p className="text-zinc-300 text-sm sm:text-base leading-relaxed font-sans font-normal">
-                          {movieData?.description || "No synopsis available for this title."}
+                          {movieData?.description || "Aucun synopsis disponible pour ce titre."}
                         </p>
                       </div>
 
@@ -3245,7 +3245,7 @@ export default function CinemaPlayerView({
                       <div className="flex items-center justify-between pb-2 border-b border-white/10">
                         <h3 className="text-zinc-200 font-cinzel text-xs uppercase tracking-wider flex items-center gap-1.5 font-bold">
                           <Film className="w-3.5 h-3.5 text-amber-400" />
-                          Details
+                          Fiche Technique
                         </h3>
                         <span className="text-[10px] font-sans font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
                           4K UHD
@@ -3255,23 +3255,23 @@ export default function CinemaPlayerView({
                       <div className="flex flex-col gap-2.5 text-left font-sans">
                         {/* Director */}
                         <div className="flex items-center justify-between py-1 border-b border-white/5">
-                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Director</span>
-                          <span className="text-xs font-sans font-semibold text-zinc-200 truncate max-w-[140px]" title={movieData?.director || "Not specified"}>
-                            {movieData?.director || "Not specified"}
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Réalisateur</span>
+                          <span className="text-xs font-sans font-semibold text-zinc-200 truncate max-w-[140px]" title={movieData?.director || "Non spécifié"}>
+                            {movieData?.director || "Non spécifié"}
                           </span>
                         </div>
 
                         {/* Release Date */}
                         <div className="flex items-center justify-between py-1 border-b border-white/5">
-                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Release</span>
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Sortie</span>
                           <span className="text-xs font-sans font-medium text-zinc-200">
-                            {movieData?.releaseDate || movieData?.year || "Not specified"}
+                            {movieData?.releaseDate || movieData?.year || "Non spécifiée"}
                           </span>
                         </div>
 
                         {/* Runtime */}
                         <div className="flex items-center justify-between py-1 border-b border-white/5">
-                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Runtime</span>
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Durée</span>
                           <span className="text-xs font-sans font-medium text-zinc-200">
                             {movieData?.duration ? `${movieData.duration}${String(movieData.duration).includes('m') ? '' : ' min'}` : "Standard"}
                           </span>
@@ -3279,7 +3279,7 @@ export default function CinemaPlayerView({
 
                         {/* TMDB Rating */}
                         <div className="flex items-center justify-between py-1 border-b border-white/5">
-                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Rating</span>
+                          <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Note TMDB</span>
                           <div className="flex items-center gap-1">
                             <span className="text-amber-400 text-xs">★</span>
                             <span className="text-xs font-semibold text-amber-300">
@@ -3294,7 +3294,7 @@ export default function CinemaPlayerView({
                           <div className="flex flex-wrap gap-1">
                             <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">HDR10</span>
                             <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">DOLBY 5.1</span>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">EN / FR SUB</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/10 font-mono">VF / VOSTFR</span>
                           </div>
                         </div>
                       </div>
@@ -3310,10 +3310,10 @@ export default function CinemaPlayerView({
                       <div className="flex items-center gap-2.5">
                         <h3 className="text-zinc-100 font-cinzel text-sm sm:text-base uppercase tracking-[2px] font-bold flex items-center gap-2">
                           <Film className="w-4 h-4 text-amber-400" />
-                          More Like This
+                          Titres similaires
                         </h3>
                         <span className="text-[10px] font-sans font-semibold text-zinc-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                          {similarMovies.length} titles
+                          {similarMovies.length} titres
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -3324,7 +3324,7 @@ export default function CinemaPlayerView({
                             if (el) el.scrollBy({ left: -280, behavior: 'smooth' }); 
                           }} 
                           className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 hover:text-amber-400 transition-colors cursor-pointer text-white"
-                          title="Previous"
+                          title="Précédent"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
@@ -3335,7 +3335,7 @@ export default function CinemaPlayerView({
                             if (el) el.scrollBy({ left: 280, behavior: 'smooth' }); 
                           }} 
                           className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 hover:text-amber-400 transition-colors cursor-pointer text-white"
-                          title="Next"
+                          title="Suivant"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -3369,7 +3369,7 @@ export default function CinemaPlayerView({
                               )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
                                 <span className="flex items-center gap-1.5 text-xs font-sans font-medium text-amber-400">
-                                  <Play className="w-3.5 h-3.5 fill-amber-400" /> Watch
+                                  <Play className="w-3.5 h-3.5 fill-amber-400" /> Regarder
                                 </span>
                               </div>
                             </div>
@@ -3391,7 +3391,7 @@ export default function CinemaPlayerView({
                       </div>
                     ) : (
                       <div className="py-6 text-zinc-500 font-sans text-xs">
-                        No similar titles available.
+                        Aucun titre similaire disponible.
                       </div>
                     )}
                   </div>
@@ -3410,7 +3410,7 @@ export default function CinemaPlayerView({
             <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
               <h3 className="text-zinc-200 font-sans text-xs uppercase tracking-wider flex items-center gap-1.5 font-semibold">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse"></div>
-                Sources
+                Serveurs
               </h3>
               <div className="flex items-center gap-1.5 bg-black/50 p-1 rounded-lg border border-white/10">
                 <button 
@@ -3422,7 +3422,7 @@ export default function CinemaPlayerView({
                     handleSelectServer(0, newServers);
                   }} 
                   className={"w-5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
-                  title="English"
+                  title="Anglais"
                 >
                   <img src="https://flagcdn.com/w40/gb.png" alt="EN" className="w-full h-full object-cover rounded-sm" />
                 </button>
@@ -3435,7 +3435,7 @@ export default function CinemaPlayerView({
                     handleSelectServer(0, newServers);
                   }} 
                   className={"w-5 h-3.5 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-35 hover:opacity-100")} 
-                  title="French"
+                  title="Français"
                 >
                   <img src="https://flagcdn.com/w40/fr.png" alt="FR" className="w-full h-full object-cover rounded-sm" />
                 </button>
@@ -3459,7 +3459,7 @@ export default function CinemaPlayerView({
                     >
                       <div className="flex items-center gap-2.5">
                         <Play className={`w-3 h-3 transition-colors ${isActive ? 'text-amber-400 fill-amber-400' : 'text-zinc-500 group-hover:text-amber-400/80'}`} />
-                        <span className={`text-xs font-sans transition-colors ${isActive ? 'text-amber-200 font-medium' : 'text-zinc-400 group-hover:text-zinc-200'}`}>{serverName || `Server ${idx + 1}`}</span>
+                        <span className={`text-xs font-sans transition-colors ${isActive ? 'text-amber-200 font-medium' : 'text-zinc-400 group-hover:text-zinc-200'}`}>{serverName || `Serveur ${idx + 1}`}</span>
                       </div>
                       <span className={`text-[9px] tracking-wide font-sans transition-colors px-1.5 py-0.5 rounded font-medium ${isActive ? 'text-amber-400 bg-amber-400/10' : 'text-zinc-400 bg-white/5'}`}>
                         HD
@@ -3500,7 +3500,7 @@ export default function CinemaPlayerView({
                       handleSelectServer(0, newServers);
                     }} 
                     className={"w-6 h-4 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "en" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-40 hover:opacity-100")} 
-                    title="English"
+                    title="Anglais"
                   >
                     <img src="https://flagcdn.com/w40/gb.png" alt="EN" className="w-full h-full object-cover rounded-sm" />
                   </button>
@@ -3513,7 +3513,7 @@ export default function CinemaPlayerView({
                       handleSelectServer(0, newServers);
                     }} 
                     className={"w-6 h-4 rounded flex items-center justify-center transition-all cursor-pointer " + (language === "fr" ? "opacity-100 ring-1 ring-amber-400/70 scale-105" : "opacity-40 hover:opacity-100")} 
-                    title="French"
+                    title="Français"
                   >
                     <img src="https://flagcdn.com/w40/fr.png" alt="FR" className="w-full h-full object-cover rounded-sm" />
                   </button>
@@ -3549,7 +3549,7 @@ export default function CinemaPlayerView({
                     >
                       <div className="flex items-center gap-3">
                         <Play className={`w-3.5 h-3.5 ${isActive ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'}`} />
-                        <span className="text-sm font-sans">{serverName || `Server ${idx + 1}`}</span>
+                        <span className="text-sm font-sans">{serverName || `Serveur ${idx + 1}`}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`text-[10px] px-2 py-0.5 rounded font-sans font-semibold ${isActive ? 'bg-amber-400/20 text-amber-300' : 'bg-white/5 text-zinc-400'}`}>

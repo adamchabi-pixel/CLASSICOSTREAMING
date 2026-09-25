@@ -181,7 +181,7 @@ export default function UserProfileView({
               Classico Personal Space
             </h2>
             <p className="text-xs text-zinc-400 font-sans leading-relaxed">
-              Sign in to choose your cult cinema avatar (The Godfather, Scarface, Pulp Fiction, The Joker...) and synchronize your watchlist, favorites, and playback progress across devices.
+              Sign in to choose your cult cinema avatar (The Godfather, Scarface, Pulp Fiction, Joker...) and sync your watchlist, favorites, and watch progress across all your devices.
             </p>
           </div>
 
@@ -245,7 +245,7 @@ export default function UserProfileView({
               <div className="flex items-center gap-3 pt-1 text-[11px] text-zinc-400">
                 <span className="flex items-center gap-1 text-emerald-400">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Cloud Connected & Synced
+                  Cloud Connected & Synchronized
                 </span>
               </div>
             </div>
@@ -267,10 +267,10 @@ export default function UserProfileView({
       {/* Navigation Sub-Tabs */}
       <div className="flex items-center gap-2 border-b border-neutral-800/80 pb-3 overflow-x-auto custom-scrollbar">
         {[
-          { id: "watchlist", label: "My List", count: watchlistMovies.length, icon: Bookmark },
+          { id: "watchlist", label: "My Watchlist", count: watchlistMovies.length, icon: Bookmark },
           { id: "favorites", label: "Favorites", count: favoritesMovies.length, icon: Heart },
           { id: "continue", label: "Continue Watching", count: continueWatchingMovies.length, icon: Clock },
-          { id: "history", label: "History", count: historyMovies.length, icon: History }
+          { id: "history", label: "Watch History", count: historyMovies.length, icon: History }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -305,10 +305,10 @@ export default function UserProfileView({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-cinzel font-bold text-white">
-                My List ({watchlistMovies.length})
+                My Watchlist ({watchlistMovies.length})
               </h3>
               <p className="text-xs text-zinc-500">
-                Movies and series saved to your personal list
+                Movies and series saved in your personal watchlist
               </p>
             </div>
 
@@ -332,9 +332,9 @@ export default function UserProfileView({
             ) : (
               <div className="py-16 text-center rounded-2xl bg-neutral-900/30 border border-neutral-800/60 p-8 space-y-3">
                 <Bookmark className="w-12 h-12 text-zinc-600 mx-auto stroke-1" />
-                <h4 className="text-base font-semibold text-zinc-300">Your list is empty</h4>
+                <h4 className="text-base font-semibold text-zinc-300">Your watchlist is empty</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  Click the bookmark icon on any movie or series to save it to your list and easily find it here.
+                  Click the bookmark icon on any movie or series to save it to your list and find it here easily.
                 </p>
               </div>
             )}
@@ -349,7 +349,7 @@ export default function UserProfileView({
                 My Favorites ({favoritesMovies.length})
               </h3>
               <p className="text-xs text-zinc-500">
-                Your personal all-time favorites
+                Your essential cinematic favorites
               </p>
             </div>
 
@@ -375,7 +375,7 @@ export default function UserProfileView({
                 <Heart className="w-12 h-12 text-zinc-600 mx-auto stroke-1" />
                 <h4 className="text-base font-semibold text-zinc-300">No favorites yet</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  Add favorites by clicking the heart icon on any movie card or details modal.
+                  Add favorites by clicking the heart icon on any poster or detail view.
                 </p>
               </div>
             )}
@@ -412,7 +412,7 @@ export default function UserProfileView({
                 <Clock className="w-12 h-12 text-zinc-600 mx-auto stroke-1" />
                 <h4 className="text-base font-semibold text-zinc-300">Nothing in progress</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  Start watching any film or episode; your exact timestamp will automatically be tracked and saved here.
+                  Start watching a movie or episode: your progress will be automatically saved and resumed here.
                 </p>
               </div>
             )}
@@ -438,7 +438,7 @@ export default function UserProfileView({
                 )}
               </div>
               <p className="text-xs text-zinc-500">
-                Chronological list of watched movies and series
+                Chronological history of watched movies and series
               </p>
             </div>
 
@@ -472,9 +472,9 @@ export default function UserProfileView({
             ) : (
               <div className="py-16 text-center rounded-2xl bg-neutral-900/30 border border-neutral-800/60 p-8 space-y-3">
                 <History className="w-12 h-12 text-zinc-600 mx-auto stroke-1" />
-                <h4 className="text-base font-semibold text-zinc-300">History is empty</h4>
+                <h4 className="text-base font-semibold text-zinc-300">Watch history is empty</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  Watched films and episodes will appear here automatically.
+                  Watched movies and episodes will appear here automatically.
                 </p>
               </div>
             )}

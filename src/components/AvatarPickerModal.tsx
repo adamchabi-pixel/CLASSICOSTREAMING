@@ -82,7 +82,7 @@ export default function AvatarPickerModal({
               Cult Avatars
             </div>
             <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-white tracking-wide">
-              Choose Your Legend
+              Choose your Legend
             </h2>
             <p className="text-[11px] text-zinc-400 font-sans max-w-xs mx-auto">
               Select an iconic character to represent your profile.
@@ -173,7 +173,7 @@ export default function AvatarPickerModal({
           <div className="pt-3 border-t border-neutral-800/80 flex items-center justify-between text-xs text-zinc-500 shrink-0">
             <span className="flex items-center gap-1.5 text-[11px]">
               <Film className="w-3 h-3 text-amber-400" />
-              {DEFAULT_AVATARS.length} characters
+              {DEFAULT_AVATARS.length} icons
             </span>
             <button
               onClick={onClose}

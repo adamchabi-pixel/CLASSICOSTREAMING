@@ -17,9 +17,10 @@ import { DEFAULT_AVATARS } from "../lib/supabase";
 
 interface ProfileDropdownProps {
   onNavigateToProfileTab?: () => void;
+  watchlistCount?: number;
 }
 
-export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropdownProps) {
+export default function ProfileDropdown({ onNavigateToProfileTab, watchlistCount }: ProfileDropdownProps) {
   const {
     user,
     activeProfile,
@@ -64,8 +65,8 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
         {/* Profile / Avatar Trigger Button */}
         <button
           onClick={handleToggle}
-          aria-label={user ? (activeProfile?.name || "Mon Compte") : "Connexion"}
-          title={user ? (activeProfile?.name || "Mon Compte") : "Connexion"}
+          aria-label={user ? (activeProfile?.name || "My Account") : "Sign In"}
+          title={user ? (activeProfile?.name || "My Account") : "Sign In"}
           className={`relative flex items-center justify-center transition-all cursor-pointer group focus:outline-none ${
             user
               ? "w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full overflow-hidden border border-amber-400/40 hover:border-amber-400 hover:scale-105 active:scale-95 shadow-md"
@@ -80,6 +81,11 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
             />
           ) : (
             <UserIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
+          )}
+          {watchlistCount !== undefined && watchlistCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-[8px] text-white font-mono rounded-full flex items-center justify-center border border-black font-extrabold shadow-sm animate-pulse">
+              {watchlistCount}
+            </span>
           )}
         </button>
 
@@ -108,7 +114,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="text-xs font-bold text-white truncate font-cinzel">
-                          {activeProfile?.name || "Mon Profil"}
+                          {activeProfile?.name || "My Profile"}
                         </h4>
                         {currentAvatarInfo && (
                           <p className="text-[10px] text-amber-400 font-semibold truncate">
@@ -130,7 +136,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full mt-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-all cursor-pointer group shadow-sm"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
-                      <span>Changer d'avatar</span>
+                      <span>Change avatar</span>
                     </button>
                   </div>
 
@@ -144,7 +150,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                     >
                       <Film className="w-4 h-4 text-zinc-400" />
-                      <span>Mon Profil & Historique</span>
+                      <span>My Profile & History</span>
                     </button>
 
                     <button
@@ -155,7 +161,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                     >
                       <Bookmark className="w-4 h-4 text-zinc-400" />
-                      <span>Ma Liste</span>
+                      <span>My Watchlist</span>
                     </button>
 
                     <button
@@ -166,7 +172,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                     >
                       <Heart className="w-4 h-4 text-zinc-400" />
-                      <span>Mes Favoris</span>
+                      <span>My Favorites</span>
                     </button>
                   </div>
 
@@ -180,7 +186,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer font-medium"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>Se déconnecter</span>
+                      <span>Sign out</span>
                     </button>
                   </div>
                 </>
@@ -190,10 +196,10 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                   <div className="p-3 space-y-2 text-center">
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider">
                       <Sparkles className="w-3 h-3" />
-                      <span>Espace Personnel</span>
+                      <span>Personal Space</span>
                     </div>
                     <p className="text-[11px] text-zinc-400 font-sans leading-relaxed">
-                      Connectez-vous pour choisir votre avatar culte et synchroniser vos favoris.
+                      Sign in to select your cult avatar and sync your favorites.
                     </p>
                     <div className="space-y-1.5 pt-1">
                       <button
@@ -204,7 +210,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                         className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer font-['Montserrat',sans-serif]"
                       >
                         <LogIn className="w-3.5 h-3.5" />
-                        <span>Se connecter</span>
+                        <span>Sign in</span>
                       </button>
                       <button
                         onClick={() => {
@@ -214,7 +220,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                         className="w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-zinc-300 hover:text-white text-xs font-semibold transition-all cursor-pointer"
                       >
                         <UserPlus className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>Créer un compte</span>
+                        <span>Create account</span>
                       </button>
                     </div>
                   </div>
@@ -229,7 +235,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                     >
                       <Film className="w-4 h-4 text-zinc-500" />
-                      <span>Mon Profil & Historique</span>
+                      <span>My Profile & History</span>
                     </button>
                     <button
                       onClick={() => {
@@ -240,7 +246,7 @@ export default function ProfileDropdown({ onNavigateToProfileTab }: ProfileDropd
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-neutral-900 transition-colors cursor-pointer"
                     >
                       <Bookmark className="w-4 h-4 text-zinc-500" />
-                      <span>Ma Liste</span>
+                      <span>My Watchlist</span>
                     </button>
                   </div>
                 </>

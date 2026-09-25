@@ -71,7 +71,7 @@ export default function MovieDetailView({
             setEpisodes(Array.from({ length: count }, (_, i) => ({
               id: i + 1,
               episode_number: i + 1,
-              name: `Épisode ${i + 1}`,
+              name: `Episode ${i + 1}`,
               overview: "",
               still_path: null
             })));
@@ -84,7 +84,7 @@ export default function MovieDetailView({
           setEpisodes(Array.from({ length: count }, (_, i) => ({
             id: i + 1,
             episode_number: i + 1,
-            name: `Épisode ${i + 1}`,
+            name: `Episode ${i + 1}`,
             overview: "",
             still_path: null
           })));
@@ -100,7 +100,7 @@ export default function MovieDetailView({
             return Array.from({ length: count }, (_, i) => ({
               id: i + 1,
               episode_number: i + 1,
-              name: `Épisode ${i + 1}`,
+              name: `Episode ${i + 1}`,
               overview: "",
               still_path: null
             }));
@@ -259,7 +259,7 @@ export default function MovieDetailView({
               {fullMovie.isTv && fullMovie.seasons && (
                 <>
                   <span>•</span>
-                  <span>{fullMovie.seasons.length} Seasons</span>
+                  <span>{fullMovie.seasons.length} Season{fullMovie.seasons.length > 1 ? "s" : ""}</span>
                 </>
               )}
               {fullMovie.originalLanguage && (
@@ -292,7 +292,7 @@ export default function MovieDetailView({
                   className="inline-flex items-center gap-2.5 gold-button px-6 py-3 sm:px-8 sm:py-3.5 [@media(max-height:500px)_and_(orientation:landscape)]:px-4 [@media(max-height:500px)_and_(orientation:landscape)]:py-2 rounded-full text-[13px] [@media(max-height:500px)_and_(orientation:landscape)]:text-[11px] tracking-widest uppercase transition-all duration-200 active:scale-95 cursor-pointer font-bold"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  {fullMovie.isTv ? (lastWatched ? `PLAY S${String(lastWatched.season).padStart(2, '0')}E${String(lastWatched.episode).padStart(2, '0')}` : `PLAY S${String(selectedSeason || 1).padStart(2, '0')}E01`) : 'Play'}
+                  {fullMovie.isTv ? (lastWatched ? `PLAY S${String(lastWatched.season).padStart(2, '0')}E${String(lastWatched.episode).padStart(2, '0')}` : `PLAY S${String(selectedSeason || 1).padStart(2, '0')}E01`) : 'Watch'}
                 </button>
                 
                 <button onClick={() => setShowTrailerModal(true)} className="inline-flex items-center gap-2.5 bg-zinc-800/80 hover:bg-zinc-700/80 text-white px-6 py-3 sm:px-8 sm:py-3.5 [@media(max-height:500px)_and_(orientation:landscape)]:px-4 [@media(max-height:500px)_and_(orientation:landscape)]:py-2 rounded-full text-[13px] [@media(max-height:500px)_and_(orientation:landscape)]:text-[11px] tracking-widest uppercase transition-all duration-200 active:scale-95 cursor-pointer font-bold border border-zinc-700/50 hover:border-zinc-500/50">
@@ -300,7 +300,7 @@ export default function MovieDetailView({
                   TRAILER
                 </button>
                 
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDownloadUrlToConfirm(getDownloadUrl()); }} className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-zinc-800/80 hover:bg-zinc-700/80 text-white rounded-full transition-all active:scale-95 cursor-pointer border border-zinc-700/50 hover:border-zinc-500/50 shrink-0" title="Télécharger">
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDownloadUrlToConfirm(getDownloadUrl()); }} className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-zinc-800/80 hover:bg-zinc-700/80 text-white rounded-full transition-all active:scale-95 cursor-pointer border border-zinc-700/50 hover:border-zinc-500/50 shrink-0" title="Download">
                   <Download className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
@@ -312,7 +312,7 @@ export default function MovieDetailView({
                       ? "bg-amber-500 text-black border-amber-400 font-bold shadow-lg shadow-amber-500/20"
                       : "bg-neutral-800/80 hover:bg-neutral-700/80 text-white border-neutral-700/50 hover:border-neutral-500/50"
                   }`}
-                  title={isInWatchlist(String(fullMovie.id)) ? "Retirer de ma liste" : "Ajouter à ma liste"}
+                  title={isInWatchlist(String(fullMovie.id)) ? "Remove from my list" : "Add to my list"}
                 >
                   {isInWatchlist(String(fullMovie.id)) ? <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : <Plus className="w-5 h-5 sm:w-6 sm:h-6" />}
                 </button>
@@ -325,7 +325,7 @@ export default function MovieDetailView({
                       ? "bg-rose-600/90 text-white border-rose-500 shadow-lg shadow-rose-600/30"
                       : "bg-neutral-800/80 hover:bg-neutral-700/80 text-zinc-300 hover:text-rose-400 border-neutral-700/50 hover:border-neutral-500/50"
                   }`}
-                  title={isFavorite(String(fullMovie.id)) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  title={isFavorite(String(fullMovie.id)) ? "Remove from favorites" : "Add to favorites"}
                 >
                   <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isFavorite(String(fullMovie.id)) ? "fill-current text-white" : ""}`} />
                 </button>
@@ -337,7 +337,7 @@ export default function MovieDetailView({
                   onClick={() => setExpandedSection(expandedSection === 'casting' ? null : 'casting')}
                   className="mt-3 sm:mt-4 px-3 py-1.5 sm:px-4 sm:py-2 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2 rounded-lg cursor-pointer border border-zinc-800/50 backdrop-blur-sm w-fit"
                 >
-                  CASTING
+                  CAST
                   <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${expandedSection === 'casting' ? 'rotate-180' : ''}`} />
                 </button>
               )}
@@ -442,7 +442,7 @@ export default function MovieDetailView({
                         type="button"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDownloadUrlToConfirm(getEpisodeDownloadUrl(selectedSeason, ep.episode_number)); }}
                         className="p-2 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all flex items-center justify-center border border-amber-500/20 hover:scale-110 cursor-pointer"
-                        title="Télécharger"
+                        title="Download"
                       >
                         <Download className="w-4 h-4" />
                       </button>
@@ -499,7 +499,7 @@ export default function MovieDetailView({
       {fullMovie.similar && fullMovie.similar.length > 0 && (
         <div className="max-w-[2000px] w-full mx-auto px-4 sm:px-8 mt-6 sm:mt-12 mb-20 space-y-2 text-left">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-widest">Similar Content</h3>
+            <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-widest">Similar Titles</h3>
             <div className="flex gap-2">
               <button onClick={() => { const el = document.getElementById('similar-scroll'); if (el) el.scrollBy({ left: -300, behavior: 'smooth' }); }} className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 transition-colors cursor-pointer text-white"><ChevronLeft className="w-5 h-5" /></button>
               <button onClick={() => { const el = document.getElementById('similar-scroll'); if (el) el.scrollBy({ left: 300, behavior: 'smooth' }); }} className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 transition-colors cursor-pointer text-white"><ChevronRight className="w-5 h-5" /></button>
@@ -572,7 +572,7 @@ export default function MovieDetailView({
             </div>
             <h3 className="text-lg font-bold text-white mb-2 font-forum tracking-wide">External Link</h3>
             <p className="text-zinc-400 text-sm mb-6">
-              These links are provided by external services. Use at your own discretion.
+              These links are provided by third-party services. Use them at your discretion.
             </p>
             <div className="flex w-full gap-3">
               <button 
@@ -588,7 +588,7 @@ export default function MovieDetailView({
                 onClick={() => setDownloadUrlToConfirm(null)}
                 className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-colors"
               >
-                Proceed
+                Continue
               </a>
             </div>
           </div>

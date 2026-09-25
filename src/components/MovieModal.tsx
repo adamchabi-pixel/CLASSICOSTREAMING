@@ -227,7 +227,7 @@ export default function MovieModal({
                   {displayMovie.isTv && displayMovie.seasons && (
                     <>
                       <span>•</span>
-                      <span>{displayMovie.seasons.length} Seasons</span>
+                      <span>{displayMovie.seasons.length} Season{displayMovie.seasons.length > 1 ? "s" : ""}</span>
                     </>
                   )}
                   {displayMovie.originalLanguage && (
@@ -254,10 +254,10 @@ export default function MovieModal({
                   {checkingJellyfin ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin opacity-70" />
-                      Loading
+                      Loading...
                     </>
                   ) : (
-                    "Play Now"
+                    "Watch"
                   )}
                 </button>
               </div>
@@ -314,7 +314,7 @@ export default function MovieModal({
                 {/* Right Column: Spec Sheet */}
                 <div className="space-y-6 bg-neutral-900/40 p-5 sm:p-6 rounded-xl border border-neutral-800/60">
                   <h3 className="text-lg font-forum font-bold text-white tracking-wide uppercase pb-2 border-b border-zinc-800/50">
-                    Technical Sheet
+                    Technical Details
                   </h3>
 
                   <div className="space-y-4 text-sm">
@@ -330,7 +330,7 @@ export default function MovieModal({
                     {/* Director */}
                     <div className="space-y-1 py-1 border-b border-zinc-800/60">
                       <span className="text-zinc-400 block text-xs">Director</span>
-                      <span className="text-white font-semibold font-display text-base">{displayMovie.director || "Unknown Director"}</span>
+                      <span className="text-white font-semibold font-display text-base">{displayMovie.director || "Not specified"}</span>
                     </div>
 
                     {/* Duration */}
@@ -369,7 +369,7 @@ export default function MovieModal({
               {displayMovie.similar && displayMovie.similar.length > 0 && (
                 <div className="mt-8 space-y-4">
                   <h3 className="text-sm font-mono uppercase tracking-widest text-[#f4ecd8] font-bold pb-2 border-b border-zinc-800/50">
-                    Similar Content
+                    Similar Titles
                   </h3>
                   <div className="flex overflow-x-auto gap-3 sm:gap-4 pb-4 no-scrollbar scroll-smooth">
                     {displayMovie.similar.map((sim, idx) => (

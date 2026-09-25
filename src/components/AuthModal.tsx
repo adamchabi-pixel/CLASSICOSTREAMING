@@ -22,15 +22,15 @@ import { useAuth } from "../context/AuthContext";
 import { DEFAULT_AVATARS } from "../lib/supabase";
 
 const MOVIE_GENRES = [
-  "Action & Aventure",
-  "Crime & Mafia",
-  "Science-Fiction",
-  "Drame & Chefs-d'œuvre",
-  "Thriller & Mystère",
-  "Horreur & Frisson",
-  "Comédie & Culte",
-  "Animation & Fantastique",
-  "Western & Historique"
+  "Action & Adventure",
+  "Crime & Gangster",
+  "Science Fiction",
+  "Drama & Masterpieces",
+  "Thriller & Mystery",
+  "Horror & Suspense",
+  "Comedy & Cult",
+  "Animation & Fantasy",
+  "Western & History"
 ];
 
 export default function AuthModal() {
@@ -124,11 +124,11 @@ export default function AuthModal() {
       return;
     }
     if (!password || password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters long.");
+      setErrorMsg("Password must be at least 6 characters.");
       return;
     }
     if (!favoriteGenre) {
-      setErrorMsg("Please select your favorite movie genre.");
+      setErrorMsg("Please choose your preferred genre.");
       return;
     }
 
@@ -149,7 +149,7 @@ export default function AuthModal() {
         if (error) {
           setErrorMsg(error.message || "Invalid credentials. Please verify your email and password.");
         } else {
-          setSuccessMsg("Signed in successfully! Welcome back.");
+          setSuccessMsg("Signed in successfully! Welcome back to Classico.");
           setTimeout(() => {
             handleClose();
           }, 600);
@@ -171,9 +171,9 @@ export default function AuthModal() {
             msg.toLowerCase().includes("quota")
           ) {
             setIsRateLimited(true);
-            setErrorMsg("Email verification rate limit reached. Click below to continue directly:");
+            setErrorMsg("Email limit reached. Click below to continue directly:");
           } else {
-            setErrorMsg(msg || "Failed to create account. Please try again.");
+            setErrorMsg(msg || "Account creation failed. Please try again.");
           }
         } else {
           setSuccessMsg(`Welcome to Classico, ${username.trim() || 'Cinephile'}! Your profile is ready.`);
@@ -278,10 +278,10 @@ export default function AuthModal() {
             <div className="mb-5 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-zinc-300 space-y-3 animate-in fade-in">
               <div className="flex items-center gap-2 text-amber-400 font-bold font-['Montserrat',sans-serif] tracking-wider uppercase">
                 <Sparkles className="w-4 h-4" />
-                <span>Instant Access Available</span>
+                <span>Immediate Access Available</span>
               </div>
               <p className="text-[11px] text-zinc-400 leading-relaxed text-left">
-                Supabase email verification is rate-limited on the free tier. You can continue right away with your chosen character avatar:
+                Email verification has reached its temporary limit. You can continue immediately with your chosen avatar:
               </p>
               <button
                 type="button"
@@ -292,7 +292,7 @@ export default function AuthModal() {
                     selectedAvatarUrl, 
                     favoriteGenre
                   );
-                  setSuccessMsg(`Welcome, ${username.trim() || 'Alex'}! Profile created.`);
+                  setSuccessMsg(`Welcome, ${username.trim() || 'Film Lover'}! Profile activated.`);
                   setTimeout(() => {
                     handleClose();
                   }, 800);
@@ -300,7 +300,7 @@ export default function AuthModal() {
                 className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-500/20 active:scale-95"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Continue Instantly</span>
+                <span>Continue Immediately</span>
               </button>
             </div>
           )}
@@ -316,7 +316,7 @@ export default function AuthModal() {
           {mode === "login" && (
             <div>
               <p className="text-xs text-zinc-400 font-sans text-center mb-5 max-w-sm mx-auto">
-                Access your personal watch history, resume playback, and manage favorites.
+                Access your watch history, resume current titles, and manage your favorites.
               </p>
 
               <form onSubmit={handleFinalSubmit} className="space-y-4">
@@ -393,7 +393,7 @@ export default function AuthModal() {
                     onClick={() => switchMode("signup")}
                     className="text-amber-400 hover:underline font-semibold cursor-pointer ml-1"
                   >
-                    Sign up
+                    Create an account
                   </button>
                 </p>
               </div>
@@ -404,7 +404,7 @@ export default function AuthModal() {
           {mode === "signup" && signupStep === "form" && (
             <div>
               <p className="text-xs text-zinc-400 font-sans text-center mb-5 max-w-sm mx-auto">
-                Create your account. You'll choose your character avatar on the next step.
+                Create your account. You'll choose your iconic movie avatar in the next step.
               </p>
 
               <form onSubmit={handleProceedToAvatar} className="space-y-3.5">
@@ -467,7 +467,7 @@ export default function AuthModal() {
                       minLength={6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="•••••••• (min 6 chars)"
+                      placeholder="•••••••• (min 6 characters)"
                       autoComplete="new-password"
                       data-lpignore="true"
                       className="w-full bg-neutral-900/80 border border-neutral-800 focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 rounded-xl pl-3.5 pr-9 py-2 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
@@ -487,7 +487,7 @@ export default function AuthModal() {
                 <div className="space-y-1 text-left">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-300 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
                     <Clapperboard className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Favorite Movie Genre</span>
+                    <span>Favorite Genre</span>
                   </label>
                   <div className="relative">
                     <select
@@ -551,10 +551,10 @@ export default function AuthModal() {
               {/* Title */}
               <div className="text-center">
                 <h3 className="font-['Montserrat',sans-serif] text-base font-bold text-white tracking-wide uppercase">
-                  Choose Your Avatar
+                  Choose your Avatar
                 </h3>
                 <p className="text-[11px] text-zinc-400 mt-0.5">
-                  Select your cult icon (scroll to browse all {DEFAULT_AVATARS.length})
+                  Select your cult character ({DEFAULT_AVATARS.length} icons available)
                 </p>
               </div>
 
@@ -577,7 +577,7 @@ export default function AuthModal() {
                     </span>
                   </div>
                   <p className="text-[10px] text-zinc-400 truncate mt-0.5">
-                    {selectedAvatarInfo.name} • {selectedAvatarInfo.category}
+                    {selectedAvatarInfo.name} • {selectedAvatarInfo.category === "Series" ? "Series" : "Movie"}
                   </p>
                 </div>
               </div>
@@ -585,7 +585,7 @@ export default function AuthModal() {
               {/* Filter tabs (All, Movies, Series) */}
               <div className="flex items-center justify-between px-0.5">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-                  Icons ({DEFAULT_AVATARS.length})
+                  Avatars ({DEFAULT_AVATARS.length})
                 </span>
                 <div className="flex items-center gap-1">
                   <button
@@ -689,7 +689,7 @@ export default function AuthModal() {
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
-                    <span>CONFIRM AVATAR & COMPLETE SIGN UP</span>
+                    <span>CONFIRM AVATAR & FINISH</span>
                   </>
                 )}
               </button>

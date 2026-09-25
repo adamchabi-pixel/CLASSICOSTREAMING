@@ -15,6 +15,7 @@ import { COLLECTIONS as RAW_COLLECTIONS, Movie, Collection } from "./data";
 const COLLECTIONS: Collection[] = [...RAW_COLLECTIONS].sort((a, b) => { if (a.id === "trending-now") return -1; if (b.id === "trending-now") return 1; return a.title.localeCompare(b.title); });
 
 import MovieCard from "./components/MovieCard";
+import { MomentumCarousel } from "./components/MomentumCarousel";
 import LibraryView from "./components/LibraryView";
 const MovieModal = React.lazy(() => import("./components/MovieModal"));
 import MovieDetailView from "./components/MovieDetailView";
@@ -214,6 +215,10 @@ function sortSagaMovies(sagaId: string, movies: Movie[]): Movie[] {
       return m.year;
     };
     return list.sort((a, b) => getRockyScore(a) - getRockyScore(b));
+  }
+
+  if (sagaId === "trending-now") {
+    return list;
   }
 
   return list.sort((a, b) => a.year - b.year);
@@ -675,23 +680,29 @@ const isAnimeOrAdultKeyword = (q: string) => {
 export default function App() {
 
 
-  const [asyncData, setAsyncData] = useState<{all: any[], imported: any[], hero: any} | null>(null);
+  const [asyncData, setAsyncData] = useState<{all: any[], imported: any[]} | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      import('./data/all_movies'),
-      import('./data/imported_movies'),
-      import('./data/hero_movies')
-    ]).then(([all, imported, hero]) => {
-      setAsyncData({
-        all: all.allMoviesData,
-        imported: imported.importedMoviesData,
-        hero: hero.heroMoviesData
+    const loadCatalogs = () => {
+      Promise.all([
+        import('./data/all_movies'),
+        import('./data/imported_movies')
+      ]).then(([all, imported]) => {
+        setAsyncData({
+          all: all.allMoviesData,
+          imported: imported.importedMoviesData
+        });
+        if (typeof window !== 'undefined') {
+          setTimeout(() => sessionStorage.removeItem('returning_from_ad'), 100);
+        }
       });
-      if (typeof window !== 'undefined') {
-        setTimeout(() => sessionStorage.removeItem('returning_from_ad'), 100);
-      }
-    });
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(loadCatalogs, { timeout: 800 });
+    } else {
+      setTimeout(loadCatalogs, 20);
+    }
   }, []);
 
   const [tmdbCache, setTmdbCache] = useState<Movie[]>(() => {
@@ -722,7 +733,10 @@ export default function App() {
   }, []);
 
   const allMoviesBase = React.useMemo(() => {
-    const combined = (asyncData ? [...asyncData.imported, ...asyncData.all] : []).filter(m => m && !isAnimeOrAdult(m as unknown as Movie));
+    const combined = (asyncData 
+      ? [...asyncData.imported, ...asyncData.all] 
+      : [...COLLECTIONS.flatMap(c => c.movies), ...heroMoviesData.heroes]
+    ).filter(m => m && !isAnimeOrAdult(m as unknown as Movie));
     const groups = new Map<string, any[]>();
     
     combined.forEach(m => {
@@ -894,34 +908,29 @@ export default function App() {
   }, [user]);
   
   const [expandedCollections, setExpandedCollections] = useState<Record<string, boolean>>({});
-  const isHeroLoading = !asyncData;
+  const isHeroLoading = false;
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [routeScrollPositions, setRouteScrollPositions] = useState<Record<string, number>>({});
     
-  const heroMovies = asyncData ? asyncData.hero.heroes : [];
-  const heroMovie = heroMovies[currentHeroIndex] || null;
+  const heroMovies = heroMoviesData.heroes;
+  const heroMovie: any = heroMovies[currentHeroIndex] || heroMovies[0] || null;
   const useTextTitleForHero = false;
   const setUseTextTitleForHero = (val: boolean) => {};
   const isJellyfinLoading = false;
   const jellyfinConfig = null;
 
-  // Preload all hero backdrops and logos in advance so carousel transitions are 100% instantaneous and lag-free
+  // Preload only active hero backdrop in advance
   useEffect(() => {
     if (heroMovies && heroMovies.length > 0) {
-      heroMovies.forEach((m) => {
-        if (m.backdropUrl) {
-          const img = new window.Image();
-          img.src = m.backdropUrl;
-        }
-        if (m.logoUrl) {
-          const img = new window.Image();
-          img.src = m.logoUrl;
-        }
-      });
+      const active = heroMovies[currentHeroIndex] || heroMovies[0];
+      if (active?.backdropUrl) {
+        const img = new window.Image();
+        img.src = active.backdropUrl;
+      }
     }
-  }, [heroMovies]);
+  }, [heroMovies, currentHeroIndex]);
 
   const loadProgress = () => {
     let savedProgress = localStorage.getItem("classico_progress");
@@ -1042,7 +1051,7 @@ export default function App() {
   // Dynamically map movies into collections & genres by checking server presence
   const mappedCollections = React.useMemo(() => {
 
-    if (!allMoviesBase || allMoviesBase.length === 0) return [];
+    if (!allMoviesBase || allMoviesBase.length === 0) return COLLECTIONS;
 
     const matchedServersMovieIds = new Set<string>();
 
@@ -1075,8 +1084,8 @@ export default function App() {
               providerIds_unused: match.providerIds || movie.providerIds,
               isTv: match.isTv !== undefined ? match.isTv : movie.isTv,
               streamUrl: match.streamUrl,
-              posterUrl: match.posterUrl || movie.posterUrl,
-              backdropUrl: match.backdropUrl || movie.backdropUrl,
+              posterUrl: (movie.posterUrl && movie.posterUrl.startsWith("http")) ? movie.posterUrl : (match.posterUrl || movie.posterUrl),
+              backdropUrl: (movie.backdropUrl && movie.backdropUrl.startsWith("http")) ? movie.backdropUrl : (match.backdropUrl || movie.backdropUrl),
               year: match.year || movie.year,
               originalTitle: match.originalTitle || movie.originalTitle,
               studios: match.studios || movie.studios,
@@ -1306,50 +1315,6 @@ export default function App() {
       };
     }).filter((col) => col.movies.length > 0);
   }, [allMoviesBase, collectionMods]);
-
-  // SAGA COMPLETENESS CHECKLIST VALIDATION ENGINE
-  const sagaCompletenessList = React.useMemo(() => {
-    if (!allMoviesBase || allMoviesBase.length === 0) return [];
-
-    const titleToMovieMap = new Map<string, Movie>();
-    allMoviesBase.forEach(jf => {
-      const ct = cleanTitle(jf.title);
-      if (ct) titleToMovieMap.set(ct, jf);
-    });
-
-    const fastCheckOwned = (expectedMovie: Movie) => {
-       const ct = cleanTitle(expectedMovie.title);
-       if (ct && titleToMovieMap.has(ct)) return true;
-       return allMoviesBase.some(jf => isMovieMatch(expectedMovie.title, jf.title));
-    };
-
-    return COLLECTIONS.map(collection => {
-      const ownedTitles: string[] = [];
-      const missingMovies: Array<{ title: string; year: number }> = [];
-
-      collection.movies.forEach(expectedMovie => {
-        const isOwned = fastCheckOwned(expectedMovie);
-        if (isOwned) {
-          ownedTitles.push(expectedMovie.title);
-        } else {
-          missingMovies.push({ title: expectedMovie.title, year: expectedMovie.year });
-        }
-      });
-
-      const totalExpected = collection.movies.length;
-      const countOwned = ownedTitles.length;
-      const percentage = totalExpected > 0 ? Math.round((countOwned / totalExpected) * 100) : 100;
-
-      return {
-        id: collection.id,
-        title: collection.title,
-        countOwned,
-        totalExpected,
-        percentage,
-        missingMovies
-      };
-    });
-  }, [allMoviesBase]);
 
   const toggleCollection = (collectionId: string) => {
     setExpandedCollections(prev => ({
@@ -1648,16 +1613,35 @@ export default function App() {
     handleAddToHistory(movie);
   };
 
-  // Carousel smooth scrolling helper
+  // Carousel smooth scrolling helper with momentum friction braking ("normal au début après ça freine")
   const scrollCarousel = (collectionId: string, direction: "left" | "right") => {
     const container = carouselRefs.current[collectionId];
-    if (container) {
-      const scrollAmt = container.clientWidth * 0.75;
-      container.scrollBy({
-        left: direction === "left" ? -scrollAmt : scrollAmt,
-        behavior: "smooth"
-      });
-    }
+    if (!container) return;
+
+    const scrollAmt = container.clientWidth * 0.78 * (direction === "left" ? -1 : 1);
+    const startScroll = container.scrollLeft;
+    const targetScroll = Math.max(0, Math.min(container.scrollWidth - container.clientWidth, startScroll + scrollAmt));
+    const distance = targetScroll - startScroll;
+    if (Math.abs(distance) < 2) return;
+
+    const duration = 650;
+    const startTime = performance.now();
+
+    // Ease-out Quart deceleration: brisk linear travel at start, then pronounced smooth braking to a halt
+    const easeOutBraking = (t: number) => 1 - Math.pow(1 - t, 4);
+
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const ease = easeOutBraking(progress);
+      container.scrollLeft = startScroll + distance * ease;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
   };
 
   // Continuous scroll animation removed for max-fluidity, standard native sub-millisecond scrolling with chevrons is retained.
@@ -1736,28 +1720,6 @@ export default function App() {
 
     return Array.from(canonicalMap.values()).filter(m => !isAnimeOrAdult(m));
   }, [mappedCollections, allMoviesBase, tmdbCache, heroMovies, getCanonicalMovieKey]);
-
-    const unmatchedMovies = React.useMemo(() => {
-    if (!allMovies || allMovies.length === 0) return [];
-    
-    const inCollections = new Set<string>();
-    mappedCollections.forEach(c => c.movies.forEach(m => inCollections.add(m.id)));
-
-    return allMovies.filter(m => {
-      if (!m || !m.id) return false;
-      if (inCollections.has(m.id)) return false;
-      const t = String(m.title || m.originalTitle || "").toLowerCase();
-      if (t.includes("john wick")) return false;
-      if (t.includes("batman begins")) return false;
-      if (t.includes("fast and furious") || t.includes("fast & furious") || t.includes("furious 7") || t.includes("fast 5") || t.includes("fast x")) return false;
-      if (t.includes("devil wears prada 2") || t.includes("le diable s'habille en prada 2")) return false;
-      if (t.includes("bronx tale") || t.includes("il était une fois dans le bronx")) return false;
-      if (t.includes("21 jump street") || t.includes("22 jump street") || t.includes("superbad") || t.includes("grown ups") || t.includes("white chicks")) return false;
-      if (t.includes("memories of murder")) return false;
-      return true;
-    });
-  }, [allMovies, mappedCollections]);
-
 
   const [isSearchingTmdb, setIsSearchingTmdb] = useState(false);
 
@@ -2310,29 +2272,10 @@ export default function App() {
     return list;
   }, [history, findMovieById, getCanonicalMovieKey]);
 
-  if (!asyncData) {
-    if (typeof window !== 'undefined' && sessionStorage.getItem('returning_from_ad') === 'true') {
-      return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center">
-          <div className="w-16 h-16 rounded-full border-4 border-[#FFD700] border-t-transparent animate-spin drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]"></div>
-        </div>
-      );
-    }
+  if (typeof window !== 'undefined' && sessionStorage.getItem('returning_from_ad') === 'true') {
     return (
-      <div id="startup-screen" style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',height:'100vh',backgroundColor:'#000',pointerEvents:'none',userSelect:'none'}}>
-        <div style={{position:'relative',overflow:'hidden',display:'flex',alignItems:'center'}}>
-          <span style={{fontFamily:"'Cinzel',serif",fontWeight:700,fontSize:'1.875rem',letterSpacing:'0.22em',textTransform:'uppercase',lineHeight:1,background:'linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%)',backgroundSize:'200% auto',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
-            CLASSICO
-          </span>
-        </div>
-        <span style={{fontFamily:"'Pinyon Script',cursive",display:'block',fontSize:'1.25rem',color:'#f4ecd8',lineHeight:1,marginTop:'-2px',userSelect:'none',textAlign:'center',transform:'translateX(-3px)',filter:'drop-shadow(0 0 4px rgba(244,236,216,0.2))'}}>
-          The Best
-        </span>
-        <div id="startup-screen" style={{display:'flex',gap:'8px',marginTop:'32px'}}>
-          <div style={{width:'8px',height:'8px',borderRadius:'50%',backgroundColor:'#fcf6ba',boxShadow:'0 0 10px rgba(252,246,186,0.8)',animation:'illuminate 1.5s infinite ease-in-out both',animationDelay:'0s'}}></div>
-          <div style={{width:'8px',height:'8px',borderRadius:'50%',backgroundColor:'#fcf6ba',boxShadow:'0 0 10px rgba(252,246,186,0.8)',animation:'illuminate 1.5s infinite ease-in-out both',animationDelay:'-1.0s'}}></div>
-          <div style={{width:'8px',height:'8px',borderRadius:'50%',backgroundColor:'#fcf6ba',boxShadow:'0 0 10px rgba(252,246,186,0.8)',animation:'illuminate 1.5s infinite ease-in-out both',animationDelay:'-0.5s'}}></div>
-        </div>
+      <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center items-center">
+        <div className="w-16 h-16 rounded-full border-4 border-[#FFD700] border-t-transparent animate-spin drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]"></div>
       </div>
     );
   }
@@ -2395,7 +2338,7 @@ export default function App() {
                       id="global-search-input"
                       type="text"
                       autoFocus
-                      placeholder="Search movie, director..."
+                      placeholder="Search movies, series, directors..."
                       value={searchInput}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -2463,7 +2406,7 @@ export default function App() {
             {/* Mobile Actions: Notifications & Profile & Hamburger (hidden on md) */}
             <div className="flex md:hidden items-center gap-1.5 sm:gap-2 shrink-0">
               <NotificationDropdown />
-              <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} />
+              <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} watchlistCount={watchlist.length} />
               <button 
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent("close-nav-dropdowns"));
@@ -2483,9 +2426,8 @@ export default function App() {
                 { id: "accueil", label: "Home", icon: Compass },
                 { id: "collections", label: "Movies", icon: FilmIcon },
                 { id: "series", label: "Series", icon: Tv },
-                { id: "recommended", label: "Recommended", icon: Sparkles },
-                { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" },
-                { id: "profil", label: "My Profile", icon: User }
+                { id: "recommended", label: "Recommendations", icon: Sparkles },
+                { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" }
               ].map((tab) => {
                 const IconComp = tab.icon;
                 const isActive = activeTab === tab.id && searchQuery === "";
@@ -2509,11 +2451,6 @@ export default function App() {
                   >
                     <IconComp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     {tab.label}
-                    {tab.id === "profil" && watchlist.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-[8px] text-white font-mono rounded-full flex items-center justify-center border border-black font-extrabold shadow-sm animate-pulse">
-                        {watchlist.length}
-                      </span>
-                    )}
                     {isActive && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />}
                   </button>
                 );
@@ -2521,7 +2458,7 @@ export default function App() {
 
               <div className="flex items-center gap-2 ml-1 sm:ml-2 pl-2 border-l border-zinc-800/80">
                 <NotificationDropdown />
-                <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} />
+                <ProfileDropdown onNavigateToProfileTab={() => navigateTo("/profil")} watchlistCount={watchlist.length} />
               </div>
             </nav>
           </div>
@@ -2535,19 +2472,19 @@ export default function App() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="md:hidden absolute top-[calc(100%+0.5rem)] right-4 w-48 bg-black/75 backdrop-blur-md overflow-hidden border border-white/5 rounded-2xl shadow-2xl origin-top-right"
+              className="md:hidden absolute top-[calc(100%+0.5rem)] right-4 w-56 sm:w-64 bg-black/85 backdrop-blur-md overflow-hidden border border-white/10 rounded-2xl shadow-2xl origin-top-right z-50"
             >
               <nav className="flex flex-col py-2 px-2 gap-1">
                 {[
                   { id: "accueil", label: "Home", icon: Compass },
                   { id: "collections", label: "Movies", icon: FilmIcon },
                   { id: "series", label: "Series", icon: Tv },
-                  { id: "recommended", label: "Recommended", icon: Sparkles },
-                  { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" },
-                  { id: "profil", label: "My Profile", icon: User }
+                  { id: "recommended", label: "Recommendation for you", icon: Sparkles },
+                  { id: "animco", label: "Animco", icon: Handshake, external: "https://www.animcostreaming.com" }
                 ].map((tab) => {
                   const IconComp = tab.icon;
                   const isActive = activeTab === tab.id && searchQuery === "";
+                  const isRec = tab.id === "recommended";
                   return (
                     <button
                       key={tab.id}
@@ -2560,14 +2497,17 @@ export default function App() {
                         navigateTo(tab.id === "accueil" ? "/" : `/${tab.id}`);
                         setSearchQuery(""); setSearchInput("");
                       }}
-                      className={`relative flex items-center gap-3 px-3 py-2.5 rounded-none text-sm font-medium tracking-wide transition-all duration-300 w-full text-left ${
+                      className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium tracking-wide transition-all duration-300 w-full text-left ${
                         isActive
-                          ? "text-white"
+                          ? "text-white bg-white/10 font-bold"
                           : "text-zinc-300 hover:text-white hover:bg-white/5"
                       }`}
                     >
-                      <IconComp strokeWidth={2} className={`w-4 h-4 ${isActive ? "text-white" : "text-zinc-400"}`} />
-                      {tab.label}
+                      <IconComp
+                        strokeWidth={isRec ? 2.5 : 2}
+                        className={`${isRec ? "w-6 h-6 text-amber-400 shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" : `w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-zinc-400"}`}`}
+                      />
+                      <span className={isRec ? "font-semibold text-amber-100" : ""}>{tab.label}</span>
                       {isActive && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />}
                     </button>
                   );
@@ -2608,7 +2548,7 @@ export default function App() {
                 </h2>
                 <div className="flex items-center gap-3">
                   <p className="text-xs sm:text-sm text-zinc-400 font-mono">
-                    {searchedMovies.length} cinematic masterpiece{searchedMovies.length > 1 ? "s" : ""} found
+                    {searchedMovies.length} title{searchedMovies.length > 1 ? "s" : ""} found
                   </p>
                   {isSearchingTmdb && (
                     <div className="w-4 h-4 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin" />
@@ -2616,7 +2556,7 @@ export default function App() {
                 </div>
               </div>
 
-              <ErrorBoundary fallbackTitle="Erreur dans les résultats de recherche" onReset={() => { setSearchQuery(""); setSearchInput(""); }}>
+              <ErrorBoundary fallbackTitle="Error in search results" onReset={() => { setSearchQuery(""); setSearchInput(""); }}>
                 {searchedMovies.length > 0 ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 pt-2 justify-items-center">
                     {searchedMovies.map((movie, idx) => (
@@ -2634,9 +2574,9 @@ export default function App() {
                     <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-850 flex items-center justify-center mx-auto text-zinc-600">
                       <Search className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-display font-bold text-white">No matches found</h3>
+                    <h3 className="text-lg font-display font-bold text-white">No results found</h3>
                     <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed font-sans">
-                      Some of our classic movies are grouped by director or themes. Try for example: <span className="text-amber-400 font-mono">Tarantino</span>, <span className="text-amber-400 font-mono">Nolan</span>, <span className="text-amber-400 font-mono">Star Wars</span> or <span className="text-amber-400 font-mono">Action</span>.
+                      Some of our classics are organized by director or thematic saga. Try searching for: <span className="text-amber-400 font-mono">Tarantino</span>, <span className="text-amber-400 font-mono">Nolan</span>, <span className="text-amber-400 font-mono">Star Wars</span> or <span className="text-amber-400 font-mono">Action</span>.
                     </p>
                   </div>
                 )}
@@ -2652,11 +2592,11 @@ export default function App() {
                       </svg>
                     </div>
                     <p className="text-sm sm:text-base font-sans font-medium text-zinc-200 text-center sm:text-left">
-                      Can't find your movie? <span className="text-white font-semibold">Request it on our discord server</span>
+                      Can't find your movie? <span className="text-white font-semibold">Request it on our Discord server</span>
                     </p>
                   </div>
                   <a
-                    href="https://discord.gg/bGmAvKdWA"
+                    href="https://discord.gg/bzbtZFUpxK"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-sans font-bold px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm transition-all duration-300 shadow-[0_0_15px_rgba(88,101,242,0.3)] hover:shadow-[0_0_25px_rgba(88,101,242,0.5)] shrink-0"
@@ -2778,7 +2718,7 @@ export default function App() {
                                 }}
                                 className="absolute -bottom-5 opacity-0 group-hover:opacity-100 text-[9px] font-sans text-zinc-400 hover:text-white transition-opacity bg-black/80 px-2 py-0.5 rounded border border-white/10 pointer-events-auto"
                               >
-                                Switch to text title 🗸
+                                Show text title 🗸
                               </button>
                             </div>
                           ) : (
@@ -2795,7 +2735,7 @@ export default function App() {
                                   }}
                                   className="absolute -bottom-5 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 text-[9px] text-zinc-400 hover:text-white bg-black/80 border border-white/10 px-2 py-0.5 rounded transition-all cursor-pointer font-sans"
                                 >
-                                  🖼️ View logo
+                                  🖼️ Show logo
                                 </button>
                               )}
                             </div>
@@ -2850,7 +2790,7 @@ export default function App() {
                             className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
                           >
                             <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
-                            Play
+                            Watch
                           </button>
 
                           <button
@@ -2909,10 +2849,10 @@ export default function App() {
                         </button>
                       </div>
 
-                      {/* Horizontal movie items flex row with ultra-fast virtualization */}
-                      <div
+                      {/* Horizontal movie items flex row with momentum braking scroll */}
+                      <MomentumCarousel
                         id={`carousel-container-resume-lecture`}
-                        ref={(el) => {
+                        containerRef={(el) => {
                           carouselRefs.current['resume-lecture'] = el;
                         }}
                         className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
@@ -2927,7 +2867,7 @@ export default function App() {
                             />
                           </LazyVirtualCard>
                         ))}
-                      </div>
+                      </MomentumCarousel>
                     </div>
                   </div>
                 )}
@@ -2952,10 +2892,10 @@ export default function App() {
                           {/* Text Content */}
                           <div className="space-y-0.5 sm:space-y-2">
                             <h3 className="text-[15px] leading-tight sm:text-xl font-sans font-bold tracking-tight text-white flex items-center gap-2">
-                              Join Classico's community!
+                              Join the Classico Community!
                             </h3>
                             <p className="text-[11px] sm:text-[15px] text-zinc-400 font-sans leading-snug sm:leading-relaxed max-w-2xl">
-                              Connect with other movie lovers, report bugs, get updates, suggest movies, and be part of the Classico community.
+                              Connect with fellow cinema lovers, report bugs, discover new releases, request films, and join the Classico journey.
                             </p>
                           </div>
                         </div>
@@ -2963,7 +2903,7 @@ export default function App() {
                         {/* CTA Button */}
                         <div className="flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">
                           <a
-                            href="https://discord.gg/bGmAvKdWA"
+                            href="https://discord.gg/bzbtZFUpxK"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center w-full md:w-auto gap-2 bg-[#5865F2] hover:bg-[#4752C4] text-white font-sans font-bold px-4 py-2.5 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl text-[13px] sm:text-[14px] tracking-wide transition-all duration-300 shadow-[0_0_15px_rgba(88,101,242,0.3)] hover:shadow-[0_0_25px_rgba(88,101,242,0.5)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
@@ -2979,7 +2919,7 @@ export default function App() {
                         STRAIGHT BANGERS
                       </h2>
                       <span className="block font-signature text-[18px] sm:text-[23px] text-[#f4ecd8] leading-none mt-1 filter drop-shadow-[0_0_4px_rgba(244,236,216,0.2)]">
-                        Cinematic Selections
+                        Cinema Selections
                       </span>
                     </div>
 
@@ -2990,7 +2930,7 @@ export default function App() {
                       <div className="flex flex-row items-center sm:items-end justify-between gap-2 sm:gap-3 border-b border-zinc-900 pb-2 sm:pb-3">
                         <div className="space-y-0.5 max-w-[80%]">
                           <span className="text-[8px] sm:text-[9px] font-mono tracking-[2px] sm:tracking-[3px] text-zinc-500 uppercase font-bold">
-                            CINEMATIC COLLECTION • {collection.movies.length} MOVIES
+                            CINEMA COLLECTION • {collection.movies.length} TITLES
                           </span>
                           <h3 className="text-base sm:text-2xl font-cinzel font-bold text-white uppercase tracking-widest leading-tight truncate">
                             {collection.title}
@@ -3017,10 +2957,6 @@ export default function App() {
                         onMouseEnter={() => { hoveredCarousels.current[collection.id] = true; }}
                         onMouseLeave={() => { hoveredCarousels.current[collection.id] = false; }}
                       >
-                        {/* Soft ambient mask on edges */}
-                        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-stone-950 to-transparent z-10 pointer-events-none" />
-                        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-stone-950 to-transparent z-10 pointer-events-none" />
-
                         {/* Navigation chevron triggers */}
                         <div className="absolute inset-y-0 left-2 flex items-center z-20 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-200 pointer-events-none">
                           <button
@@ -3042,10 +2978,10 @@ export default function App() {
                           </button>
                         </div>
 
-                        {/* Horizontal movie items flex row with ultra-fast virtualization */}
-                        <div
+                        {/* Horizontal movie items flex row with momentum braking scroll */}
+                        <MomentumCarousel
                           id={`carousel-container-${collection.id}`}
-                          ref={(el) => {
+                          containerRef={(el) => {
                             carouselRefs.current[collection.id] = el;
                           }}
                           className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
@@ -3054,17 +2990,20 @@ export default function App() {
                             <LazyVirtualCard 
                               key={`${collection.id}-${movie.id}`}
                               priority={idx < 6}
-                              className={collection.id === "trending-now" ? "w-[200px] min-[400px]:w-[240px] sm:w-[300px] aspect-[2/3] mr-12 sm:mr-20" : undefined}
+                              className={collection.id === "trending-now" 
+                                ? "w-[170px] min-[400px]:w-[200px] sm:w-[240px] md:w-[260px] shrink-0 mr-8 sm:mr-12" 
+                                : "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px] shrink-0"}
                             >
                               <MovieCard
                                 movie={movie}
+                                variant="rectangular"
                                 onSelect={(m) => handleOpenMovie(m, false)}
                                 onPlay={(m) => handleOpenMovie(m, false)}
                                 trendingIndex={collection.id === "trending-now" ? idx + 1 : undefined}
                               />
                             </LazyVirtualCard>
                           ))}
-                        </div>
+                        </MomentumCarousel>
                       </div>
                     </div>
                   ))}
@@ -3231,12 +3170,12 @@ export default function App() {
                 <div className="py-20 text-center max-w-sm mx-auto space-y-4">
                   <div className="w-16 h-16 rounded-full bg-red-900/30 border border-red-500/30 flex items-center justify-center mx-auto text-red-500 mb-4"><AlertCircle className="w-8 h-8" /></div>
                   <p className="text-red-400 font-mono text-sm tracking-widest uppercase">{movieLoadError}</p>
-                  <button onClick={() => navigateTo("/")} className="mt-6 px-4 py-2 bg-zinc-800 text-white rounded hover:bg-zinc-700">Go Back</button>
+                  <button onClick={() => navigateTo("/")} className="mt-6 px-4 py-2 bg-zinc-800 text-white rounded hover:bg-zinc-700">Back to Home</button>
                 </div>
               ) : (
                 <div className="py-20 text-center max-w-sm mx-auto space-y-4">
                   <Loader2 className="w-8 h-8 text-amber-500 animate-spin mx-auto mb-4" />
-                  <p className="text-zinc-400 font-mono text-sm tracking-widest uppercase">Loading movie data...</p>
+                  <p className="text-zinc-400 font-mono text-sm tracking-widest uppercase">Loading movie details...</p>
                 </div>
               )}
             </motion.div>
@@ -3249,7 +3188,7 @@ export default function App() {
               className="w-full min-h-screen"
             >
               <ErrorBoundary 
-                fallbackTitle="Interruption de la lecture du film"
+                fallbackTitle="Playback error"
                 onReset={() => navigateTo("/")}
               >
                 <React.Suspense fallback={<div className="w-full h-screen bg-black flex items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-amber-500" /></div>}>
@@ -3314,7 +3253,7 @@ export default function App() {
           CLASSICO
         </div>
         <p className="max-w-md mx-auto leading-relaxed text-[11px] text-zinc-400/80">
-          CLASSICO is a streaming site dedicated to cult movies and legendary cinema collections. All images, metadata, and playback simulators are purely artistic and fictional.
+          CLASSICO is a streaming platform dedicated to cult movies and legendary cinema sagas. All images, metadata, and player simulations are purely artistic and cinephilic.
         </p>
         <div className="flex items-center justify-center gap-4 text-[10px] pt-2">
           <p className="text-zinc-600 font-sans tracking-wide">

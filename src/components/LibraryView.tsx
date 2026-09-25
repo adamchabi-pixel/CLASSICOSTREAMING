@@ -18,8 +18,8 @@ const PLATFORMS = [
 ];
 
 const LANGUAGES = [
-  { id: "en", name: "English", icon: Globe },
   { id: "fr", name: "French", icon: Globe },
+  { id: "en", name: "English", icon: Globe },
   { id: "ja", name: "Japanese", icon: Globe },
   { id: "es", name: "Spanish", icon: Globe },
   { id: "ko", name: "Korean", icon: Globe },
@@ -70,8 +70,8 @@ const TV_GENRES = [
   { id: 10764, name: "Reality", icon: Video },
   { id: 10765, name: "Sci-Fi", icon: Rocket },
   { id: 10766, name: "Soap", icon: Heart },
-  { id: 10767, name: "Talk", icon: Users },
-  { id: 10768, name: "Politics", icon: Landmark },
+  { id: 10767, name: "Talk Show", icon: Users },
+  { id: 10768, name: "War & Politics", icon: Landmark },
   { id: 37, name: "Western", icon: Star }
 ];
 
@@ -296,14 +296,14 @@ export default function LibraryView({ onSelect, onPlay, getProgress, type = 'mov
              ) : errorMsg ? (
                  <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-80">
                     <FilmIcon className="w-16 h-16 text-red-500" />
-                    <h3 className="text-xl font-bold text-red-400">Error Loading Movies</h3>
+                    <h3 className="text-xl font-bold text-red-400">Loading Error</h3>
                     <p className="text-zinc-400 max-w-md">{errorMsg}</p>
                  </div>
              ) : movies.length === 0 ? (
                  <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-50">
                     <FilmIcon className="w-16 h-16 text-zinc-600" />
                     <h3 className="text-xl font-bold text-white">No Results</h3>
-                    <p className="text-zinc-400">Try changing your filters.</p>
+                    <p className="text-zinc-400">Try adjusting your filters.</p>
                   </div>
              ) : (
                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5">

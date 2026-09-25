@@ -68,7 +68,7 @@ export default function LazyVirtualCard({ children, className, priority = false 
       {isIntersecting ? (
         children
       ) : (
-        <div className="w-full h-full rounded-xl bg-neutral-900 border border-neutral-800/40 opacity-30" />
+        <div className="w-full h-full min-h-[180px] aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30" />
       )}
     </div>
   );

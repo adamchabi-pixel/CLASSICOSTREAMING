@@ -162,7 +162,7 @@ export default function RecommendedView({
       .filter(m => m && m.id && m.title)
       .map(m => {
         let score = 65; // base baseline score
-        let mainReason = "Curated Masterpiece";
+        let mainReason = "Must-watch masterpiece";
 
         const movieGenres = (m.genre || []).map(g => g.toLowerCase().trim());
         const movieDirector = (m.director || "").toLowerCase().trim();
@@ -180,7 +180,7 @@ export default function RecommendedView({
         // Selected interactive taste tag match
         if (selectedTasteGenre && movieGenres.some(g => g.includes(selectedTasteGenre.toLowerCase()))) {
           score += 20;
-          mainReason = `Targeted for ${selectedTasteGenre}`;
+          mainReason = `Selected for ${selectedTasteGenre}`;
         }
 
         // Genre affinity
@@ -193,10 +193,10 @@ export default function RecommendedView({
           }
         });
 
-        if (genreMatchCount > 0 && mainReason === "Curated Masterpiece") {
+        if (genreMatchCount > 0 && mainReason === "Must-watch masterpiece") {
           const topG = movieGenres.find(g => tasteProfile.genreWeights[g]);
           if (topG) {
-            mainReason = `Because you like ${topG.charAt(0).toUpperCase() + topG.slice(1)}`;
+            mainReason = `Because you love ${topG.charAt(0).toUpperCase() + topG.slice(1)}`;
           }
         }
 
@@ -210,7 +210,7 @@ export default function RecommendedView({
         const matchedActor = movieCast.find(a => tasteProfile.actorWeights[a]);
         if (matchedActor) {
           score += 10;
-          if (mainReason === "Curated Masterpiece") {
+          if (mainReason === "Must-watch masterpiece") {
             const prettyActor = (m.cast || []).find(c => c.toLowerCase().trim() === matchedActor);
             mainReason = `Starring ${prettyActor || matchedActor}`;
           }
@@ -300,12 +300,139 @@ export default function RecommendedView({
 
   // Interactive Quick Genre Filter options
   const popularTastePills = [
-    { label: "Crime & Mafia", genre: "Crime" },
-    { label: "Sci-Fi Mindbenders", genre: "Science Fiction" },
-    { label: "Action Adrenaline", genre: "Action" },
-    { label: "Cinematic Dramas", genre: "Drama" },
+    { label: "Crime & Gangster", genre: "Crime" },
+    { label: "Science Fiction", genre: "Science Fiction" },
+    { label: "Action & Adrenaline", genre: "Action" },
+    { label: "Unforgettable Drama", genre: "Drama" },
     { label: "Thrillers & Suspense", genre: "Thriller" }
   ];
+
+  // 1. If not logged in, prompt user to create an account for personalized recommendations
+  if (!isLoggedIn) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center space-y-8 flex flex-col items-center justify-center min-h-[70vh]">
+        <div className="relative">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-500/20 via-amber-400/10 to-transparent border border-amber-500/30 flex items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+            <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-amber-400 animate-pulse" />
+          </div>
+          <div className="absolute -inset-4 bg-amber-500/10 blur-2xl -z-10 rounded-full" />
+        </div>
+
+        <div className="space-y-3 max-w-xl">
+          <span className="text-[11px] font-mono uppercase tracking-[3px] text-amber-400 font-bold">
+            Personalized For You
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-cinzel font-black uppercase text-white tracking-wide leading-tight">
+            Create an Account for Personalized Recommendations
+          </h1>
+          <p className="text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
+            Create an account to get movie and series recommendations uniquely tailored to your taste. Track what you watch, save favorites to your watchlist, and unlock AI-powered recommendations that adapt to your viewing habits.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          {onOpenSignUp && (
+            <button
+              onClick={onOpenSignUp}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-sans font-bold text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_40px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            >
+              Create an Account
+            </button>
+          )}
+          {onOpenSignUp && (
+            <button
+              onClick={onOpenSignUp}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 text-white border border-zinc-800 hover:border-zinc-700 font-sans font-semibold text-sm uppercase tracking-wider transition-all cursor-pointer"
+            >
+              Sign In
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-zinc-900 max-w-2xl w-full text-left">
+          <div className="space-y-1">
+            <h4 className="text-xs font-mono font-bold text-amber-400 uppercase">Tailored Suggestions</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">Picks matched to the genres, directors, and eras you enjoy.</p>
+          </div>
+          <div className="space-y-1">
+            <h4 className="text-xs font-mono font-bold text-amber-400 uppercase">Cloud Sync</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">Your watch history and progress synchronize across all your devices.</p>
+          </div>
+          <div className="space-y-1">
+            <h4 className="text-xs font-mono font-bold text-amber-400 uppercase">Match Score %</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">See how closely each movie aligns with your profile in real time.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. If logged in but hasn't watched any movies yet
+  if (watchedMovies.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center space-y-8 flex flex-col items-center justify-center min-h-[70vh]">
+        <div className="relative">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-500/20 via-amber-400/10 to-transparent border border-amber-500/30 flex items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+            <FilmIcon className="w-10 h-10 sm:w-12 sm:h-12 text-amber-400" />
+          </div>
+          <div className="absolute -inset-4 bg-amber-500/10 blur-2xl -z-10 rounded-full" />
+        </div>
+
+        <div className="space-y-3 max-w-xl">
+          <span className="text-[11px] font-mono uppercase tracking-[3px] text-amber-400 font-bold">
+            No Watch History Yet
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-cinzel font-black uppercase text-white tracking-wide leading-tight">
+            Recommendations Activate When You Watch Movies
+          </h1>
+          <p className="text-sm sm:text-base text-zinc-400 font-sans leading-relaxed">
+            Your personalized recommendations will start working once you begin watching movies and series! Start streaming a few titles, and our algorithm will automatically analyze your taste to recommend films you will love.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <button
+            onClick={() => {
+              window.history.pushState({}, "", "/collections");
+              window.dispatchEvent(new PopStateEvent("popstate"));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-sans font-bold text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
+            Explore Movie Catalog
+          </button>
+          <button
+            onClick={() => {
+              window.history.pushState({}, "", "/");
+              window.dispatchEvent(new PopStateEvent("popstate"));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 text-white border border-zinc-800 hover:border-zinc-700 font-sans font-semibold text-sm uppercase tracking-wider transition-all cursor-pointer"
+          >
+            Back to Home
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-zinc-900 max-w-2xl w-full text-left">
+          <div className="space-y-1">
+            <span className="text-xs font-mono font-bold text-amber-400">Step 1</span>
+            <h4 className="text-xs font-bold text-white uppercase">Watch Any Title</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">Pick any film or episode from our curated collections.</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-xs font-mono font-bold text-amber-400">Step 2</span>
+            <h4 className="text-xs font-bold text-white uppercase">Train Your Taste</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">We detect the genres, directors, and styles you enjoy most.</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-xs font-mono font-bold text-amber-400">Step 3</span>
+            <h4 className="text-xs font-bold text-white uppercase">Get Top Matches</h4>
+            <p className="text-xs text-zinc-500 leading-relaxed">Return here anytime for a constantly refreshed list of top picks.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 sm:space-y-12 max-w-[2000px] mx-auto px-4 sm:px-8 py-6">
@@ -320,7 +447,7 @@ export default function RecommendedView({
               <Sparkles className="w-4 h-4 animate-pulse" />
             </div>
             <span className="text-[11px] font-mono uppercase tracking-[3px] text-amber-400 font-bold">
-              AI Powered Recommendation Engine
+              Curated Recommendations Engine
             </span>
           </div>
 
@@ -334,16 +461,16 @@ export default function RecommendedView({
           <p className="text-xs sm:text-sm text-zinc-400 font-sans mt-1.5 max-w-2xl leading-relaxed">
             {watchedMovies.length > 0 ? (
               <>
-                Tailored based on your <span className="text-stone-200 font-semibold">{watchedMovies.length} watched titles</span>
-                {favoriteGenre ? <> and preferred genre <span className="text-amber-400 font-semibold">{favoriteGenre}</span></> : ""}.
+                Personalized according to your <span className="text-stone-200 font-semibold">{watchedMovies.length} watched titles</span>
+                {favoriteGenre ? <> and favorite genre <span className="text-amber-400 font-semibold">{favoriteGenre}</span></> : ""}.
               </>
             ) : favoriteGenre ? (
               <>
-                Personalized starting picks based on your favorite genre <span className="text-amber-400 font-semibold">{favoriteGenre}</span>. As you watch movies, recommendations refine automatically.
+                Personalized suggestions based on your favorite genre <span className="text-amber-400 font-semibold">{favoriteGenre}</span>. Recommendations adapt with every title you watch.
               </>
             ) : (
               <>
-                Curated cinephile recommendations calculated across legendary directors, genres, and ratings.
+                Exceptional cinematic curation based on legendary filmmakers, genres, and critical acclaim.
               </>
             )}
           </p>
@@ -400,7 +527,7 @@ export default function RecommendedView({
               : "bg-neutral-900 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700"
           }`}
         >
-          Dynamic Overall Taste
+          All Genres
         </button>
         {popularTastePills.map(pill => {
           const isSel = selectedTasteGenre === pill.genre;
@@ -446,7 +573,7 @@ export default function RecommendedView({
 
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold tracking-wider uppercase">
                 <Flame className="w-3.5 h-3.5" />
-                #1 Top Recommendation
+                #1 Recommendation
               </span>
 
               {spotlightItem.movie.isTv && (
@@ -521,7 +648,7 @@ export default function RecommendedView({
                 {watchlist.includes(spotlightItem.movie.id) ? (
                   <>
                     <BookmarkCheck className="w-4 h-4 text-rose-400" />
-                    <span>In My List</span>
+                    <span>In My Watchlist</span>
                   </>
                 ) : (
                   <>
@@ -544,11 +671,11 @@ export default function RecommendedView({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <h3 className="text-lg sm:text-2xl font-cinzel font-bold text-white uppercase tracking-wider">
-                Top Matches For You
+                Top Matches
               </h3>
             </div>
             <p className="text-xs text-zinc-400 font-sans">
-              Ranked dynamically by your genre affinity, director preferences, and ratings
+              Ranked according to your favorite genres, preferred filmmakers, and critical acclaim
             </p>
           </div>
         </div>
@@ -592,7 +719,7 @@ export default function RecommendedView({
               </h3>
             </div>
             <p className="text-xs text-zinc-400 font-sans">
-              Similar themes, storytelling style, and genre DNA
+              Similar themes, narrative style, and cinematic atmosphere
             </p>
           </div>
 
@@ -620,11 +747,11 @@ export default function RecommendedView({
             <div className="flex items-center gap-2">
               <Tv className="w-4 h-4 text-sky-400" />
               <h3 className="text-lg sm:text-2xl font-cinzel font-bold text-white uppercase tracking-wider">
-                Recommended Series for Binge-Watching
+                Binge-Worthy Recommended Series
               </h3>
             </div>
             <p className="text-xs text-zinc-400 font-sans">
-              Critically acclaimed television sagas matched to your taste
+              Critically acclaimed television sagas tailored to your taste
             </p>
           </div>
 
@@ -662,11 +789,11 @@ export default function RecommendedView({
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
               <h3 className="text-lg sm:text-2xl font-cinzel font-bold text-white uppercase tracking-wider">
-                Uncompromising Masterpieces
+                Must-Watch Masterpieces
               </h3>
             </div>
             <p className="text-xs text-zinc-400 font-sans">
-              Highest-rated cinema history milestones with unmatched reviews
+              The highest peaks in the history of world cinema
             </p>
           </div>
 
@@ -697,17 +824,17 @@ export default function RecommendedView({
         <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-950/20 via-neutral-900 to-black border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="space-y-1">
             <h4 className="text-lg font-cinzel font-bold text-white uppercase">
-              Save Your Profile & Get 100% Tailored Suggestions
+              Create your profile and enjoy tailored suggestions
             </h4>
             <p className="text-xs text-zinc-400 font-sans max-w-xl">
-              Create your free Classico account, choose your legendary cult character avatar, and get tailored recommendations updated automatically after each film.
+              Create your free Classico account, choose your cult avatar, and receive refined recommendations after every viewing.
             </p>
           </div>
           <button
             onClick={onOpenSignUp}
             className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shrink-0 cursor-pointer"
           >
-            Create Free Account
+            Create free account
           </button>
         </div>
       )}

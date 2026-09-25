@@ -98,10 +98,10 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
 
         {/* Title */}
         <h2 className="text-2xl sm:text-3xl font-cinzel font-bold text-white mb-2">
-          {isNew ? "Ajouter un profil" : "Modifier le profil"}
+          {isNew ? "Add Profile" : "Edit Profile"}
         </h2>
         <p className="text-xs text-zinc-400 mb-6 font-sans">
-          Personnalisez le nom et l'avatar de votre profil. (Jusqu'à 5 profils par compte)
+          Customize your profile name and avatar. (Up to 5 profiles per account)
         </p>
 
         {errorMsg && (
@@ -115,12 +115,12 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
           {/* Profile Name & Current Avatar Preview */}
           <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800/80">
             <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-amber-400 shadow-md shrink-0">
-              <img src={avatarUrl} alt="Avatar sélectionné" className="w-full h-full object-cover" />
+              <img src={avatarUrl} alt="Selected avatar" className="w-full h-full object-cover" />
             </div>
 
             <div className="w-full space-y-2">
               <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">
-                Nom du profil
+                Profile Name
               </label>
               <input
                 type="text"
@@ -128,7 +128,7 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
                 maxLength={30}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Mon Profil"
+                placeholder="e.g. My Profile"
                 className="w-full bg-neutral-900 border border-neutral-700 focus:border-amber-400 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-all"
               />
             </div>
@@ -137,8 +137,8 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
           {/* Avatar Selector Gallery */}
           <div className="space-y-2.5">
             <label className="text-[11px] uppercase tracking-wider font-semibold text-zinc-400 flex items-center justify-between">
-              <span>Choisir un avatar ({DEFAULT_AVATARS.length} disponibles)</span>
-              <span className="text-[10px] text-amber-400 font-normal">Cliquez pour sélectionner</span>
+              <span>Choose an avatar ({DEFAULT_AVATARS.length} available)</span>
+              <span className="text-[10px] text-amber-400 font-normal">Click to select</span>
             </label>
             <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 max-h-48 overflow-y-auto p-2 bg-neutral-900/40 rounded-2xl border border-neutral-800/80 custom-scrollbar">
               {DEFAULT_AVATARS.map((av) => {
@@ -171,8 +171,8 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
           {/* Kids Mode Toggle */}
           <div className="flex items-center justify-between p-4 rounded-2xl bg-neutral-900/50 border border-neutral-800">
             <div>
-              <p className="text-sm font-semibold text-white">Profil Enfants</p>
-              <p className="text-xs text-zinc-400">Contenus et séries adaptés pour la famille.</p>
+              <p className="text-sm font-semibold text-white">Kids Profile</p>
+              <p className="text-xs text-zinc-400">Content and series tailored for the family.</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -190,21 +190,21 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
             {!isNew && profile && profiles.length > 1 ? (
               showConfirmDelete ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-rose-400">Confirmer ?</span>
+                  <span className="text-xs text-rose-400">Confirm?</span>
                   <button
                     type="button"
                     onClick={handleDelete}
                     disabled={isSaving}
                     className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all cursor-pointer"
                   >
-                    Oui, supprimer
+                    Yes, delete
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowConfirmDelete(false)}
                     className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-zinc-300 text-xs transition-all cursor-pointer"
                   >
-                    Annuler
+                    Cancel
                   </button>
                 </div>
               ) : (
@@ -214,7 +214,7 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
                   className="text-xs text-zinc-500 hover:text-rose-400 flex items-center gap-1.5 transition-colors cursor-pointer py-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  Supprimer ce profil
+                  Delete this profile
                 </button>
               )
             ) : (
@@ -227,7 +227,7 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-xl border border-neutral-800 hover:border-zinc-600 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer"
               >
-                Annuler
+                Cancel
               </button>
 
               <button
@@ -238,10 +238,10 @@ export default function ProfileEditModal({ profile, isNew = false, onClose }: Pr
                 {isSaving ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Enregistrement...</span>
+                    <span>Saving...</span>
                   </>
                 ) : (
-                  <span>Enregistrer</span>
+                  <span>Save</span>
                 )}
               </button>
             </div>

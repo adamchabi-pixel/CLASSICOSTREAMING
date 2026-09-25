@@ -1238,7 +1238,7 @@ export default function App() {
       };
       return {
         id: `genre-${idClean}`,
-        title: `Cinéma ${title}`,
+        title: `Cinema ${title}`,
         description: config.description,
         movies: movies
       };
@@ -1266,7 +1266,7 @@ export default function App() {
           finalCollections.push({
             id: `custom-${m.customCategory.toLowerCase().replace(/[^a-z]/g, '-')}`,
             title: m.customCategory,
-            description: "Catégorie Personnalisée",
+            description: "Custom Category",
             movies: [{ ...m}]
           });
         }

@@ -115,7 +115,7 @@ export default function LibraryView({ onSelect, onPlay, getProgress, type = 'mov
                const j = await res.json();
                data = j.data || j;
            } catch (parseError) {
-               throw new Error("Le serveur a retourné une réponse invalide (peut-être en cours de rafraichissement).");
+               throw new Error("Server returned an invalid response (it may still be refreshing).");
            }
            
            const isAnimeOrAdult = (m: any) => {

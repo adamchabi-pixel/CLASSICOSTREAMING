@@ -76,12 +76,12 @@ export default function ProfileSelectorModal() {
           {/* Header Title */}
           <div className="space-y-3 mb-10 sm:mb-14">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-cinzel font-bold text-white tracking-wide">
-              {isManageMode ? "Gérer les profils" : "Qui regarde ?"}
+              {isManageMode ? "Manage Profiles" : "Who's watching?"}
             </h1>
             <p className="text-sm text-zinc-400 font-sans">
               {isManageMode
-                ? "Sélectionnez un profil pour modifier son nom, son avatar ou le supprimer."
-                : "Choisissez votre profil pour retrouver vos favoris et votre reprise de lecture."}
+                ? "Select a profile to edit its name, avatar, or delete it."
+                : "Choose your profile to access your favorites and continue watching."}
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export default function ProfileSelectorModal() {
                   </div>
                 </div>
                 <span className="text-sm sm:text-base text-zinc-500 group-hover:text-zinc-300 font-medium tracking-wide transition-colors">
-                  Ajouter un profil
+                  Add Profile
                 </span>
               </div>
             )}
@@ -170,7 +170,7 @@ export default function ProfileSelectorModal() {
                   : "border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 hover:bg-neutral-900"
               }`}
             >
-              {isManageMode ? "Terminé" : "Gérer les profils"}
+              {isManageMode ? "Done" : "Manage Profiles"}
             </button>
           </div>
         </motion.div>

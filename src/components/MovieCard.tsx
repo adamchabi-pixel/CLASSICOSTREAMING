@@ -158,12 +158,6 @@ export default function MovieCard({ movie, onSelect, onPlay, progressPercent, tr
             </div>
           )}
 
-          {/* Trending Rank Badge */}
-          {trendingIndex !== undefined && (
-            <div className="absolute top-2 left-2 z-30 bg-black/85 backdrop-blur-sm border border-amber-500/50 text-amber-400 px-2 py-0.5 rounded-none font-cinzel font-black text-xs shadow-md">
-              #{trendingIndex}
-            </div>
-          )}
         </div>
 
         {/* Trending Number Indicator at corner */}

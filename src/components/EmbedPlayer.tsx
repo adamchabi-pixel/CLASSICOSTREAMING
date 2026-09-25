@@ -19,9 +19,9 @@ const EmbedPlayer: React.FC<EmbedPlayerProps> = ({ embedUrl }) => {
     return (
       <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-white z-40 p-4 text-center">
         <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-        <h3 className="text-xl font-bold mb-2">Erreur de chargement</h3>
+        <h3 className="text-xl font-bold mb-2">Loading Error</h3>
         <p className="text-zinc-400 max-w-md">
-          Impossible de charger le lecteur vidéo. Le serveur de streaming est peut-être inaccessible ou la vidéo n'est plus disponible.
+          Unable to load video player. The streaming server might be unreachable or the video is no longer available.
         </p>
       </div>
     );

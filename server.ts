@@ -93,11 +93,51 @@ app.get("/api/discover", async (req, res) => {
   }
 });
 
+const TMDB_GENRES_MAP: Record<number, string> = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Sci-Fi",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
+  10759: "Action & Adventure",
+  10762: "Kids",
+  10763: "News",
+  10764: "Reality",
+  10765: "Sci-Fi & Fantasy",
+  10766: "Soap",
+  10767: "Talk",
+  10768: "War & Politics"
+};
+
+const trendingCache: Record<string, { timestamp: number; data: any[] }> = {};
+
 app.get("/api/trending", async (req, res) => {
   try {
-    const pages = [1, 2, 3];
-    const fetchPage = async (page) => {
-      const url = `https://api.tmdb.org/3/trending/all/day?language=en-US&page=${page}`;
+    const type = (req.query.type as string) || "movie";
+    const cacheKey = `trending_${type}`;
+    const now = Date.now();
+
+    // 15-minute server cache
+    if (trendingCache[cacheKey] && (now - trendingCache[cacheKey].timestamp < 15 * 60 * 1000) && trendingCache[cacheKey].data.length > 0) {
+      return res.json({ success: true, results: trendingCache[cacheKey].data, cached: true });
+    }
+
+    const pages = [1, 2];
+    const fetchPage = async (page: number) => {
+      const url = `https://api.tmdb.org/3/trending/${type}/day?language=en-US&page=${page}`;
       const response = await fetch(url, {
         headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
       });
@@ -108,11 +148,12 @@ app.get("/api/trending", async (req, res) => {
 
     const resultsByPage = await Promise.all(pages.map(fetchPage));
     const combinedResults = resultsByPage.flat();
-    const validResults = combinedResults.filter((m: any) => (m.media_type === "movie" || m.media_type === "tv") && !isAnimeOrAdult(m));
+    const validResults = combinedResults.filter((m: any) => !isAnimeOrAdult(m));
     
-    const enrichedResults = validResults.slice(0, 60).map((m: any) => {
+    const enrichedResults = validResults.slice(0, 50).map((m: any) => {
       const title = m.title || m.name || m.original_title || m.original_name;
-      const isTv = m.media_type === "tv";
+      const isTv = (m.media_type === "tv" || type === "tv");
+      const genres = (m.genre_ids || []).map((gid: number) => TMDB_GENRES_MAP[gid]).filter(Boolean);
       return {
         id: isTv ? `${m.id}-tv` : String(m.id),
         tmdbId: String(m.id),
@@ -121,20 +162,31 @@ app.get("/api/trending", async (req, res) => {
         originalTitle: m.original_title || m.original_name,
         description: m.overview || "",
         posterUrl: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
-        backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w780${m.backdrop_path}` : null,
+        backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}` : null,
         year: parseInt((m.release_date || m.first_air_date || "0").split("-")[0]) || 0,
+        releaseDate: m.release_date || m.first_air_date,
         voteAverage: m.vote_average,
+        rating: m.vote_average ? m.vote_average.toFixed(1) : "?",
         director: "Unknown",
         cast: [],
-        genre: [],
+        genre: genres.length > 0 ? genres : ["Trending"],
         isIframeEmbed: true,
         iframeSrc: ""
       };
     });
     
+    if (enrichedResults.length > 0) {
+      trendingCache[cacheKey] = { timestamp: now, data: enrichedResults };
+    }
+
     res.json({ success: true, results: enrichedResults });
   } catch (error) {
     console.error("TMDB Trending API Error:", error);
+    const type = (req.query.type as string) || "movie";
+    const cacheKey = `trending_${type}`;
+    if (trendingCache[cacheKey]?.data?.length > 0) {
+      return res.json({ success: true, results: trendingCache[cacheKey].data, stale: true });
+    }
     res.status(500).json({ success: false, error: "TMDB trending failed" });
   }
 });

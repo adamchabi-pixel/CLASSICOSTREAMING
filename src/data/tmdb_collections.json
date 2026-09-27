@@ -5,272 +5,574 @@
     "description": "The most watched and highly acclaimed movies right now, updated daily.",
     "movies": [
       {
-        "id": "238",
-        "tmdbId": "238",
-        "imdbId": "tt0068646",
-        "title": "The Godfather",
-        "originalTitle": "The Godfather",
-        "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
-        "year": 1972,
-        "duration": "175 min",
-        "rating": "8.7",
-        "voteAverage": 8.687,
-        "director": "Francis Ford Coppola",
-        "cast": [
-          "Marlon Brando",
-          "Al Pacino",
-          "James Caan",
-          "Robert Duvall"
-        ],
+        "id": "1492640",
+        "tmdbId": "1492640",
+        "title": "Unabomber",
+        "originalTitle": "Unabomber",
+        "description": "Follow Ted Kaczynski's transformation from Harvard prodigy into the infamous Unabomber. Subjected to controversial psychological experiments by Professor Henry Murray, Kaczynski's troubled past resurfaces decades later when his manhunt, led by FBI agent Joanne Miller, brings to light the chilling consequences of ambition and isolation.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/39aMkR8Y5vhCG9dTkjiqRl8AVqp.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/58D9nalUYW5L5K0guw7hcpsEJBH.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.1",
+        "voteAverage": 7.1,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Drama",
-          "Crime"
+          "Trending"
         ],
-        "tagline": "An offer you can't refuse."
+        "tagline": "Currently trending worldwide"
       },
       {
-        "id": "1032863",
-        "tmdbId": "1032863",
-        "imdbId": "tt22526100",
-        "title": "The Love Hypothesis",
-        "originalTitle": "The Love Hypothesis",
-        "description": "Olive Smith, a biology PhD candidate, and Dr. Adam Carlsen, a hotshot professor and well-known tyrant, enter into a fake relationship, seeing each of their carefully calculated theories on love get thrown into chaos.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/vfZxVHextAGC70zrNhS8lsROqP1.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/o7Oy9Gbx1CCyaweL8xUhtMW4Puq.jpg",
+        "id": "1377237",
+        "tmdbId": "1377237",
+        "title": "Runner",
+        "originalTitle": "Runner",
+        "description": "A former soldier is thrown into a brutal race against time when a critical medical delivery makes him and his unlikely partner the targets of a ruthless cartel. As the mission spirals into a deadly manhunt, every detour, delay, and bullet pushes them closer to failure. With betrayal closing in from every side, they must survive the chase and deliver their cargo to save the life of a little girl.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yBKMAIj7clP42UkFejhGDBBoTpb.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/2c9zNZJL0ZdagD6JbmU3hH4hovs.jpg",
         "year": 2026,
-        "duration": "112 min",
-        "rating": "8.1",
-        "voteAverage": 8.1,
-        "director": "Claire Scanlon",
-        "cast": [
-          "Lili Reinhart",
-          "Tom Bateman",
-          "Rachel Marsh",
-          "Jaboukie Young-White"
-        ],
+        "duration": "Movie",
+        "rating": "7.6",
+        "voteAverage": 7.6,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Romance",
-          "Comedy"
+          "Trending"
         ],
-        "tagline": "Fake dating. Real chemistry."
+        "tagline": "Currently trending worldwide"
       },
       {
         "id": "1423191",
         "tmdbId": "1423191",
-        "imdbId": "tt35538033",
         "title": "Resident Evil",
         "originalTitle": "Resident Evil",
         "description": "Medical courier Bryan unwittingly finds himself fighting for survival as one fateful, horrifying night collapses around him in chaos.",
         "posterUrl": "https://image.tmdb.org/t/p/w500/i7UyjfPio0VFHB9rBUZSFyhOoM8.jpg",
         "backdropUrl": "https://image.tmdb.org/t/p/original/3icyRAqgakNcQn6aDVz9libFmBA.jpg",
         "year": 2026,
-        "duration": "95 min",
+        "duration": "Movie",
         "rating": "7.3",
-        "voteAverage": 7.28,
-        "director": "Zach Cregger",
-        "cast": [
-          "Austin Abrams",
-          "Paul Walter Hauser",
-          "Kali Reis",
-          "Zach Cherry"
-        ],
+        "voteAverage": 7.3,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Horror",
-          "Science Fiction",
-          "Adventure"
+          "Trending"
         ],
-        "tagline": "A new era of evil."
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1032863",
+        "tmdbId": "1032863",
+        "title": "The Love Hypothesis",
+        "originalTitle": "The Love Hypothesis",
+        "description": "Olive Smith, a biology PhD candidate, and Dr. Adam Carlsen, a hotshot professor and well-known tyrant, enter into a fake relationship, seeing each of their carefully calculated theories on love get thrown into chaos.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vfZxVHextAGC70zrNhS8lsROqP1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/o7Oy9Gbx1CCyaweL8xUhtMW4Puq.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "8.2",
+        "voteAverage": 8.2,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1339713",
+        "tmdbId": "1339713",
+        "title": "Obsession",
+        "originalTitle": "Obsession",
+        "description": "After breaking the mysterious \"One Wish Willow\" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/uoTZOIXnkcTgJe1emITpsQq7sPu.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "8.2",
+        "voteAverage": 8.19,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
       },
       {
         "id": "1084244",
         "tmdbId": "1084244",
-        "imdbId": "tt29355505",
         "title": "Toy Story 5",
         "originalTitle": "Toy Story 5",
         "description": "When Bonnie receives a Lilypad tablet as a gift and becomes obsessed, Buzz, Woody, Jessie and the rest of the gang's jobs become exponentially harder when they have to go head to head with the all-new threat to playtime.",
         "posterUrl": "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/qjTqY5coNiz6sVtPng40IzltsoN.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/4D1pdB27uph7J8HQzNf8QvvH9bn.jpg",
         "year": 2026,
-        "duration": "102 min",
+        "duration": "Movie",
         "rating": "8.3",
-        "voteAverage": 8.348,
-        "director": "Andrew Stanton",
-        "cast": [
-          "Joan Cusack",
-          "Tom Hanks",
-          "Tim Allen",
-          "Conan O'Brien"
-        ],
+        "voteAverage": 8.323,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Animation",
-          "Family",
-          "Comedy",
-          "Adventure"
+          "Trending"
         ],
-        "tagline": "It's on."
+        "tagline": "Currently trending worldwide"
       },
       {
-        "id": "969681",
-        "tmdbId": "969681",
-        "imdbId": "tt22084616",
-        "title": "Spider-Man: Brand New Day",
-        "originalTitle": "Spider-Man: Brand New Day",
-        "description": "Fighting crime full-time as Spider-Man in a world that doesn't remember him—and the pressure of seeing his old friends move on without him—sparks a change in Peter Parker he may not have the power to control. But that transformation might also be the only thing that can stop a shocking new threat to the city and those he loves - a powerful villain no one can even see.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/bjiS5ipwxb9JFy3XRRN4OAilSeX.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/qeQJx07rK2xm8SD2sJxFKhE7gs0.jpg",
+        "id": "1263337",
+        "tmdbId": "1263337",
+        "title": "Heart of the Beast",
+        "originalTitle": "Heart of the Beast",
+        "description": "After a harrowing plane crash, Special Forces officer James Belmont and his combat dog, Odin, find themselves stranded deep in the Alaskan wilderness. Together, they are forced into a brutal fight for survival against the elements.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1ApfSA8JTqeha3GTFEY8syV4auq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/bicMU6xVD5deVyKP2azpyx7xkmH.jpg",
         "year": 2026,
-        "duration": "145 min",
-        "rating": "7.9",
-        "voteAverage": 7.864,
-        "director": "Destin Daniel Cretton",
-        "cast": [
-          "Tom Holland",
-          "Zendaya",
-          "Mark Ruffalo",
-          "Jon Bernthal"
-        ],
+        "duration": "Movie",
+        "rating": "7.7",
+        "voteAverage": 7.7,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Science Fiction",
-          "Action",
-          "Adventure"
+          "Trending"
         ],
-        "tagline": "A brand new day starts now."
+        "tagline": "Currently trending worldwide"
       },
       {
         "id": "1083381",
         "tmdbId": "1083381",
-        "imdbId": "tt26657236",
         "title": "Backrooms",
         "originalTitle": "Backrooms",
         "description": "A strange doorway appears in the basement of a furniture showroom.",
         "posterUrl": "https://image.tmdb.org/t/p/w500/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg",
         "backdropUrl": "https://image.tmdb.org/t/p/original/dqmMWNWfLnExDRpMtIMqI97GQFR.jpg",
         "year": 2026,
-        "duration": "111 min",
+        "duration": "Movie",
         "rating": "7.0",
-        "voteAverage": 7.029,
-        "director": "Kane Parsons",
-        "cast": [
-          "Chiwetel Ejiofor",
-          "Renate Reinsve",
-          "Finn Bennett",
-          "Lukita Maxwell"
-        ],
+        "voteAverage": 7,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Horror",
-          "Mystery",
-          "Science Fiction"
+          "Trending"
         ],
-        "tagline": "See how far it goes."
+        "tagline": "Currently trending worldwide"
       },
       {
-        "id": "1339713",
-        "tmdbId": "1339713",
-        "imdbId": "tt37287335",
-        "title": "Obsession",
-        "originalTitle": "Obsession",
-        "description": "After breaking the mysterious \"One Wish Willow\" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/rZfmzpixLKLR3Hg2u0WgC7XLFl8.jpg",
+        "id": "1375441",
+        "tmdbId": "1375441",
+        "title": "Primetime",
+        "originalTitle": "Primetime",
+        "description": "In 2006, To Catch a Predator host Chris Hansen sets out to make television history, turning an undercover investigation into one of the most controversial cultural phenomena of the decade.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/lmrulvLbmaejTix1YaMxo1oGhH1.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/4E5RVsSUG1A4Adwbqupu5w6kofZ.jpg",
         "year": 2026,
-        "duration": "109 min",
-        "rating": "8.2",
-        "voteAverage": 8.194,
-        "director": "Curry Barker",
-        "cast": [
-          "Michael Johnston",
-          "Inde Navarrette",
-          "Cooper Tomlinson",
-          "Megan Lawless"
-        ],
+        "duration": "Movie",
+        "rating": "7.1",
+        "voteAverage": 7.1,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Horror",
-          "Thriller"
+          "Trending"
         ],
-        "tagline": "Be careful who you wish for…"
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "969681",
+        "tmdbId": "969681",
+        "title": "Spider-Man: Brand New Day",
+        "originalTitle": "Spider-Man: Brand New Day",
+        "description": "Fighting crime full-time as Spider-Man in a world that doesn't remember him—and the pressure of seeing his old friends move on without him—sparks a change in Peter Parker he may not have the power to control. But that transformation might also be the only thing that can stop a shocking new threat to the city and those he loves - a powerful villain no one can even see.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/bjiS5ipwxb9JFy3XRRN4OAilSeX.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/qeQJx07rK2xm8SD2sJxFKhE7gs0.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.9",
+        "voteAverage": 7.864,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
       },
       {
         "id": "1368337",
         "tmdbId": "1368337",
-        "imdbId": "tt33764258",
         "title": "The Odyssey",
         "originalTitle": "The Odyssey",
         "description": "Odysseus, the legendary King of Ithaca, embarks on a long and perilous journey home following the Trojan War. Throughout his voyage, he is forced to confront the whims of gods, mythological monsters, and trials that stretch both his cunning and his humanity to the breaking point.",
         "posterUrl": "https://image.tmdb.org/t/p/w500/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/iuylzRSllrGn7YB322kwKoOVMcq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/bulFtfy3oBQtCnAMSi7g6DSSds3.jpg",
         "year": 2026,
-        "duration": "173 min",
+        "duration": "Movie",
         "rating": "8.0",
-        "voteAverage": 8.02,
-        "director": "Christopher Nolan",
-        "cast": [
-          "Matt Damon",
-          "Tom Holland",
-          "Anne Hathaway",
-          "Robert Pattinson"
-        ],
+        "voteAverage": 8,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Adventure",
-          "Action",
-          "Fantasy"
+          "Trending"
         ],
-        "tagline": "Defy the gods."
+        "tagline": "Currently trending worldwide"
       },
       {
-        "id": "1240889",
-        "tmdbId": "1240889",
-        "imdbId": "tt35298123",
-        "title": "Teenage Sex and Death at Camp Miasma",
-        "originalTitle": "Teenage Sex and Death at Camp Miasma",
-        "description": "After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original’s star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium.",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/6Q6Zo6GNXMLP600OJSh6MhW21um.jpg",
-        "backdropUrl": "https://image.tmdb.org/t/p/original/d1n2ySWSanU34eEsluRjfrjRq52.jpg",
+        "id": "1465063",
+        "tmdbId": "1465063",
+        "title": "Forgotten Island",
+        "originalTitle": "Forgotten Island",
+        "description": "While celebrating their last night together, high school graduates and best friends Jo and Raissa stumble upon a mysterious portal that transports them to the fantastical island of Nakali. When they discover that the memories of their entire friendship are the price for returning home, Jo and Raissa must race to find a way to leave the island before they forget each other forever.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/Lr0Ng7Gg02RW1AyfYEL6P0WUvd.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/cNICUho5uiAGkfCAQq1ihyaMla4.jpg",
         "year": 2026,
-        "duration": "112 min",
-        "rating": "6.4",
-        "voteAverage": 6.4,
-        "director": "Jane Schoenbrun",
-        "cast": [
-          "Hannah Einbinder",
-          "Gillian Anderson",
-          "Amanda Fix",
-          "Arthur Conti"
-        ],
+        "duration": "Movie",
+        "rating": "7.9",
+        "voteAverage": 7.9,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Comedy",
-          "Horror",
-          "Romance"
+          "Trending"
         ],
-        "tagline": "Blood. Lust."
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1607127",
+        "tmdbId": "1607127",
+        "title": "One Last Shot",
+        "originalTitle": "One Last Shot",
+        "description": "Navy Seal Jake Harris must stop a team of mercenaries, led by his disillusioned former comrade, from disabling the US missile defense network.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/niQ4NBh2jqAf1hDZP5m6ReWFAb7.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8giIQcHpxgsPVP6c7aQtHl3txuh.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.6",
+        "voteAverage": 7.6,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1248832",
+        "tmdbId": "1248832",
+        "title": "Digger",
+        "originalTitle": "Digger",
+        "description": "The most powerful man in the world embarks on a frantic mission to prove he is humanity's savior before the disaster he's unleashed destroys everything.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1ATXKrIPJyKNwnJ6lcG088Sa6zi.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/u3EtxdmZeiliW98c5Oegk5LIGZa.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.8",
+        "voteAverage": 7.8,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
       },
       {
         "id": "1101383",
         "tmdbId": "1101383",
-        "imdbId": "tt27165187",
         "title": "The End of Oak Street",
         "originalTitle": "The End of Oak Street",
         "description": "After a mysterious cosmic event rips Oak Street from suburbia and transports their neighborhood to someplace unknown, the Platt family soon discovers that their very survival depends on them sticking together as they navigate their now unrecognizable surroundings.",
         "posterUrl": "https://image.tmdb.org/t/p/w500/fYXqpgPmHMphSF2W30GbTeJVIa5.jpg",
         "backdropUrl": "https://image.tmdb.org/t/p/original/b9q9VmbXDvJmTziRqkwdEmFdwhr.jpg",
         "year": 2026,
-        "duration": "100 min",
+        "duration": "Movie",
         "rating": "7.0",
-        "voteAverage": 6.997,
-        "director": "David Robert Mitchell",
-        "cast": [
-          "Anne Hathaway",
-          "Ewan McGregor",
-          "Maisy Stella",
-          "Christian Convery"
-        ],
+        "voteAverage": 7,
+        "director": "Trending Now",
+        "cast": [],
         "genre": [
-          "Science Fiction",
-          "Mystery",
-          "Thriller"
+          "Trending"
         ],
-        "tagline": "Where goes the neighborhood."
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1003596",
+        "tmdbId": "1003596",
+        "title": "Avengers: Doomsday",
+        "originalTitle": "Avengers: Doomsday",
+        "description": "Beloved heroes from three distinct universes are set on a deadly collision course and face an existential threat unlike anything they've ever encountered.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iYVl6Vha1AQfCGJy36o2IkercOr.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/s4v0UX1anfXm0UvloLsTTJ4v222.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "?",
+        "voteAverage": 0,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1284465",
+        "tmdbId": "1284465",
+        "title": "The Death of Robin Hood",
+        "originalTitle": "The Death of Robin Hood",
+        "description": "Grappling with his past after a life of crime and murder, Robin Hood finds himself gravely injured after a battle he thought would be his last. In the hands of a mysterious woman, he is offered a chance at salvation.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/13MmRwmG5NmaMfU8qNrtgGXisiD.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/lh3BDkmWJh998n4fQcHYcVi7dpm.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.6",
+        "voteAverage": 6.6,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1108427",
+        "tmdbId": "1108427",
+        "title": "Moana",
+        "originalTitle": "Moana",
+        "description": "Teenage Moana answers the Ocean's call and, for the first time, voyages beyond the reef of her island of Motunui with infamous demigod Maui on an unforgettable journey to restore prosperity to her people.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/gaet1xQ2nxrG0V1Ep9T20ZMNEIC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/c6BPbkO5Npt1OdwttAxCFo06wtH.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.4",
+        "voteAverage": 7.4,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1283515",
+        "tmdbId": "1283515",
+        "title": "Verity",
+        "originalTitle": "Verity",
+        "description": "Lowen Ashleigh is hired by Jeremy Crawford to ghostwrite novels for his bestselling author wife Verity, who is unable to finish following an accident. Lowen gradually uncovers Verity's disturbing truths while residing at the Crawfords' home to work.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/e2t7NjahJTgz2PMx2BW4ZRgHR6Z.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9qxyrJfjk577ym5WD6HCDmunoyO.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "?",
+        "voteAverage": 0,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1291366",
+        "tmdbId": "1291366",
+        "title": "The Deputy",
+        "originalTitle": "The Deputy",
+        "description": "A young sheriff's deputy finds himself in the crosshairs of dangerous criminals when the dead body he is assigned to keep an eye on disappears from a crime scene.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qL654LNOfBu49e12jnnQIv6mny.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9yWto4XFFzSZ7yHlh6fYmwbDw8u.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.1",
+        "voteAverage": 6.1,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1291366",
+        "tmdbId": "1291366",
+        "title": "The Deputy",
+        "originalTitle": "The Deputy",
+        "description": "A young sheriff's deputy finds himself in the crosshairs of dangerous criminals when the dead body he is assigned to keep an eye on disappears from a crime scene.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qL654LNOfBu49e12jnnQIv6mny.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/9yWto4XFFzSZ7yHlh6fYmwbDw8u.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.1",
+        "voteAverage": 6.1,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1422041",
+        "tmdbId": "1422041",
+        "title": "La bola negra",
+        "originalTitle": "La bola negra",
+        "description": "The intertwined lives of three men in three different eras, three lives intimately linked by sexuality and desire, pain, and legacy.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/jT5SR5qc9KvVg7HUEmjMWEUYMce.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/bDsmYvrzto7xrEwqDpLC3SPhn9A.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "8.2",
+        "voteAverage": 8.2,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1477712",
+        "tmdbId": "1477712",
+        "title": "Ice Cream Man",
+        "originalTitle": "Ice Cream Man",
+        "description": "An idyllic summer town descends into madness when an ice cream man serves kids sweet delights with horrifying results.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/lNBxToxHWrzmkqeFnf1XADUTxQq.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/hjF1rzTDR7YvnJUcH2SfP48w492.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "4.7",
+        "voteAverage": 4.7,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "687163",
+        "tmdbId": "687163",
+        "title": "Project Hail Mary",
+        "originalTitle": "Project Hail Mary",
+        "description": "Science teacher Ryland Grace wakes up on a spaceship light years from home with no recollection of who he is or how he got there. As his memory returns, he begins to uncover his mission: solve the riddle of the mysterious substance causing the sun to die out. He must call on his scientific knowledge and unorthodox ideas to save everything on Earth from extinction.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/AdpvqIhgaqg5JHzH3M6532XV3PG.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/8Tfys3mDZVp4tNoH2ktm06a0Tau.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "8.6",
+        "voteAverage": 8.642,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1242876",
+        "tmdbId": "1242876",
+        "title": "500 Miles",
+        "originalTitle": "500 Miles",
+        "description": "A broken family is forced to come together when 16-year-old Finn and his livewire younger brother Charlie run away from trouble at home in England to reach their estranged grandfather on Ireland’s stunning and wild west coast.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/FhRosui9MSdxdyD3h0skOFhqED.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/smTYZM6iSRwB9BJXFkOTQ0rG1VM.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.7",
+        "voteAverage": 6.7,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1240889",
+        "tmdbId": "1240889",
+        "title": "Teenage Sex and Death at Camp Miasma",
+        "originalTitle": "Teenage Sex and Death at Camp Miasma",
+        "description": "After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original’s star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/6Q6Zo6GNXMLP600OJSh6MhW21um.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/d1n2ySWSanU34eEsluRjfrjRq52.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.3",
+        "voteAverage": 6.3,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1421903",
+        "tmdbId": "1421903",
+        "title": "Werwulf",
+        "originalTitle": "Werwulf",
+        "description": "A harrowing tale of devotion, damnation and the devil within.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/imnkSt4PSQpxIuyiRpJCiLk3SZz.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/jmW9NkzbpI9vhyxJU2x644Nj7VU.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "?",
+        "voteAverage": 0,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1212763",
+        "tmdbId": "1212763",
+        "title": "Evil Dead Burn",
+        "originalTitle": "Evil Dead Burn",
+        "description": "After her husband's abrupt death, Alice seeks solace with his remaining family — descendants of a leading researcher on demonic possession. As her in-laws transform one by one into creatures that feed on fear, she comes to discover that the vows she took in life survive even in death.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uRxrNXQWkHoENm3nwVOZDYSCx2F.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/o0jkkpcN81QqSl8DMLScBCXyUH9.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "7.7",
+        "voteAverage": 7.676,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "1375646",
+        "tmdbId": "1375646",
+        "title": "Colony",
+        "originalTitle": "군체",
+        "description": "Professor Se-jeong is thrust into a bloody nightmare when a rapidly mutating virus is released during a biotech conference causing authorities to seal the facility. Trapped inside with no escape, Se-jeong along with a small group of survivors must fight to stay alive while the infected undergo horrific transformations.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tN799oUR0f1gUKDYdMNrDaY7I51.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/hpBGCnzOvdtQoMyE48gvwp2y5yx.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "8.1",
+        "voteAverage": 8.1,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
+      },
+      {
+        "id": "445466",
+        "tmdbId": "445466",
+        "title": "Idiots",
+        "originalTitle": "Idiots",
+        "description": "Two rock-bottom drivers transport a wealthy teen to rehab, but their simple job spirals into a chaotic journey of drugs, danger, and crime as their passenger derails their plans.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/flpCqxH46pGZD1kNOdYgrVsDoTm.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/original/lneqlgbg3XUjNaeGYk8arhgzczo.jpg",
+        "year": 2026,
+        "duration": "Movie",
+        "rating": "6.8",
+        "voteAverage": 6.8,
+        "director": "Trending Now",
+        "cast": [],
+        "genre": [
+          "Trending"
+        ],
+        "tagline": "Currently trending worldwide"
       }
     ]
   },

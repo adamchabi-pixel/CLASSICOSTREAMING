@@ -11,6 +11,106 @@ interface MovieDetailViewProps {
   onSimilarClick?: (id: any) => void;
 }
 
+export function resolveTvProgress(targetMovie: Movie, fullTargetMovie?: Movie): { season: number; episode: number } | null {
+  try {
+    const isTv = Boolean(
+      targetMovie?.isTv || 
+      fullTargetMovie?.isTv || 
+      (targetMovie as any)?.media_type === "tv" ||
+      (fullTargetMovie as any)?.media_type === "tv" ||
+      String(targetMovie?.id || "").endsWith("-tv") || 
+      String(fullTargetMovie?.id || "").endsWith("-tv")
+    );
+    if (!isTv) return null;
+
+    const rawId = String(targetMovie?.id || "");
+    const fullId = String(fullTargetMovie?.id || "");
+    const cleanId = rawId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const cleanFullId = fullId.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const tmdbId = String(targetMovie?.tmdbId || fullTargetMovie?.tmdbId || targetMovie?.providerIds?.Tmdb || fullTargetMovie?.providerIds?.Tmdb || cleanId).replace(/-tv$/, "");
+
+    // 1. Check if ID itself has explicit -S{s}E{e}
+    const matchId = rawId.match(/-S(\d+)E(\d+)/i) || fullId.match(/-S(\d+)E(\d+)/i);
+    if (matchId) {
+      return { season: parseInt(matchId[1], 10), episode: parseInt(matchId[2], 10) };
+    }
+
+    const candidateKeys = Array.from(new Set([
+      rawId,
+      fullId,
+      cleanId,
+      `${cleanId}-tv`,
+      cleanFullId,
+      `${cleanFullId}-tv`,
+      tmdbId,
+      `${tmdbId}-tv`,
+      targetMovie?.id ? String(targetMovie.id) : "",
+      fullTargetMovie?.id ? String(fullTargetMovie.id) : ""
+    ])).filter(Boolean);
+
+    // 2. Check classico_tv_state
+    const tvStateStr = localStorage.getItem("classico_tv_state");
+    if (tvStateStr) {
+      const tvState = JSON.parse(tvStateStr);
+      for (const k of candidateKeys) {
+        if (tvState[k]?.season && tvState[k]?.episode) {
+          const s = Number(tvState[k].season);
+          const e = Number(tvState[k].episode);
+          if (s > 0 && e > 0) return { season: s, episode: e };
+        }
+      }
+    }
+
+    // 3. Check classico_progress
+    const progressStr = localStorage.getItem("classico_progress");
+    if (progressStr) {
+      const prog = JSON.parse(progressStr);
+      for (const k of candidateKeys) {
+        const item = prog[k];
+        if (item && typeof item === "object") {
+          if (item.last_season_watched && item.last_episode_watched) {
+            const s = Number(item.last_season_watched);
+            const e = Number(item.last_episode_watched);
+            if (s > 0 && e > 0) return { season: s, episode: e };
+          }
+          if (item.show_progress && typeof item.show_progress === "object") {
+            const keys = Object.keys(item.show_progress);
+            if (keys.length > 0) {
+              const lastKey = keys[keys.length - 1];
+              const epData = item.show_progress[lastKey];
+              if (epData?.season && epData?.episode) {
+                return { season: Number(epData.season), episode: Number(epData.episode) };
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 4. Check classico_history (most recent items first)
+    const historyStr = localStorage.getItem("classico_history");
+    if (historyStr) {
+      const hist = JSON.parse(historyStr);
+      if (Array.isArray(hist)) {
+        for (const hId of hist) {
+          const sHId = String(hId);
+          for (const k of [cleanId, cleanFullId, tmdbId].filter(Boolean)) {
+            if (sHId.includes(k) && sHId.includes("-S")) {
+              const hMatch = sHId.match(/-S(\d+)E(\d+)/i);
+              if (hMatch) {
+                return { season: parseInt(hMatch[1], 10), episode: parseInt(hMatch[2], 10) };
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[TV PROGRESS] Error resolving progress:", err);
+  }
+  return null;
+}
+
 export default function MovieDetailView({
   movie,
   onBack,
@@ -22,7 +122,16 @@ export default function MovieDetailView({
   React.useEffect(() => {
     setFullMovie(movie);
   }, [movie]);
-  const [selectedSeason, setSelectedSeason] = React.useState(fullMovie.seasons && fullMovie.seasons.length > 0 ? fullMovie.seasons[0].season_number : 1);
+
+  const initialProgress = React.useMemo(() => resolveTvProgress(movie, fullMovie), [movie, fullMovie]);
+  const [lastWatched, setLastWatched] = React.useState<{season: number, episode: number} | null>(initialProgress);
+  const [selectedSeason, setSelectedSeason] = React.useState<number>(() => {
+    if (initialProgress?.season) return initialProgress.season;
+    if (fullMovie.seasons && fullMovie.seasons.length > 0) {
+      return fullMovie.seasons.find((s: any) => s.season_number > 0)?.season_number || fullMovie.seasons[0].season_number;
+    }
+    return 1;
+  });
   const [episodes, setEpisodes] = React.useState<any[]>([]);
   const [isSeasonDropdownOpen, setIsSeasonDropdownOpen] = React.useState(false);
     
@@ -39,21 +148,31 @@ export default function MovieDetailView({
       })
       .catch(console.error);
   }, [movie.id, movie.isTv]);
-  const [lastWatched, setLastWatched] = React.useState<{season: number, episode: number} | null>(null);
 
+  // Synchronize TV series progress and active season
   React.useEffect(() => {
-    if (fullMovie.isTv) {
-      try {
-        const tvState = JSON.parse(localStorage.getItem("classico_tv_state") || "{}");
-        if (tvState[movie.id]) {
-          setLastWatched(tvState[movie.id]);
-          if (!selectedSeason || fullMovie.seasons?.length && selectedSeason === fullMovie.seasons[0].season_number) {
-            setSelectedSeason(tvState[movie.id].season);
-          }
-        }
-      } catch (e) {}
+    const isTv = Boolean(fullMovie.isTv || movie.isTv || String(fullMovie.id || "").endsWith("-tv"));
+    if (isTv) {
+      const prog = resolveTvProgress(movie, fullMovie);
+      if (prog) {
+        setLastWatched(prog);
+        setSelectedSeason(prog.season);
+      }
     }
-  }, [fullMovie.id, fullMovie.isTv]);
+  }, [fullMovie.id, fullMovie.isTv, movie.id, movie.isTv]);
+
+  // Keep selected season valid when fullMovie.seasons loads
+  React.useEffect(() => {
+    if (fullMovie.seasons && fullMovie.seasons.length > 0) {
+      const prog = resolveTvProgress(movie, fullMovie);
+      if (prog && fullMovie.seasons.some((s: any) => s.season_number === prog.season)) {
+        setSelectedSeason(prog.season);
+      } else if (!fullMovie.seasons.some((s: any) => s.season_number === selectedSeason)) {
+        const firstValid = fullMovie.seasons.find((s: any) => s.season_number > 0)?.season_number || fullMovie.seasons[0].season_number;
+        setSelectedSeason(firstValid);
+      }
+    }
+  }, [fullMovie.seasons]);
 
   React.useEffect(() => {
     if (fullMovie.isTv && selectedSeason) {
@@ -122,16 +241,42 @@ export default function MovieDetailView({
   
   const handlePlayEpisode = (seasonNum: number, episodeNum: number) => {
     const isTv = Boolean(fullMovie.isTv || movie.isTv || String(fullMovie.id || "").endsWith("-tv"));
-    let baseId = String(fullMovie.id || "").replace(/-S\d+E\d+$/, "");
+    let baseId = String(fullMovie.id || movie.id || "").replace(/-S\d+E\d+$/, "");
     if (isTv && !baseId.endsWith("-tv")) {
       baseId = `${baseId}-tv`;
     }
+    const cleanId = baseId.replace(/-tv$/, "");
+    const tmdbId = String(fullMovie.tmdbId || movie.tmdbId || cleanId).replace(/-tv$/, "");
+    const keys = Array.from(new Set([
+      baseId,
+      cleanId,
+      `${cleanId}-tv`,
+      tmdbId,
+      `${tmdbId}-tv`,
+      String(movie.id),
+      String(fullMovie.id)
+    ])).filter(Boolean);
+
     try {
       const tvState = JSON.parse(localStorage.getItem("classico_tv_state") || "{}");
-      tvState[movie.id] = { season: seasonNum, episode: episodeNum };
-      tvState[baseId] = { season: seasonNum, episode: episodeNum };
+      keys.forEach(k => {
+        tvState[k] = { season: seasonNum, episode: episodeNum };
+      });
       localStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+
+      const prog = JSON.parse(localStorage.getItem("classico_progress") || "{}");
+      keys.forEach(k => {
+        if (!prog[k] || typeof prog[k] !== "object") {
+          prog[k] = { id: k, type: "tv", show_progress: {} };
+        }
+        prog[k].type = "tv";
+        prog[k].last_season_watched = seasonNum;
+        prog[k].last_episode_watched = episodeNum;
+      });
+      localStorage.setItem("classico_progress", JSON.stringify(prog));
+      window.dispatchEvent(new CustomEvent("classico_progress_updated"));
       setLastWatched({ season: seasonNum, episode: episodeNum });
+      setSelectedSeason(seasonNum);
     } catch (e) {}
     onPlay(`${baseId}-S${seasonNum}E${episodeNum}`);
   };
@@ -289,10 +434,22 @@ export default function MovieDetailView({
                       onPlay(fullMovie.id);
                     }
                   }}
-                  className="inline-flex items-center gap-2.5 gold-button px-6 py-3 sm:px-8 sm:py-3.5 [@media(max-height:500px)_and_(orientation:landscape)]:px-4 [@media(max-height:500px)_and_(orientation:landscape)]:py-2 rounded-full text-[13px] [@media(max-height:500px)_and_(orientation:landscape)]:text-[11px] tracking-widest uppercase transition-all duration-200 active:scale-95 cursor-pointer font-bold"
+                  className="relative group inline-flex items-center gap-2.5 bg-gradient-to-b from-neutral-800/90 via-neutral-900/95 to-black border border-white/10 hover:border-amber-400/40 text-white px-7 py-3.5 sm:px-9 sm:py-4 [@media(max-height:500px)_and_(orientation:landscape)]:px-5 [@media(max-height:500px)_and_(orientation:landscape)]:py-2.5 rounded-xl text-[13px] [@media(max-height:500px)_and_(orientation:landscape)]:text-[11px] tracking-widest uppercase transition-all duration-300 hover:scale-102 active:scale-95 cursor-pointer font-bold shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] overflow-hidden"
                 >
-                  <Play className="w-4 h-4 fill-current" />
-                  {fullMovie.isTv ? (lastWatched ? `PLAY S${String(lastWatched.season).padStart(2, '0')}E${String(lastWatched.episode).padStart(2, '0')}` : `PLAY S${String(selectedSeason || 1).padStart(2, '0')}E01`) : 'Watch'}
+                  <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                  <Play className="w-4 h-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="text-zinc-100 group-hover:text-white font-bold tracking-wider">
+                    {fullMovie.isTv ? (
+                      lastWatched ? (
+                        <span>CONTINUE S{String(lastWatched.season).padStart(2, '0')}E{String(lastWatched.episode).padStart(2, '0')}</span>
+                      ) : (
+                        <span>PLAY S{String(selectedSeason || 1).padStart(2, '0')}E01</span>
+                      )
+                    ) : (
+                      <span>Watch</span>
+                    )}
+                  </span>
+                  <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />
                 </button>
                 
                 <button onClick={() => setShowTrailerModal(true)} className="inline-flex items-center gap-2.5 bg-zinc-800/80 hover:bg-zinc-700/80 text-white px-6 py-3 sm:px-8 sm:py-3.5 [@media(max-height:500px)_and_(orientation:landscape)]:px-4 [@media(max-height:500px)_and_(orientation:landscape)]:py-2 rounded-full text-[13px] [@media(max-height:500px)_and_(orientation:landscape)]:text-[11px] tracking-widest uppercase transition-all duration-200 active:scale-95 cursor-pointer font-bold border border-zinc-700/50 hover:border-zinc-500/50">
@@ -387,56 +544,69 @@ export default function MovieDetailView({
           </div>
           <div className="flex flex-col gap-4 relative z-10">
             {episodes.length > 0 ? (
-              episodes.map((ep) => (
-                <div
-                  key={ep.episode_number}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => handlePlayEpisode(selectedSeason, ep.episode_number)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handlePlayEpisode(selectedSeason, ep.episode_number);
-                    }
-                  }}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-zinc-900/30 hover:bg-zinc-800/80 rounded-xl p-3 transition-colors text-left border border-transparent hover:border-zinc-700/50 cursor-pointer"
-                >
-                  <div className="relative shrink-0 w-full sm:w-40 aspect-video rounded-lg overflow-hidden bg-zinc-800">
-                    {ep.stillUrl && ep.stillUrl.trim() ? (
-                      <img src={ep.stillUrl.trim()} referrerPolicy="no-referrer" alt={ep.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                        <Film className="w-6 h-6" />
+              episodes.map((ep) => {
+                const isCurrentEpisode = Boolean(
+                  lastWatched && 
+                  lastWatched.season === selectedSeason && 
+                  lastWatched.episode === ep.episode_number
+                );
+                return (
+                  <div
+                    key={ep.episode_number}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handlePlayEpisode(selectedSeason, ep.episode_number)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handlePlayEpisode(selectedSeason, ep.episode_number);
+                      }
+                    }}
+                    className={`group flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-xl p-3 transition-all text-left cursor-pointer border ${
+                      isCurrentEpisode
+                        ? "bg-amber-500/10 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/30"
+                        : "bg-zinc-900/30 hover:bg-zinc-800/80 border-transparent hover:border-zinc-700/50"
+                    }`}
+                  >
+                    <div className="relative shrink-0 w-full sm:w-40 aspect-video rounded-lg overflow-hidden bg-zinc-800">
+                      {ep.stillUrl && ep.stillUrl.trim() ? (
+                        <img src={ep.stillUrl.trim()} referrerPolicy="no-referrer" alt={ep.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                          <Film className="w-6 h-6" />
+                        </div>
+                      )}
+                      <div className={`absolute inset-0 transition-colors ${isCurrentEpisode ? "bg-amber-950/20" : "bg-black/20 group-hover:bg-black/40"}`} />
+                      <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${isCurrentEpisode ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border shadow-lg ${isCurrentEpisode ? "bg-amber-500 text-black border-amber-400" : "bg-black/60 text-white border-white/20"}`}>
+                          <Play className="w-4 h-4 fill-current ml-0.5" />
+                        </div>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center border border-white/20">
-                        <Play className="w-4 h-4 text-white fill-current ml-0.5" />
-                      </div>
+                      {ep.runtime > 0 && (
+                        <div className="absolute bottom-1.5 right-1.5 bg-black/80 px-1.5 py-0.5 rounded text-[10px] font-bold text-white">
+                          {ep.runtime}m
+                        </div>
+                      )}
                     </div>
-                    {ep.runtime > 0 && (
-                      <div className="absolute bottom-1.5 right-1.5 bg-black/80 px-1.5 py-0.5 rounded text-[10px] font-bold text-white">
-                        {ep.runtime}m
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-4 mb-1">
-                      
-                      <h4 className="text-sm font-bold text-zinc-100 group-hover:text-amber-400 transition-colors flex items-center gap-2">
-                        <span className="truncate">{ep.episode_number}. {ep.name}</span>
-                        {watchedEpisodes[`s${selectedSeason}e${ep.episode_number}`] && (
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-4 mb-1">
+                        <h4 className={`text-sm font-bold transition-colors flex items-center flex-wrap gap-2 ${isCurrentEpisode ? "text-amber-400" : "text-zinc-100 group-hover:text-amber-400"}`}>
+                          <span className="truncate">{ep.episode_number}. {ep.name}</span>
+                          {isCurrentEpisode && (
+                            <span className="text-[10px] font-black bg-amber-500 text-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm shrink-0">
+                              <Play className="w-2.5 h-2.5 fill-current" /> RESUME
+                            </span>
+                          )}
+                          {watchedEpisodes[`s${selectedSeason}e${ep.episode_number}`] && !isCurrentEpisode && (
                             <span className="text-[10px] bg-green-500/20 text-green-500 px-1.5 py-0.5 rounded border border-green-500/30 flex items-center gap-1 shrink-0"><CheckCircle className="w-3 h-3"/> Watched</span>
-                        )}
-                      </h4>
-
+                          )}
+                        </h4>
+                      </div>
+                      
+                      <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed mt-1">
+                        {ep.overview || "No description available."}
+                      </p>
                     </div>
-                    
-                    <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed mt-1">
-                      {ep.overview || "No description available."}
-                    </p>
-                  </div>
                     <div className="shrink-0 pl-2">
                       <button 
                         type="button"
@@ -447,9 +617,9 @@ export default function MovieDetailView({
                         <Download className="w-4 h-4" />
                       </button>
                     </div>
-
-                </div>
-              ))
+                  </div>
+                );
+              })
             ) : (
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>

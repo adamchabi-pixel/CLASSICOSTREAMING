@@ -18,7 +18,7 @@ import MovieCard from "./components/MovieCard";
 import { MomentumCarousel } from "./components/MomentumCarousel";
 import LibraryView from "./components/LibraryView";
 const MovieModal = React.lazy(() => import("./components/MovieModal"));
-import MovieDetailView from "./components/MovieDetailView";
+import MovieDetailView, { resolveTvProgress } from "./components/MovieDetailView";
 const CinemaPlayerView = React.lazy(() => import("./components/CinemaPlayerView"));
 import ErrorBoundary from "./components/ErrorBoundary";
 import LazyVirtualCard from "./components/LazyVirtualCard";
@@ -29,6 +29,7 @@ import ProfileDropdown from "./components/ProfileDropdown";
 import NotificationDropdown from "./components/NotificationDropdown";
 import UserProfileView from "./components/UserProfileView";
 import RecommendedView from "./components/RecommendedView";
+import PlatformShowcase from "./components/PlatformShowcase";
 
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
@@ -677,6 +678,19 @@ const isAnimeOrAdultKeyword = (q: string) => {
   return banned.some(b => term.includes(b));
 };
 
+// Immediate instant preload of the primary hero assets as soon as JS evaluates
+if (typeof window !== "undefined" && heroMoviesData?.heroes?.length > 0) {
+  const firstHero = heroMoviesData.heroes[0];
+  if (firstHero?.backdropUrl) {
+    const img = new window.Image();
+    img.src = firstHero.backdropUrl;
+  }
+  if (firstHero?.logoUrl) {
+    const logo = new window.Image();
+    logo.src = firstHero.logoUrl;
+  }
+}
+
 export default function App() {
 
 
@@ -798,6 +812,29 @@ export default function App() {
   const [routePath, setRoutePath] = useState(initialPath);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const [selectedPlatformFilter, setSelectedPlatformFilter] = useState<number | null>(null);
+
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>(() => {
+    try {
+      const cached = localStorage.getItem("classico_live_trending_v2");
+      const timeStr = localStorage.getItem("classico_live_trending_time");
+      if (cached) {
+        const time = timeStr ? parseInt(timeStr) : 0;
+        if (Date.now() - time < 2 * 60 * 60 * 1000) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      }
+    } catch (e) {}
+    const defaultTrending = RAW_COLLECTIONS.find(c => c.id === "trending-now")?.movies;
+    return defaultTrending && defaultTrending.length > 0 ? defaultTrending : [];
+  });
+
+  const handlePlatformSeeAll = (platformId: number) => {
+    setSelectedPlatformFilter(platformId);
+    navigateTo("/collections");
+  };
+
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -888,6 +925,23 @@ export default function App() {
   } = useAuth();
 
   useEffect(() => {
+    // Graceful cinematic fade-out of the startup screen once App renders
+    const startupScreen = document.getElementById("startup-screen");
+    if (startupScreen) {
+      const timer = setTimeout(() => {
+        startupScreen.style.opacity = "0";
+        startupScreen.style.transform = "scale(1.04)";
+        setTimeout(() => {
+          try {
+            startupScreen.remove();
+          } catch(e) {}
+        }, 700);
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
     setWatchlist(authWatchlist || []);
   }, [authWatchlist]);
 
@@ -921,13 +975,28 @@ export default function App() {
   const isJellyfinLoading = false;
   const jellyfinConfig = null;
 
-  // Preload only active hero backdrop in advance
+  // Preload active and next hero backdrop and logo in advance
   useEffect(() => {
     if (heroMovies && heroMovies.length > 0) {
       const active = heroMovies[currentHeroIndex] || heroMovies[0];
       if (active?.backdropUrl) {
         const img = new window.Image();
         img.src = active.backdropUrl;
+      }
+      if (active?.logoUrl) {
+        const logo = new window.Image();
+        logo.src = active.logoUrl;
+      }
+      // Preload next hero slide in background
+      const nextIndex = (currentHeroIndex + 1) % heroMovies.length;
+      const next = heroMovies[nextIndex];
+      if (next?.backdropUrl) {
+        const nextImg = new window.Image();
+        nextImg.src = next.backdropUrl;
+      }
+      if (next?.logoUrl) {
+        const nextLogo = new window.Image();
+        nextLogo.src = next.logoUrl;
       }
     }
   }, [heroMovies, currentHeroIndex]);
@@ -1051,7 +1120,14 @@ export default function App() {
   // Dynamically map movies into collections & genres by checking server presence
   const mappedCollections = React.useMemo(() => {
 
-    if (!allMoviesBase || allMoviesBase.length === 0) return COLLECTIONS;
+    const collectionsToUse = COLLECTIONS.map(col => {
+      if (col.id === "trending-now" && trendingMovies.length > 0) {
+        return { ...col, movies: trendingMovies };
+      }
+      return col;
+    });
+
+    if (!allMoviesBase || allMoviesBase.length === 0) return collectionsToUse;
 
     const matchedServersMovieIds = new Set<string>();
 
@@ -1069,8 +1145,13 @@ export default function App() {
 
     // 1. Process standard Saga Collections (Christopher Nolan, John Wick, etc.)
     // Keep ONLY movies actually found on the server, and drop empty collections
-    const curatedSagaCollections = COLLECTIONS.map((collection) => {
-      const enrichedMovies = collection.movies
+    const curatedSagaCollections = collectionsToUse.map((collection) => {
+      const isTrendingCol = collection.id === "trending-now";
+      const sourceMovies = (isTrendingCol && trendingMovies.length > 0)
+        ? trendingMovies
+        : collection.movies;
+
+      const enrichedMovies = sourceMovies
         .map((movie) => {
           const match = fastFindMatch(movie);
           if (match) {
@@ -1113,17 +1194,20 @@ export default function App() {
         .filter((m): m is Movie => m !== null);
 
       // Dynamically load unmatched movies from Jellyfin that belong to this saga!
-      allMoviesBase.forEach((jf) => {
-        const sagaIds = getDynamicSagaIds(jf);
-        if (sagaIds.includes(collection.id)) {
-          // Check if it's already represented to prevent duplicate titles
-          if (!enrichedMovies.some(m => isMovieMatch(m.title, jf.title))) {
-            const enriched = enrichDynamicMovie(jf, collection.id);
-            enrichedMovies.push(enriched);
-            matchedServersMovieIds.add(jf.id);
+      // (Skip for trending-now to keep only authentic trending titles)
+      if (!isTrendingCol) {
+        allMoviesBase.forEach((jf) => {
+          const sagaIds = getDynamicSagaIds(jf);
+          if (sagaIds.includes(collection.id)) {
+            // Check if it's already represented to prevent duplicate titles
+            if (!enrichedMovies.some(m => isMovieMatch(m.title, jf.title))) {
+              const enriched = enrichDynamicMovie(jf, collection.id);
+              enrichedMovies.push(enriched);
+              matchedServersMovieIds.add(jf.id);
+            }
           }
-        }
-      });
+        });
+      }
 
       // SORT ACCORDING TO RECOMMENDED CHRONOLOGICAL OR OFFICIAL RELEASE ORDER
       const sortedMovies = sortSagaMovies(collection.id, enrichedMovies);
@@ -1314,7 +1398,7 @@ export default function App() {
         movies: uniqueMovies
       };
     }).filter((col) => col.movies.length > 0);
-  }, [allMoviesBase, collectionMods]);
+  }, [allMoviesBase, collectionMods, trendingMovies]);
 
   const toggleCollection = (collectionId: string) => {
     setExpandedCollections(prev => ({
@@ -1580,15 +1664,10 @@ export default function App() {
       
       let pId = baseId;
       if (isTv) {
-        try {
-          const tvState = (JSON.parse(localStorage.getItem("classico_tv_state") || "{}") || {});
-          const state = tvState[movie.id] || tvState[baseId] || (movie.tmdbId ? tvState[String(movie.tmdbId)] : null);
-          const s = state ? state.season : 1;
-          const e = state ? state.episode : 1;
-          pId = `${baseId}-S${s}E${e}`;
-        } catch(e) {
-          pId = `${baseId}-S1E1`;
-        }
+        const prog = resolveTvProgress(movie);
+        const s = prog ? prog.season : 1;
+        const e = prog ? prog.episode : 1;
+        pId = `${baseId}-S${s}E${e}`;
       }
       
       // Préchargement immédiat de l'API de playback au clic pour devancer la navigation de la page
@@ -1724,41 +1803,32 @@ export default function App() {
   const [isSearchingTmdb, setIsSearchingTmdb] = useState(false);
 
   useEffect(() => {
+    let lastFetched = 0;
     const fetchTrending = async () => {
       try {
-        const TMDB_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs";
-        const response = await fetch('/api/trending');
-        if (!response.ok) return;
+        const response = await fetch('/api/trending?type=movie');
+        if (!response.ok) throw new Error("Trending API response not ok");
         const data = await response.json();
-        const results = (data.results || []).map((m: any) => {
-          const title = m.title || m.name || m.original_title || m.original_name;
-          const isTv = m.media_type === "tv";
-          return {
-            id: isTv ? `${m.id}-tv` : String(m.id),
-            tmdbId: String(m.id),
-            isTv,
-            title,
-            originalTitle: m.original_title || m.original_name,
-            description: m.overview || "",
-            posterUrl: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
-            backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w780${m.backdrop_path}` : null,
-            year: parseInt((m.release_date || m.first_air_date || "0").split("-")[0]) || 0,
-            voteAverage: m.vote_average,
-            director: "Unknown",
-            cast: [],
-            genre: [],
-            isIframeEmbed: true,
-            iframeSrc: ""
-          };
-        });
+        const results = (data.results || []).map((m: any) => ({
+          ...m,
+          isIframeEmbed: true,
+          iframeSrc: ""
+        }));
 
         if (results.length > 0) {
+          setTrendingMovies(results);
+          lastFetched = Date.now();
+          try {
+            localStorage.setItem("classico_live_trending_v2", JSON.stringify(results));
+            localStorage.setItem("classico_live_trending_time", String(Date.now()));
+          } catch (e) {}
           setTmdbCache(prev => {
-            const data = { results };
             const map = new Map(prev.map(m => [m.id, m]));
-            data.results.forEach((m: any) => map.set(m.id, m));
+            results.forEach((m: any) => map.set(m.id, m));
             const newCache = Array.from(map.values());
-            localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
+            try {
+              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
+            } catch (e) {}
             return newCache;
           });
           return;
@@ -1770,7 +1840,7 @@ export default function App() {
       // Fallback for static deployments
       const tmdbToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs";
       try {
-        const res = await fetch('https://api.tmdb.org/3/trending/all/day?language=en-US', {
+        const res = await fetch('https://api.tmdb.org/3/trending/movie/day?language=en-US', {
             headers: {
                 "Authorization": `Bearer ${tmdbToken}`,
                 "Accept": "application/json"
@@ -1794,37 +1864,64 @@ export default function App() {
               return false;
             };
             const validResults = m.results.filter((r: any) => !isAnimeOrAdult(r));
-            const formatted = validResults.map((r: any) => {
-              const isTv = r.media_type === "tv";
-              return {
-                id: String(r.id) + (isTv ? "-tv" : ""),
-                tmdbId: String(r.id),
-                isTv,
-                title: isTv ? r.name : r.title,
-                originalTitle: isTv ? r.original_name : r.original_title,
-                description: r.overview,
-                posterUrl: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : "",
-                backdropUrl: r.backdrop_path ? `https://image.tmdb.org/t/p/w780${r.backdrop_path}` : "",
-                year: r.release_date ? parseInt(r.release_date.split("-")[0]) : (r.first_air_date ? parseInt(r.first_air_date.split("-")[0]) : 0),
-                voteAverage: r.vote_average,
-                isIframeEmbed: true,
-                iframeSrc: ""
-              };
-            });
-            setTmdbCache(prev => {
-              const map = new Map(prev.map((item: any) => [item.id, item]));
-              formatted.forEach((item: any) => map.set(item.id, item));
-              const newCache = Array.from(map.values());
-              localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
-              return newCache;
-            });
+            const formatted = validResults.map((r: any) => ({
+              id: String(r.id),
+              tmdbId: String(r.id),
+              isTv: false,
+              title: r.title,
+              originalTitle: r.original_title,
+              description: r.overview || "",
+              posterUrl: r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : "",
+              backdropUrl: r.backdrop_path ? `https://image.tmdb.org/t/p/w1280${r.backdrop_path}` : "",
+              year: r.release_date ? parseInt(r.release_date.split("-")[0]) : 0,
+              releaseDate: r.release_date,
+              voteAverage: r.vote_average,
+              rating: r.vote_average ? r.vote_average.toFixed(1) : "?",
+              director: "Unknown",
+              cast: [],
+              genre: ["Trending"],
+              isIframeEmbed: true,
+              iframeSrc: ""
+            }));
+            if (formatted.length > 0) {
+              setTrendingMovies(formatted);
+              lastFetched = Date.now();
+              try {
+                localStorage.setItem("classico_live_trending_v2", JSON.stringify(formatted));
+                localStorage.setItem("classico_live_trending_time", String(Date.now()));
+              } catch (e) {}
+              setTmdbCache(prev => {
+                const map = new Map(prev.map((item: any) => [item.id, item]));
+                formatted.forEach((item: any) => map.set(item.id, item));
+                const newCache = Array.from(map.values());
+                try {
+                  localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
+                } catch (e) {}
+                return newCache;
+              });
+            }
           }
         }
       } catch (err) {
         console.error("TMDB Fallback failed:", err);
       }
     };
+
     fetchTrending();
+    // Auto-update trending movies periodically without manual intervention
+    const intervalId = setInterval(fetchTrending, 15 * 60 * 1000);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && Date.now() - lastFetched > 30 * 60 * 1000) {
+        fetchTrending();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   
@@ -2612,7 +2709,7 @@ export default function App() {
             /* ========================================================== */
             <motion.div
               key="tab-accueil"
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="space-y-6 sm:space-y-12"
@@ -2647,10 +2744,10 @@ export default function App() {
                 >
                   
                   {/* Cover Image Layer with smooth fade and very slow, subtle cinematic zoom-in */}
-                  <AnimatePresence mode="sync">
+                  <AnimatePresence mode="sync" initial={false}>
                     <motion.div
                       key={`hero-bg-${heroMovie.id}`}
-                      initial={{ opacity: 0 }}
+                      initial={false}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -2660,8 +2757,9 @@ export default function App() {
                         src={(heroMovie.backdropUrl && heroMovie.backdropUrl.trim()) || CLASSICO_HERO_BACKDROP}
                         alt={heroMovie.title}
                         referrerPolicy="no-referrer"
-                        decoding="async"
+                        decoding="sync"
                         loading="eager"
+                        fetchPriority="high"
                         initial={{ scale: 1.0 }}
                         animate={{ scale: 1.02 }}
                         transition={{ duration: 16, ease: "linear" }}
@@ -2684,10 +2782,10 @@ export default function App() {
                   />
                   
                   {/* Spotlight Content and Description Box with distinct text entrance transition */}
-                  <AnimatePresence mode="wait">
+                  <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={`hero-content-${heroMovie.id}`}
-                      initial={{ opacity: 0, y: 16 }}
+                      initial={false}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -12 }}
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
@@ -2705,6 +2803,9 @@ export default function App() {
                                 alt={heroMovie.title}
                                 className="h-20 xs:h-24 sm:h-32 md:h-38 lg:h-44 max-h-48 w-auto object-contain max-w-[85%] sm:max-w-[70%] md:max-w-[60%] mx-auto select-none pointer-events-none transition-transform duration-300 hover:scale-102"
                                 referrerPolicy="no-referrer"
+                                decoding="sync"
+                                loading="eager"
+                                fetchPriority="high"
                                 onError={() => {
                                   setUseTextTitleForHero(true);
                                 }}
@@ -2858,9 +2959,18 @@ export default function App() {
                         className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
                       >
                         {resumeMovies.map((movie, idx) => (
-                          <LazyVirtualCard key={`resume-${movie.id}-${idx}`} priority={idx < 6}>
+                          <LazyVirtualCard 
+                            key={`resume-${movie.id}-${idx}`} 
+                            priority={idx < 6}
+                            className="shrink-0 flex items-start"
+                            placeholderClassName="w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px] aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30"
+                          >
                             <MovieCard
                               movie={movie}
+                              variant="rectangular"
+                              expandOnHover={true}
+                              cardWidthClass="w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px]"
+                              hideBadge={true}
                               onSelect={(m) => handleOpenMovie(m, false)}
                               onPlay={(m) => handleOpenMovie(m, false)}
                               progressPercent={getProgress(movie.id)}
@@ -2924,89 +3034,108 @@ export default function App() {
                     </div>
 
                 <div className="flex flex-col gap-6 sm:gap-8 divide-y divide-zinc-700/60">
-                  {mappedCollections.map((collection, idx) => (
-                    <div key={collection.id} className={`space-y-4 text-left ${idx > 0 ? "pt-6 sm:pt-8" : ""}`}>
-                      {/* Collection Header with name and 'View All' button */}
-                      <div className="flex flex-row items-center sm:items-end justify-between gap-2 sm:gap-3 border-b border-zinc-900 pb-2 sm:pb-3">
-                        <div className="space-y-0.5 max-w-[80%]">
-                          <span className="text-[8px] sm:text-[9px] font-mono tracking-[2px] sm:tracking-[3px] text-zinc-500 uppercase font-bold">
-                            CINEMA COLLECTION • {collection.movies.length} TITLES
-                          </span>
-                          <h3 className="text-base sm:text-2xl font-cinzel font-bold text-white uppercase tracking-widest leading-tight truncate">
-                            {collection.title}
-                          </h3>
-                        </div>
+                  {mappedCollections.map((collection, idx) => {
+                    const isComedyGold = collection.id === "comedy-gold" || 
+                      collection.title.toLowerCase().includes("comedy gold") || 
+                      collection.title.toLowerCase().includes("best comedy");
 
-                        <button
-                          onClick={() => {
-                            navigateTo("/collection-detail/" + collection.id);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className="shrink-0 inline-flex items-center justify-center gap-1.5 text-[#e5c158] hover:text-white transition-all duration-200 sm:bg-[#BF953F]/5 sm:hover:bg-[#BF953F]/15 sm:border sm:border-[#BF953F]/40 sm:hover:border-[#FCF6BA]/60 sm:px-3.5 sm:py-1.5 sm:rounded-full cursor-pointer p-1.5 sm:p-0"
-                        >
-                          <span className="hidden sm:inline text-[10px] font-mono font-bold tracking-[1.5px] uppercase">
-                            VIEW ALL
-                          </span>
-                          <ChevronRight className="w-5 h-5 sm:w-3 sm:h-3" />
-                        </button>
-                      </div>
+                    return (
+                      <React.Fragment key={collection.id}>
+                        <div className={`space-y-4 text-left ${idx > 0 ? "pt-6 sm:pt-8" : ""}`}>
+                          {/* Collection Header with name */}
+                          <div className="flex flex-row items-center sm:items-end justify-between gap-2 sm:gap-3 border-b border-zinc-900 pb-2 sm:pb-3">
+                            <div className="space-y-0.5">
+                              <span className="text-[8px] sm:text-[9px] font-mono tracking-[2px] sm:tracking-[3px] text-zinc-500 uppercase font-bold">
+                                CINEMA COLLECTION • {collection.movies.length} TITLES
+                              </span>
+                              <h3 
+                                onClick={() => {
+                                  navigateTo("/collection-detail/" + collection.id);
+                                  window.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                                className="text-base sm:text-2xl font-cinzel font-bold text-white hover:text-amber-400 uppercase tracking-widest leading-tight truncate cursor-pointer transition-colors"
+                              >
+                                {collection.title}
+                              </h3>
+                            </div>
+                          </div>
 
-                      {/* Smooth Horizontal Carousel Row of Movies */}
-                      <div 
-                        className="relative group/carousel"
-                        onMouseEnter={() => { hoveredCarousels.current[collection.id] = true; }}
-                        onMouseLeave={() => { hoveredCarousels.current[collection.id] = false; }}
-                      >
-                        {/* Navigation chevron triggers */}
-                        <div className="absolute inset-y-0 left-2 flex items-center z-20 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-200 pointer-events-none">
-                          <button
-                            onClick={() => scrollCarousel(collection.id, "left")}
-                            className="bg-black/80 hover:bg-zinc-900 border border-zinc-800 text-stone-200 hover:text-amber-400 p-2 rounded-full shadow-lg transition-all duration-150 pointer-events-auto active:scale-95 cursor-pointer"
-                            title="Previous"
+                          {/* Smooth Horizontal Carousel Row of Movies */}
+                          <div 
+                            className="relative group/carousel"
+                            onMouseEnter={() => { hoveredCarousels.current[collection.id] = true; }}
+                            onMouseLeave={() => { hoveredCarousels.current[collection.id] = false; }}
                           >
-                            <ChevronLeft className="w-4 h-4" />
-                          </button>
-                        </div>
+                            {/* Navigation chevron triggers */}
+                            <div className="absolute inset-y-0 left-2 flex items-center z-20 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              <button
+                                onClick={() => scrollCarousel(collection.id, "left")}
+                                className="bg-black/80 hover:bg-zinc-900 border border-zinc-800 text-stone-200 hover:text-amber-400 p-2 rounded-full shadow-lg transition-all duration-150 pointer-events-auto active:scale-95 cursor-pointer"
+                                title="Previous"
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </button>
+                            </div>
 
-                        <div className="absolute inset-y-0 right-2 flex items-center z-20 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-200 pointer-events-none">
-                          <button
-                            onClick={() => scrollCarousel(collection.id, "right")}
-                            className="bg-black/80 hover:bg-zinc-900 border border-zinc-800 text-stone-200 hover:text-amber-400 p-2 rounded-full shadow-lg transition-all duration-150 pointer-events-auto active:scale-95 cursor-pointer"
-                            title="Next"
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
-                        </div>
+                            <div className="absolute inset-y-0 right-2 flex items-center z-20 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-200 pointer-events-none">
+                              <button
+                                onClick={() => scrollCarousel(collection.id, "right")}
+                                className="bg-black/80 hover:bg-zinc-900 border border-zinc-800 text-stone-200 hover:text-amber-400 p-2 rounded-full shadow-lg transition-all duration-150 pointer-events-auto active:scale-95 cursor-pointer"
+                                title="Next"
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </div>
 
-                        {/* Horizontal movie items flex row with momentum braking scroll */}
-                        <MomentumCarousel
-                          id={`carousel-container-${collection.id}`}
-                          containerRef={(el) => {
-                            carouselRefs.current[collection.id] = el;
-                          }}
-                          className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
-                        >
-                          {collection.movies.slice(0, 40).map((movie, idx) => (
-                            <LazyVirtualCard 
-                              key={`${collection.id}-${movie.id}`}
-                              priority={idx < 6}
-                              className={collection.id === "trending-now" 
-                                ? "w-[170px] min-[400px]:w-[200px] sm:w-[240px] md:w-[260px] shrink-0 mr-8 sm:mr-12" 
-                                : "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px] shrink-0"}
+                            {/* Horizontal movie items flex row with momentum braking scroll */}
+                            <MomentumCarousel
+                              id={`carousel-container-${collection.id}`}
+                              containerRef={(el) => {
+                                carouselRefs.current[collection.id] = el;
+                              }}
+                              className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
                             >
-                              <MovieCard
-                                movie={movie}
-                                variant="rectangular"
-                                onSelect={(m) => handleOpenMovie(m, false)}
-                                onPlay={(m) => handleOpenMovie(m, false)}
-                                trendingIndex={collection.id === "trending-now" ? idx + 1 : undefined}
-                              />
-                            </LazyVirtualCard>
-                          ))}
-                        </MomentumCarousel>
-                      </div>
-                    </div>
-                  ))}
+                              {collection.movies.slice(0, 40).map((movie, idx) => {
+                                const isTrending = collection.id === "trending-now";
+                                const cardWidth = isTrending 
+                                  ? "w-[170px] min-[400px]:w-[200px] sm:w-[240px] md:w-[260px]" 
+                                  : "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px]";
+
+                                return (
+                                  <LazyVirtualCard 
+                                    key={`${collection.id}-${movie.id}`}
+                                    priority={idx < 6}
+                                    className={`shrink-0 flex items-start ${isTrending ? "mr-8 sm:mr-12" : ""}`}
+                                    placeholderClassName={`${cardWidth} aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30`}
+                                  >
+                                    <MovieCard
+                                      movie={movie}
+                                      variant="rectangular"
+                                      expandOnHover={true}
+                                      cardWidthClass={cardWidth}
+                                      onSelect={(m) => handleOpenMovie(m, false)}
+                                      onPlay={(m) => handleOpenMovie(m, false)}
+                                      trendingIndex={isTrending ? idx + 1 : undefined}
+                                    />
+                                  </LazyVirtualCard>
+                                );
+                              })}
+                            </MomentumCarousel>
+                          </div>
+                        </div>
+
+                        {/* Directly after Best Comedy Gold: Platform Showcase */}
+                        {isComedyGold && (
+                          <PlatformShowcase
+                            onSelectMovie={(m) => handleOpenMovie(m, false)}
+                            onPlayMovie={(m) => handleOpenMovie(m, false)}
+                            getProgress={getProgress}
+                            onSeeAll={handlePlatformSeeAll}
+                          />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
 
                 {/* OTHER BANGERS Section Removed */}
@@ -3021,6 +3150,8 @@ export default function App() {
             <LibraryView 
               key="library-movies"
               type="movie"
+              activePlatform={selectedPlatformFilter}
+              onPlatformChange={setSelectedPlatformFilter}
               onSelect={(m) => handleOpenMovie(m, false)}
               onPlay={(m) => handleOpenMovie(m, false)}
               getProgress={getProgress}
@@ -3032,6 +3163,8 @@ export default function App() {
             <LibraryView 
               key="library-series"
               type="tv"
+              activePlatform={selectedPlatformFilter}
+              onPlatformChange={setSelectedPlatformFilter}
               onSelect={(m) => handleOpenMovie(m, false)}
               onPlay={(m) => handleOpenMovie(m, false)}
               getProgress={getProgress}

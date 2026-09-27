@@ -375,6 +375,41 @@ export default function CinemaPlayerView({
   const [isSeasonModalOpen, setIsSeasonModalOpen] = useState(false);
   const [isEpisodeModalOpen, setIsEpisodeModalOpen] = useState(false);
 
+  // Synchronize current TV series season & episode across all storage keys immediately
+  useEffect(() => {
+    if (isTv && currentSeason && currentEpisode) {
+      const cleanId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      const tmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || cleanId).replace(/-tv$/, "");
+      const candidateKeys = Array.from(new Set([
+        cleanId,
+        `${cleanId}-tv`,
+        tmdb,
+        `${tmdb}-tv`,
+        String(movieId)
+      ])).filter(Boolean);
+
+      try {
+        const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
+        candidateKeys.forEach(k => {
+          tvState[k] = { season: currentSeason, episode: currentEpisode };
+        });
+        safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+
+        const savedProg = JSON.parse(safeStorage.getItem("classico_progress") || "{}");
+        candidateKeys.forEach(k => {
+          if (!savedProg[k] || typeof savedProg[k] !== "object") {
+            savedProg[k] = { id: k, type: "tv", show_progress: {} };
+          }
+          savedProg[k].type = "tv";
+          savedProg[k].last_season_watched = currentSeason;
+          savedProg[k].last_episode_watched = currentEpisode;
+        });
+        safeStorage.setItem("classico_progress", JSON.stringify(savedProg));
+        window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+      } catch (e) {}
+    }
+  }, [isTv, currentSeason, currentEpisode, movieId, passedMovieData?.tmdbId, fetchedDetails?.tmdbId]);
+
   const displaySeasons = useMemo(() => {
     if (seasonsList.length > 0) return seasonsList;
     const num = (fetchedDetails as any)?.number_of_seasons || (passedMovieData as any)?.number_of_seasons || Math.max(currentSeason, 1);
@@ -565,9 +600,14 @@ export default function CinemaPlayerView({
   const [isInitialized, setIsInitialized] = useState(true);
   const [playerLogs, setPlayerLogs] = useState<string[]>([]);
   const [adClicks, setAdClicks] = useState<number>(0);
+  const [adGateMode, setAdGateMode] = useState<"initial" | "change_episode">("initial");
+
+  const requiredAdClicks = adGateMode === "change_episode" ? 2 : 3;
+  const isAdGateUnlocked = adClicks >= requiredAdClicks;
 
   useEffect(() => {
     // Re-enforce adwall on movie open and clear any stored click tokens
+    setAdGateMode("initial");
     setAdClicks(0);
     try {
       localStorage.removeItem("classico_ad_clicks_" + movieId);
@@ -641,13 +681,43 @@ export default function CinemaPlayerView({
   };
 
   const handleEpisodeSelect = (seasonNum: number, episodeNum: number) => {
+    const isDifferentEpisode = seasonNum !== currentSeason || episodeNum !== currentEpisode;
+    if (isDifferentEpisode) {
+      setAdGateMode("change_episode");
+      setAdClicks(0);
+    }
+
     setCurrentSeason(seasonNum);
     setCurrentEpisode(episodeNum);
 
     try {
+      const cleanId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      const tmdb = String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId || cleanId).replace(/-tv$/, "");
+      const candidateKeys = Array.from(new Set([
+        cleanId,
+        `${cleanId}-tv`,
+        tmdb,
+        `${tmdb}-tv`,
+        String(movieId)
+      ])).filter(Boolean);
+
       const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
-      tvState[movieId] = { season: seasonNum, episode: episodeNum };
+      candidateKeys.forEach(k => {
+        tvState[k] = { season: seasonNum, episode: episodeNum };
+      });
       safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+
+      const savedProg = JSON.parse(safeStorage.getItem("classico_progress") || "{}");
+      candidateKeys.forEach(k => {
+        if (!savedProg[k] || typeof savedProg[k] !== "object") {
+          savedProg[k] = { id: k, type: "tv", show_progress: {} };
+        }
+        savedProg[k].type = "tv";
+        savedProg[k].last_season_watched = seasonNum;
+        savedProg[k].last_episode_watched = episodeNum;
+      });
+      safeStorage.setItem("classico_progress", JSON.stringify(savedProg));
+      window.dispatchEvent(new CustomEvent("classico_progress_updated"));
     } catch(e) {}
 
     try {
@@ -2086,7 +2156,7 @@ export default function CinemaPlayerView({
       video.load();
 
       // play() immédiat seulement si l'utilisateur a débloqué
-      if (adClicks >= 3) {
+      if (isAdGateUnlocked) {
         video.play().catch((err) => {
         });
       }
@@ -2216,7 +2286,7 @@ export default function CinemaPlayerView({
     const video = videoRef.current;
     if (!video) return;
 
-    if (adClicks < 3) {
+    if (!isAdGateUnlocked) {
       video.pause();
       if (playing) setPlaying(false);
       return;
@@ -2304,16 +2374,9 @@ export default function CinemaPlayerView({
             break;
           case 'cinesrc:nextepisode':
             if (parsedData.season && parsedData.episode) {
+              handleEpisodeSelect(parsedData.season, parsedData.episode);
               const pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
               if (pTmdbId) {
-                try {
-                  const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {};
-                  tvState[pTmdbId] = { season: parsedData.season, episode: parsedData.episode };
-                  tvState[`${pTmdbId}-tv`] = { season: parsedData.season, episode: parsedData.episode };
-                  safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
-                } catch (e) {}
-                setCurrentSeason(parsedData.season);
-                setCurrentEpisode(parsedData.episode);
                 onSelectMovie?.(`${pTmdbId}-tv-S${parsedData.season}E${parsedData.episode}`);
               }
             }
@@ -2575,32 +2638,62 @@ export default function CinemaPlayerView({
       </div>
 
       {/* AdGate Overlay */}
-      {serverSelected && adClicks < 3 && (
+      {serverSelected && !isAdGateUnlocked && (
         <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center pointer-events-auto">
           <div className="max-w-md w-full bg-neutral-900 border border-amber-500/20 rounded-2xl p-8 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
-            <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Support Classico</h2>
-            <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
-              Classico is 100% free and will always remain so, but maintaining our high-speed streaming servers comes at a significant cost. The only way for us to sustain the platform is by including three quick ads per playback.
-              <br /><br />
-              <strong className="text-white">Please disable your ad blocker to support us.</strong> Thank you so much!
-            </p>
-            <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 w-full mb-6">
-              <p className="text-rose-400 text-[11px] font-mono uppercase tracking-wider">
-                Do not click on anything inside the ads, simply close the newly opened tab.
-              </p>
-            </div>
-            
-            <button
-              onClick={handleAdClick}
-              className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4 cursor-pointer"
-            >
-              <span className="font-sans text-base">Click to continue ({adClicks + 1}/3)</span>
-            </button>
-
-            <div className="flex items-center gap-2">
-              <span className="text-zinc-500 text-xs font-mono uppercase tracking-widest">Progress</span>
-              <span className="text-amber-500 font-bold font-mono bg-amber-500/10 px-2 py-0.5 rounded">{adClicks}/3</span>
-            </div>
+            {adGateMode === "change_episode" ? (
+              <>
+                <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Change Episode</h2>
+                <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
+                  You are switching to Season {currentSeason}, Episode {currentEpisode}. To support our streaming servers and keep our TV series library completely free, please support our sponsors to continue watching.
+                  <br /><br />
+                  <strong className="text-white">Please disable your ad blocker to support us.</strong> Enjoy your episode!
+                </p>
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 w-full mb-6">
+                  <p className="text-rose-400 text-[11px] font-mono uppercase tracking-wider">
+                    Do not click on anything inside the ads, simply close the newly opened tab.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={handleAdClick}
+                  className="relative group w-full py-4 px-6 rounded-xl bg-gradient-to-b from-neutral-800/90 via-neutral-900/95 to-black border border-white/10 hover:border-amber-400/40 text-white font-sans font-bold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_4px_24px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] mb-4 cursor-pointer overflow-hidden"
+                >
+                  <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                  <Play className="w-4 h-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="font-sans text-base text-zinc-100 group-hover:text-white font-bold tracking-wider">
+                    Click to continue ({adClicks + 1}/2)
+                  </span>
+                  <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-cinzel font-bold text-amber-500 mb-4 tracking-widest uppercase">Support Classico</h2>
+                <p className="text-zinc-300 text-sm mb-6 leading-relaxed font-sans">
+                  Classico is 100% free and will always remain so, but maintaining our high-speed streaming servers comes at a significant cost. The only way for us to sustain the platform is through sponsor support.
+                  <br /><br />
+                  <strong className="text-white">Please disable your ad blocker to support us.</strong> Thank you so much!
+                </p>
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-3 w-full mb-6">
+                  <p className="text-rose-400 text-[11px] font-mono uppercase tracking-wider">
+                    Do not click on anything inside the ads, simply close the newly opened tab.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={handleAdClick}
+                  className="relative group w-full py-4 px-6 rounded-xl bg-gradient-to-b from-neutral-800/90 via-neutral-900/95 to-black border border-white/10 hover:border-amber-400/40 text-white font-sans font-bold tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 shadow-[0_4px_24px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] mb-4 cursor-pointer overflow-hidden"
+                >
+                  <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                  <Play className="w-4 h-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="font-sans text-base text-zinc-100 group-hover:text-white font-bold tracking-wider">
+                    Click to continue ({adClicks + 1}/3)
+                  </span>
+                  <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />
+                </button>
+              </>
+            )}
           </div>
           <button
             onClick={handleClosePlayer}
@@ -2738,7 +2831,7 @@ export default function CinemaPlayerView({
                   </div>
                 ) : null}
 
-                {serverSelected && adClicks >= 3 && (playbackInfo?.iframeSrc || (!isLoading && !isStreamLoading && !playbackInfo?.isIframeEmbed)) ? (
+                {serverSelected && isAdGateUnlocked && (playbackInfo?.iframeSrc || (!isLoading && !isStreamLoading && !playbackInfo?.isIframeEmbed)) ? (
                   <div className="absolute inset-0 w-full h-full z-40 opacity-100 pointer-events-auto overflow-hidden bg-black">
                     {playbackInfo?.iframeSrc && playbackInfo.iframeSrc.trim() && normalizeEmbedUrl(playbackInfo.iframeSrc.trim()) ? (
                       <iframe

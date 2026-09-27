@@ -14,6 +14,10 @@
     <meta name="6a97888e-site-verification" content="4aa59da3ec677a8c3af45018a60128b4">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
+    <link rel="dns-prefetch" href="https://image.tmdb.org" />
+    <link rel="preload" as="image" href="https://image.tmdb.org/t/p/w1280/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://image.tmdb.org/t/p/w500/kysDTCloxUPJ1BILI4f8gs74fcr.png" fetchpriority="high" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Forum&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Pinyon+Script&display=swap" />
     <style>
       @keyframes illuminate { 0%, 100% { opacity: 0.2; transform: scale3d(0.8, 0.8, 1); } 50% { opacity: 1; transform: scale3d(1.2, 1.2, 1); } }
@@ -28,22 +32,20 @@
     </style>
   </head>
   <body class="bg-black text-white">
-    <div id="root">
-      <div id="startup-screen" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background-color:#000;pointer-events:none;user-select:none;">
-        <div style="position:relative;overflow:hidden;display:flex;align-items:center;">
-          <span style="font-family:'Cinzel',serif;font-weight:700;font-size:1.875rem;letter-spacing:0.22em;text-transform:uppercase;line-height:1;background:linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-            CLASSICO
-          </span>
-        </div>
-        <span style="font-family:'Pinyon Script',cursive;display:block;font-size:1.25rem;color:#f4ecd8;line-height:1;margin-top:-2px;user-select:none;text-align:center;transform:translateX(-3px);filter:drop-shadow(0 0 4px rgba(244,236,216,0.2));">
-          The Best
+    <div id="root"></div>
+    <div id="startup-screen" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background-color:#000;pointer-events:none;user-select:none;transition:opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);will-change:opacity,transform;">
+      <div style="position:relative;overflow:hidden;display:flex;align-items:center;">
+        <span style="font-family:'Cinzel',serif;font-weight:700;font-size:1.875rem;letter-spacing:0.22em;text-transform:uppercase;line-height:1;background:linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+          CLASSICO
         </span>
-        <div style="display:flex;gap:8px;margin-top:32px;">
-          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:0s;"></div>
-          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-1.0s;"></div>
-          <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-0.5s;"></div>
-        </div>
-        
+      </div>
+      <span style="font-family:'Pinyon Script',cursive;display:block;font-size:1.25rem;color:#f4ecd8;line-height:1;margin-top:-2px;user-select:none;text-align:center;transform:translateX(-3px);filter:drop-shadow(0 0 4px rgba(244,236,216,0.2));">
+        The Best
+      </span>
+      <div style="display:flex;gap:8px;margin-top:32px;">
+        <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:0s;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-1.0s;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background-color:#fcf6ba;box-shadow:0 0 10px rgba(252,246,186,0.8);animation:illuminate 1.5s infinite ease-in-out both;animation-delay:-0.5s;"></div>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

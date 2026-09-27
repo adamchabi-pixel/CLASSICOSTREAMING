@@ -15,17 +15,15 @@ export const MomentumCarousel: React.FC<MomentumCarouselProps> = ({
 }) => {
   const innerRef = useRef<HTMLDivElement | null>(null);
 
-  // Drag & Swipe State
-  const isInteractingRef = useRef(false);
+  // Drag interaction flags
   const isDraggingRef = useRef(false);
+  const isMouseDownRef = useRef(false);
   const startXRef = useRef(0);
   const startYRef = useRef(0);
-  const lastXRef = useRef(0);
-  const lastTimeRef = useRef(0);
-  const directionLockRef = useRef<"horizontal" | "vertical" | null>(null);
-
-  // Velocity sample buffer (stores recent displacements over trailing ~90ms)
-  const samplesRef = useRef<Array<{ dx: number; dt: number; time: number }>>([]);
+  const startScrollLeftRef = useRef(0);
+  const lastMouseXRef = useRef(0);
+  const lastMouseTimeRef = useRef(0);
+  const mouseSamplesRef = useRef<Array<{ dx: number; dt: number; time: number }>>([]);
   const rafIdRef = useRef<number | null>(null);
 
   const stopAnimation = useCallback(() => {
@@ -45,210 +43,155 @@ export const MomentumCarousel: React.FC<MomentumCarouselProps> = ({
     [containerRef]
   );
 
-  // Progressive Braking Glide: normal at release, then smoothly and noticeably brakes to a halt at the end
-  const startBrakingGlide = useCallback((velocityPxPerMs: number) => {
+  // Smooth, luxurious inertia glide for desktop mouse release
+  const startDesktopGlide = useCallback((initialVelocityPxPerMs: number) => {
     stopAnimation();
     const container = innerRef.current;
     if (!container) return;
 
-    // Negligible flick -> stay put
-    if (Math.abs(velocityPxPerMs) < 0.12) return;
+    if (Math.abs(initialVelocityPxPerMs) < 0.05) return;
 
-    // Strict velocity cap to keep swipe moderate and calm ("un peu moins rapide et sensible")
-    const MAX_VELOCITY = 1.15; // px/ms
-    const cappedVelocity = Math.sign(velocityPxPerMs) * Math.min(Math.abs(velocityPxPerMs), MAX_VELOCITY);
+    // Cap velocity for natural, fluid momentum flick
+    const maxVelocity = 3.2;
+    let velocity = Math.sign(initialVelocityPxPerMs) * Math.min(Math.abs(initialVelocityPxPerMs), maxVelocity);
 
-    // Limit glide distance to at most 60% of visible container width
-    const maxGlide = container.clientWidth * 0.60;
-    let glideDistance = cappedVelocity * 260;
-    if (Math.abs(glideDistance) > maxGlide) {
-      glideDistance = Math.sign(glideDistance) * maxGlide;
-    }
+    let lastTime = performance.now();
 
-    if (Math.abs(glideDistance) < 15) return;
-
-    const startScroll = container.scrollLeft;
-    // Bound target scroll within container boundaries
-    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
-    const targetScroll = Math.max(0, Math.min(maxScroll, startScroll - glideDistance));
-    const totalTravel = targetScroll - startScroll;
-
-    if (Math.abs(totalTravel) < 4) return;
-
-    // Duration between 420ms and 650ms depending on travel
-    const duration = Math.min(650, Math.max(420, Math.abs(totalTravel) * 1.4));
-    const startTime = performance.now();
-
-    // Quartic ease-out braking curve: rapid/steady travel early on, then prominent progressive braking to a soft halt
-    const easeOutBraking = (t: number) => 1 - Math.pow(1 - t, 3.8);
-
-    const animate = (currentTime: number) => {
+    const step = (currentTime: number) => {
       if (!innerRef.current) return;
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(1, elapsed / duration);
-      const ease = easeOutBraking(progress);
+      const dt = Math.min(32, currentTime - lastTime);
+      lastTime = currentTime;
 
-      innerRef.current.scrollLeft = startScroll + totalTravel * ease;
+      // Silky smooth physical deceleration curve
+      velocity *= Math.pow(0.952, dt / 16.67);
 
-      if (progress < 1) {
-        rafIdRef.current = requestAnimationFrame(animate);
+      innerRef.current.scrollLeft -= velocity * dt;
+
+      if (Math.abs(velocity) > 0.03) {
+        rafIdRef.current = requestAnimationFrame(step);
       } else {
         rafIdRef.current = null;
       }
     };
 
-    rafIdRef.current = requestAnimationFrame(animate);
+    rafIdRef.current = requestAnimationFrame(step);
   }, [stopAnimation]);
 
-  // Touch Event Handling (Native listeners for passive: false support so horizontal swipe doesn't conflict)
+  // Touch handling on mobile:
+  // Use native hardware-accelerated 120Hz compositor scrolling (never blocks the main thread with preventDefault)
+  // while tracking movement to suppress accidental card clicks when swiping.
   useEffect(() => {
     const el = innerRef.current;
     if (!el) return;
 
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let moved = false;
+
     const onTouchStart = (e: TouchEvent) => {
       stopAnimation();
       if (e.touches.length !== 1) return;
-
-      const touch = e.touches[0];
-      isInteractingRef.current = true;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      moved = false;
       isDraggingRef.current = false;
-      directionLockRef.current = null;
-      startXRef.current = touch.clientX;
-      startYRef.current = touch.clientY;
-      lastXRef.current = touch.clientX;
-      lastTimeRef.current = performance.now();
-      samplesRef.current = [];
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (!isInteractingRef.current || e.touches.length !== 1) return;
+      if (e.touches.length !== 1) return;
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
 
-      const touch = e.touches[0];
-      const now = performance.now();
-      const dx = touch.clientX - lastXRef.current;
-      const totalDx = touch.clientX - startXRef.current;
-      const totalDy = touch.clientY - startYRef.current;
-
-      // Determine gesture direction on initial threshold
-      if (directionLockRef.current === null) {
-        if (Math.abs(totalDx) > 6 || Math.abs(totalDy) > 6) {
-          if (Math.abs(totalDy) > Math.abs(totalDx)) {
-            // User is scrolling the whole webpage vertically: let browser handle natively
-            directionLockRef.current = "vertical";
-          } else {
-            // User is swiping horizontally through the movie carousel
-            directionLockRef.current = "horizontal";
-          }
+      if (dx > 8 || dy > 8) {
+        moved = true;
+        if (dx > dy) {
+          isDraggingRef.current = true;
         }
-      }
-
-      if (directionLockRef.current === "horizontal") {
-        // Prevent native horizontal runaway scroll & pull navigation
-        if (e.cancelable) {
-          e.preventDefault();
-        }
-        isDraggingRef.current = true;
-
-        if (innerRef.current) {
-          // Weighted tracking sensitivity (0.90) for calm, non-jittery finger movement
-          innerRef.current.scrollLeft -= dx * 0.90;
-        }
-
-        const dt = Math.max(1, now - lastTimeRef.current);
-        samplesRef.current.push({ dx, dt, time: now });
-        // Retain only samples from the last 90ms for accurate release flick velocity
-        samplesRef.current = samplesRef.current.filter(s => now - s.time < 90);
-
-        lastXRef.current = touch.clientX;
-        lastTimeRef.current = now;
       }
     };
 
     const onTouchEnd = () => {
-      if (!isInteractingRef.current) return;
-      isInteractingRef.current = false;
-
-      if (directionLockRef.current === "horizontal" && isDraggingRef.current) {
-        // Compute release flick velocity from recent samples
-        const recent = samplesRef.current;
-        if (recent.length > 0) {
-          const sumDx = recent.reduce((acc, s) => acc + s.dx, 0);
-          const sumDt = Math.max(1, recent.reduce((acc, s) => acc + s.dt, 0));
-          const velocity = sumDx / sumDt; // px per ms
-          startBrakingGlide(velocity);
-        }
-
-        // Prevent accidental card click upon swipe completion
+      if (moved && isDraggingRef.current) {
+        // Keep isDragging active briefly so card onClick is prevented
         setTimeout(() => {
           isDraggingRef.current = false;
-        }, 80);
+        }, 120);
       } else {
         isDraggingRef.current = false;
       }
-      directionLockRef.current = null;
     };
 
+    // Native touch listeners with passive: true for buttery 120Hz scrolling
     el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: true });
     el.addEventListener("touchend", onTouchEnd, { passive: true });
     el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    const onWheel = () => {
+      stopAnimation();
+    };
+    el.addEventListener("wheel", onWheel, { passive: true });
 
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
       el.removeEventListener("touchend", onTouchEnd);
       el.removeEventListener("touchcancel", onTouchEnd);
+      el.removeEventListener("wheel", onWheel);
     };
-  }, [startBrakingGlide, stopAnimation]);
+  }, [stopAnimation]);
 
-  // Desktop Mouse Drag Handling
+  // Desktop Mouse Drag Handling (Click and drag smoothly on desktop)
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || !innerRef.current) return;
     stopAnimation();
 
-    isInteractingRef.current = true;
+    isMouseDownRef.current = true;
     isDraggingRef.current = false;
     startXRef.current = e.clientX;
-    lastXRef.current = e.clientX;
-    lastTimeRef.current = performance.now();
-    samplesRef.current = [];
+    startYRef.current = e.clientY;
+    startScrollLeftRef.current = innerRef.current.scrollLeft;
+    lastMouseXRef.current = e.clientX;
+    lastMouseTimeRef.current = performance.now();
+    mouseSamplesRef.current = [];
 
     const onMouseMove = (moveEvent: MouseEvent) => {
-      if (!isInteractingRef.current || !innerRef.current) return;
+      if (!isMouseDownRef.current || !innerRef.current) return;
       const now = performance.now();
-      const dx = moveEvent.clientX - lastXRef.current;
+      const totalDx = moveEvent.clientX - startXRef.current;
+      const dx = moveEvent.clientX - lastMouseXRef.current;
 
-      if (Math.abs(moveEvent.clientX - startXRef.current) > 5) {
+      if (Math.abs(totalDx) > 5) {
         isDraggingRef.current = true;
       }
 
       if (isDraggingRef.current) {
-        innerRef.current.scrollLeft -= dx * 0.90;
-        const dt = Math.max(1, now - lastTimeRef.current);
-        samplesRef.current.push({ dx, dt, time: now });
-        samplesRef.current = samplesRef.current.filter(s => now - s.time < 90);
+        innerRef.current.scrollLeft = startScrollLeftRef.current - totalDx;
+        const dt = Math.max(1, now - lastMouseTimeRef.current);
+        mouseSamplesRef.current.push({ dx, dt, time: now });
+        mouseSamplesRef.current = mouseSamplesRef.current.filter(s => now - s.time < 100);
 
-        lastXRef.current = moveEvent.clientX;
-        lastTimeRef.current = now;
+        lastMouseXRef.current = moveEvent.clientX;
+        lastMouseTimeRef.current = now;
       }
     };
 
     const onMouseUp = () => {
-      isInteractingRef.current = false;
+      isMouseDownRef.current = false;
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
 
       if (isDraggingRef.current) {
-        const recent = samplesRef.current;
+        const recent = mouseSamplesRef.current;
         if (recent.length > 0) {
           const sumDx = recent.reduce((acc, s) => acc + s.dx, 0);
           const sumDt = Math.max(1, recent.reduce((acc, s) => acc + s.dt, 0));
-          const velocity = sumDx / sumDt;
-          startBrakingGlide(velocity);
+          const velocity = sumDx / sumDt; // px per ms
+          startDesktopGlide(velocity);
         }
         setTimeout(() => {
           isDraggingRef.current = false;
-        }, 80);
+        }, 100);
       }
     };
 
@@ -279,8 +222,11 @@ export const MomentumCarousel: React.FC<MomentumCarouselProps> = ({
       className={`${className} cursor-grab active:cursor-grabbing select-none`}
       style={{
         WebkitOverflowScrolling: "touch",
-        touchAction: "pan-y",
-        overscrollBehaviorX: "contain"
+        touchAction: "pan-x pan-y",
+        overscrollBehaviorX: "contain",
+        scrollBehavior: "auto",
+        willChange: "scroll-position",
+        transform: "translateZ(0)"
       }}
     >
       {children}

@@ -32,10 +32,11 @@ interface LazyVirtualCardProps {
   children: React.ReactNode;
   key?: string;
   className?: string;
+  placeholderClassName?: string;
   priority?: boolean;
 }
 
-export default function LazyVirtualCard({ children, className, priority = false }: LazyVirtualCardProps) {
+export default function LazyVirtualCard({ children, className, placeholderClassName, priority = false }: LazyVirtualCardProps) {
   const [isIntersecting, setIsIntersecting] = useState(priority);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -63,12 +64,11 @@ export default function LazyVirtualCard({ children, className, priority = false 
     <div
       ref={containerRef}
       className={`shrink-0 ${className || "w-[140px] min-[400px]:w-[160px] sm:w-[210px] aspect-[2/3]"}`}
-      style={{ containIntrinsicSize: "170px 255px" }}
     >
       {isIntersecting ? (
         children
       ) : (
-        <div className="w-full h-full min-h-[180px] aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30" />
+        <div className={placeholderClassName || "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px] aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30"} />
       )}
     </div>
   );

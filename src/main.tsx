@@ -302,26 +302,28 @@ if (typeof window !== "undefined") {
         try {
           const u = new URL(url, window.location.origin);
           const page = u.searchParams.get("page") || "1";
-          const res = await fetch(`https://api.tmdb.org/3/trending/all/day?language=en-US&page=${page}`, {
+          const type = u.searchParams.get("type") || "movie";
+          const res = await fetch(`https://api.tmdb.org/3/trending/${type}/day?language=en-US&page=${page}`, {
             headers: { "Authorization": `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNDZhYjQxYTI5MmZhY2FkZmQ3ZTg1ZjBmZjIxMzEwOSIsIm5iZiI6MTc4NDQxNDMwOS4zNTIsInN1YiI6IjZhNWMwMDY1MjNhOTJiOWM2MTc3OTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5km-ffvJ5u3te9Wz4cv9rIl6QSthypDbCJsBVs9GxVs`, "Accept": "application/json" }
           });
           if (!res.ok) throw new Error("TMDB failed");
           const data = await res.json();
-          const valid = (data.results || []).filter((m: any) => m.media_type === "movie" || m.media_type === "tv");
+          const valid = (data.results || []).filter((m: any) => !m.adult);
           const enriched = valid.map((m: any) => ({
-            id: String(m.id) + (m.media_type === "tv" ? "-tv" : ""),
+            id: String(m.id) + (m.media_type === "tv" || type === "tv" ? "-tv" : ""),
             tmdbId: String(m.id),
-            isTv: m.media_type === "tv",
+            isTv: m.media_type === "tv" || type === "tv",
             title: m.media_type === "tv" ? m.name : m.title,
             originalTitle: m.media_type === "tv" ? m.original_name : m.original_title,
             description: m.overview,
             posterUrl: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : "",
-            backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w780${m.backdrop_path}` : "",
+            backdropUrl: m.backdrop_path ? `https://image.tmdb.org/t/p/w1280${m.backdrop_path}` : "",
             year: (m.media_type === "tv" ? m.first_air_date : m.release_date) ? parseInt((m.media_type === "tv" ? m.first_air_date : m.release_date).substring(0, 4)) : new Date().getFullYear(),
             voteAverage: m.vote_average,
+            rating: m.vote_average ? m.vote_average.toFixed(1) : "?",
             director: "Unknown",
             cast: [],
-            genre: [],
+            genre: ["Trending"],
             isIframeEmbed: true,
             iframeSrc: m.media_type === "tv" ? "" : `https://111movies.net/movie/${m.id}`
           }));

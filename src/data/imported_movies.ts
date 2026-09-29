@@ -1,6 +1,75 @@
 export const importedMoviesData = [
   {
     "hasLogo": true,
+    "logoUrl": "",
+    "id": "95350-tv",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "description": "Follows new recruit John Stewart and Lantern legend Hal Jordan, two intergalactic cops drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "releaseDate": "2026-08-01",
+    "duration": "55 min",
+    "voteAverage": 7.8,
+    "rating": "7.8",
+    "language": "en",
+    "isTv": true,
+    "status": "In Production",
+    "genre": ["Sci-Fi & Fantasy", "Action & Adventure", "Crime", "Mystery"],
+    "director": "Chris Mundy",
+    "cast": ["Kyle Chandler", "Aaron Pierre", "Kelly Macdonald"]
+  },
+  {
+    "hasLogo": true,
+    "logoUrl": "",
+    "id": "lanterns",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "description": "Follows new recruit John Stewart and Lantern legend Hal Jordan, two intergalactic cops drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "releaseDate": "2026-08-01",
+    "duration": "55 min",
+    "voteAverage": 7.8,
+    "rating": "7.8",
+    "language": "en",
+    "isTv": true,
+    "status": "In Production",
+    "genre": ["Sci-Fi & Fantasy", "Action & Adventure", "Crime", "Mystery"],
+    "director": "Chris Mundy",
+    "cast": ["Kyle Chandler", "Aaron Pierre", "Kelly Macdonald"]
+  },
+  {
+    "hasLogo": true,
+    "logoUrl": "",
+    "id": "lanterns-tv",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "description": "Follows new recruit John Stewart and Lantern legend Hal Jordan, two intergalactic cops drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "releaseDate": "2026-08-01",
+    "duration": "55 min",
+    "voteAverage": 7.8,
+    "rating": "7.8",
+    "language": "en",
+    "isTv": true,
+    "status": "In Production",
+    "genre": ["Sci-Fi & Fantasy", "Action & Adventure", "Crime", "Mystery"],
+    "director": "Chris Mundy",
+    "cast": ["Kyle Chandler", "Aaron Pierre", "Kelly Macdonald"]
+  },
+  {
+    "hasLogo": true,
     "logoUrl": "https://image.tmdb.org/t/p/w500/7bfRNJWmYIwyca2kFyd031wwaJm.png",
     "id": "tt32890033",
     "tmdbId": "1315772",
@@ -217,23 +286,6 @@ export const importedMoviesData = [
       "Jared Padalecki",
       "Jensen Ackles",
       "Misha Collins"
-    ],
-    "castDetails": [
-      {
-        "name": "Jared Padalecki",
-        "character": "Sam Winchester",
-        "profile_path": "https://image.tmdb.org/t/p/w185/dTV5ImKP5uIdFShiG3VFbbjLFWo.jpg"
-      },
-      {
-        "name": "Jensen Ackles",
-        "character": "Dean Winchester",
-        "profile_path": "https://image.tmdb.org/t/p/w185/xgOAHqDiqdZCF1BhfHaeLrd47ki.jpg"
-      },
-      {
-        "name": "Misha Collins",
-        "character": "Castiel",
-        "profile_path": "https://image.tmdb.org/t/p/w185/szigprnenokR4yOpELIB2rj1Er2.jpg"
-      }
     ],
     "genre": [
       "Drama",
@@ -6640,6 +6692,508 @@ export const importedMoviesData = [
         "episode_count": 6,
         "air_date": "2025-11-09",
         "poster_path": "https://image.tmdb.org/t/p/w500/s596vM9OIz1k6tvid7s3LxfaNfu.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "95350-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=7UIBOsuUwc4",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "isTv": true,
+    "tagline": "Only one can wear the ring.",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "originalLanguage": "en",
+    "description": "Two intergalactic cops, new recruit John Stewart and Lantern legend Hal Jordan, are drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "duration": 45,
+    "director": "Damon Lindelof",
+    "cast": [
+      "Kyle Chandler",
+      "Aaron Pierre",
+      "Kelly Macdonald"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/kANHXGvFKW13UEkZbYwl9nIJeEl.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "3497",
+        "name": "Kyle Chandler",
+        "role": "Hal Jordan / Halogram",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/66n7XNj1dyYkzCBWR3Lq8Vz4PJ1.jpg"
+      },
+      {
+        "id": "1763709",
+        "name": "Aaron Pierre",
+        "role": "John Stewart",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hNwZWdT2KxKj1YLbipvtUhNjfAp.jpg"
+      },
+      {
+        "id": "9015",
+        "name": "Kelly Macdonald",
+        "role": "Sheriff Kerry Kane",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/k0yVocTnTMWlNdaeOO7YRViCdhO.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "51-tv",
+        "tmdbId": "51",
+        "isTv": true,
+        "title": "Houston Knights",
+        "description": "Houston Knights is an American crime drama set in Houston, Texas. The show ran on CBS from 1987 to 1988 and had 31 episodes. The core of the show was the partnership between two very different cops from two different cultures. Chicago cop Joey LaFiamma, played by Michael Paré, is transferred to Houston after he kills a mobster from a powerful Mafia family and a contract is put out on him. Once there, he is partnered with Levon Lundy, played by Michael Beck, the grandson of a Texas Ranger.\n\nAlthough as different as night and day, and after a rocky beginning they form a successful partnership and become friends. This is aided to a certain extent by an event where a hitman from Chicago who holds the contract to shoot La Fiamma arrives in Houston and is ultimately killed by Lundy.\n\nDuring the series, it is revealed that both La Fiamma and Lundy have their own personal demons; La Fiamma's Chicago police partner had been killed when he went ahead while La Fiamma had waited for backup to arrive. Lundy's wife had been killed by an explosion that was intended to kill him.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/pzfECkrZHkS3UXRsMcxvCB1O3Al.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/bJpNVnq0Af2COkhpmSmu0Xnkqwy.jpg",
+        "year": 1987
+      },
+      {
+        "id": "52-tv",
+        "tmdbId": "52",
+        "isTv": true,
+        "title": "That '70s Show",
+        "description": "Crank up the 8-track and flash back to a time when platform shoes and puka shells were all the rage in this hilarious retro-sitcom. For Eric, Kelso, Jackie, Hyde, Donna and Fez, a group of high school teens who spend most of their time hanging out in Eric’s basement, life in the ‘70s isn’t always so groovy. But between trying to figure out the meaning of life, avoiding their parents, and dealing with out-of-control hormones, they’ve learned one thing for sure: they’ll always get by with a little help from their friends.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/laEZvTqM80UaplUaDSCCbWhlyEV.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/rf2uHKzPniVL5LvSVxg5ACxv4cS.jpg",
+        "year": 1998
+      },
+      {
+        "id": "125053-tv",
+        "tmdbId": "125053",
+        "isTv": true,
+        "title": "Say Cheese",
+        "description": "Peace Photography Studio is an established but traditional studio founded 80 years ago and had 5 branches in its heyday. Now, there's only a single studio left and is managed by Pan Renyi and daughter Pan Zejia . Pan Zejia quietly helped out at the studio as she feels indebted to Pan Renyi who helped her settle a huge debt 10 years ago, and as a result, she remained single since then.\n\nKe Yuanhang is a newspaper reporter who is kind and magnanimous, although 5 years younger than Pan Zejia, a friendship soon developed. While Pan Zejia is irritable and impatient, Ke Yuanhang is gentle and caring. Their hindrances do not stop there, as Pan Renyi is constantly at loggerheads with Ke Yuanhang's mother, Hong Ziyi. Due to Pan Renyi's temperament, he does not get along with all his children, the matter is made worse when Pan Zejia's mother suddenly died in a car accident.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1X7odnGYhDwpqfkCZAvndk714ZM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5yg5tmvYBmcwNV4iYp8eRdnbGhJ.jpg",
+        "year": 2018
+      },
+      {
+        "id": "28727-tv",
+        "tmdbId": "28727",
+        "isTv": true,
+        "title": "Angel Street",
+        "description": "Angel Street is an American crime drama series broadcast  on CBS from September 15—October 3, 1992. Starring Robin Givens and Pamela Gidley as two Chicago homicide detectives, the series was canceled after four episodes aired, leaving four unaired.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fKSHrrhwUuWEcUyfu1bGrlAiI2i.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/zAYP32L0uBWx136DzKURvpdTVB1.jpg",
+        "year": 1992
+      },
+      {
+        "id": "318-tv",
+        "tmdbId": "318",
+        "isTv": true,
+        "title": "American Gothic",
+        "description": "Everything is not what it seems in Trinity, South Carolina. Sheriff Lucas Buck develops a sinister interest in Caleb. Caleb's cousin Gail tries to protect him, but that's complicated since she has feelings for Sheriff Buck. And Caleb's dead sister, Merlyn, returns as an angel, warning him that Buck is an incarnation of evil - and may not be human.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qajOMTtQ958JEpmokPXTruwA9qp.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/itisXkOIsntQacvuO5BF05xHJ60.jpg",
+        "year": 1995
+      },
+      {
+        "id": "184-tv",
+        "tmdbId": "184",
+        "isTv": true,
+        "title": "Jeremiah",
+        "description": "Jeremiah is an American television series starring Luke Perry and Malcolm-Jamal Warner that ran on the Showtime network from 2002 to 2004. The series takes place in a post-apocalyptic future where most of the adult population has been wiped out by a deadly virus.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yBaq79cbv8Lmhaa7ej3z6GOp9zK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/dlDynz58qyEqrd3gzxqfYB2JiUW.jpg",
+        "year": 2002
+      },
+      {
+        "id": "156-tv",
+        "tmdbId": "156",
+        "isTv": true,
+        "title": "The Beachcombers",
+        "description": "The Beachcombers is a Canadian comedy-drama television series that ran from October 1, 1972 to December 12, 1990 and is the longest-running dramatic series ever made for English-language Canadian television. In all, 387 episodes were produced.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/y5BAQlD35v8gzOSaHrTw7mcngGS.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5FQedgC453usxnGsjgBoUDRzaxV.jpg",
+        "year": 1972
+      },
+      {
+        "id": "196-tv",
+        "tmdbId": "196",
+        "isTv": true,
+        "title": "Captain Star",
+        "description": "Captain Star was an animated television series starring Richard E. Grant as Captain Jim Star, based on a comic by Steven Appleby: Rockets Passing Overhead. Only thirteen episodes of thirty-minutes each were produced and aired. The series ran on the British ITV and Canadian TELETOON networks from 1997 to 1998. The show was also later repeated on Nickelodeon UK.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/w4Q0cfVPFHyvR5tEaoNwvppGGDK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/ketBtREiwFTMUlV9HqRmPxf6gT2.jpg",
+        "year": 1997
+      }
+    ],
+    "genre": [
+      "Drama",
+      "Mystery",
+      "Sci-Fi & Fantasy"
+    ],
+    "voteAverage": 8.307,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Season 1",
+        "episode_count": 8,
+        "air_date": "2026-08-16",
+        "poster_path": "https://image.tmdb.org/t/p/w500/j9PTWG0Xn0NeIRhGGFJbciNYWvS.jpg",
+        "episodes": []
+      }
+    ],
+    "iframeSrc": ""
+  },
+  {
+    "id": "1248832",
+    "trailerUrl": "https://www.youtube.com/watch?v=job8V254NAE",
+    "tmdbId": "1248832",
+    "imdbId": "tt31450459",
+    "isTv": false,
+    "tagline": "A man. A plan. A meltdown.",
+    "title": "Digger",
+    "originalTitle": "Digger",
+    "originalLanguage": "en",
+    "description": "The most powerful man in the world embarks on a frantic mission to prove he is humanity's savior before the disaster he's unleashed destroys everything.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1ATXKrIPJyKNwnJ6lcG088Sa6zi.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/u3EtxdmZeiliW98c5Oegk5LIGZa.jpg",
+    "year": 2026,
+    "duration": 129,
+    "director": "Alejandro G. Iñárritu",
+    "cast": [
+      "Tom Cruise",
+      "Riz Ahmed",
+      "John Goodman",
+      "Sandra Hüller",
+      "Michael Stuhlbarg",
+      "Jesse Plemons"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/yihRNwM4YjIaDHGd3K9pHCfJweo.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "500",
+        "name": "Tom Cruise",
+        "role": "Digger Rockwell",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/maf8PhSvDCdEwjEMbYfGpojR5RP.jpg"
+      },
+      {
+        "id": "53240",
+        "name": "Riz Ahmed",
+        "role": "Ganesh",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/1uP9RaX7BGVx7XGTEmwObBJJzsC.jpg"
+      },
+      {
+        "id": "1230",
+        "name": "John Goodman",
+        "role": "President Compson",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/yyYqoyKHO7hE1zpgEV2XlqYWcNV.jpg"
+      },
+      {
+        "id": "7152",
+        "name": "Sandra Hüller",
+        "role": "Emma",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/jQfKXVCPTH9KEnzHHU4QemCnlMe.jpg"
+      },
+      {
+        "id": "72873",
+        "name": "Michael Stuhlbarg",
+        "role": "Vice President",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/aYB3SQm3h6ZyAdlbGyiNfakjx56.jpg"
+      },
+      {
+        "id": "88124",
+        "name": "Jesse Plemons",
+        "role": "Kenny",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/og4I51GsuwohdPgoELOHVMMqMre.jpg"
+      },
+      {
+        "id": "31512",
+        "name": "Robert John Burke",
+        "role": "Fitzgerald",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/uWEaY5gypb6cp1bdUYG4uCKw4sK.jpg"
+      },
+      {
+        "id": "2121005",
+        "name": "Emma D'Arcy",
+        "role": "Lena",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/9Zlmb7VmtVCxkLq5yqFFRRxCaED.jpg"
+      },
+      {
+        "id": "39659",
+        "name": "Burn Gorman",
+        "role": "Amos",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/udgACYWqCSuu6nvtrSjmyU28B0V.jpg"
+      },
+      {
+        "id": "3115932",
+        "name": "Sophie Wilde",
+        "role": "",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/fMZvMsvTv9MYSC6LTNdIUaMGjIv.jpg"
+      },
+      {
+        "id": "36666",
+        "name": "Pip Torrens",
+        "role": "",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/1n7pzFfT6jDHe8kc6I0AEfRryhz.jpg"
+      },
+      {
+        "id": "1486120",
+        "name": "Mercedes Hernández",
+        "role": "Adelia",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/2pC5Lv1eiItvAxeEe8KTbRlM1wY.jpg"
+      },
+      {
+        "id": "1355191",
+        "name": "Danny Kirrane",
+        "role": "Sandy Clarkson",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/yfui1GBLB2UBktBi9WRuxJoJqcs.jpg"
+      },
+      {
+        "id": "1587576",
+        "name": "James Dryden",
+        "role": "",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/66DNJWRWXzv0Sl3OHB9o5DSqFEo.jpg"
+      },
+      {
+        "id": "17199",
+        "name": "Corey Johnson",
+        "role": "Jacobs",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/mhNbf4vGzixPL5mTIOBUPguqvpB.jpg"
+      },
+      {
+        "id": "1924471",
+        "name": "Charlie Bentley",
+        "role": "EU Ambassador (uncredited)",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/xIrwKlRiAdGXBN7M8b8uAztv3rs.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "1248173",
+        "tmdbId": "1248173",
+        "isTv": false,
+        "title": "L.O.L.",
+        "description": "A young woman accidentally kills her boyfriend during foreplay.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/b5xIULOf6idOBvS2lYTm4ULpFJw.jpg",
+        "backdropUrl": "",
+        "year": 2014
+      },
+      {
+        "id": "41962",
+        "tmdbId": "41962",
+        "isTv": false,
+        "title": "A Taxing Woman's Return",
+        "description": "Ryōko Itakura returns as the tough-as-nails government taxing agent. This time she must figure out a way to expose a fanatical religious cult lead by a corrupt sociopath.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/4MaLVFMSISfG0SAJQubBL7LK69A.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/8m9rzTBGIIloDhslSSUePojkAZa.jpg",
+        "year": 1988
+      },
+      {
+        "id": "42048",
+        "tmdbId": "42048",
+        "isTv": false,
+        "title": "The Coca-Cola Kid",
+        "description": "An eccentric marketing guru visits a Coca-Cola subsidiary in Australia to try and increase market penetration. He finds zero penetration in a valley owned by an old man who makes his own soft drinks, and visits the valley to see why. After \"the Kid's\" persistence is tested he's given a tour of the man's plant, and they begin talking of a joint venture. Things get more complicated when the Coca-Cola man begins falling in love with his temporary secretary, who seems to have connections to the valley.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yBfZ52KgC3gnt8UrBULVRp43liC.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/fi3QUbgcXnMEZdtPHO2KOqkFrG2.jpg",
+        "year": 1985
+      },
+      {
+        "id": "1058090",
+        "tmdbId": "1058090",
+        "isTv": false,
+        "title": "Aliens do terceiro mundo e o sequestro de Dona Irene",
+        "description": "After receiving a letter calling for a secret conspiracy meeting, a woman is mistaken for a controversial policy and kidnapped by a pair of revolutionaries with no money for Uber. The three end up living together and witnessing the end of the world, the alien invasion and military intervention together.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/51vMP5junQxUN3B0TS3mdw5MhG3.jpg",
+        "backdropUrl": "",
+        "year": 2022
+      },
+      {
+        "id": "42600",
+        "tmdbId": "42600",
+        "isTv": false,
+        "title": "Watermelon Man",
+        "description": "A racist insurance agent lives in a typical suburban neighborhood, but his bigoted world of taunting and harassing black people on and off the job is turned upside down when his skin inexplicably turns dark overnight.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/7jKQ7goaKwlpDz40ZrgoXWHg26n.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/pbpd9rg7suUml8GXvQmzkaYwZBi.jpg",
+        "year": 1970
+      },
+      {
+        "id": "42569",
+        "tmdbId": "42569",
+        "isTv": false,
+        "title": "Where’s Poppa?",
+        "description": "When New York attorney Gordon Hocheiser meets Louise Callan, the girl of his dreams, he schemes to eliminate his aging, senile mother, even though he promised his late father that he'd always take care of her. He fears that his batty mom's eccentricities will shortly lead to Louise's departure.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/eXRK08Ml1WcBOVcaPHZu1Kqxdp2.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/dCiMfg9Io0TRftq14JM1SCSin7U.jpg",
+        "year": 1970
+      },
+      {
+        "id": "42688",
+        "tmdbId": "42688",
+        "isTv": false,
+        "title": "Wild in the Streets",
+        "description": "Musician Max Frost lends his backing to a Senate candidate who wants to give 18-year-olds the right to vote, but he takes things a step further than expected. Inspired by their hero's words, Max's fans pressure their leaders into extending the vote to citizens as young as 15. Max and his followers capitalize on their might by bringing new issues to the fore, but, drunk on power, they soon take generational warfare to terrible extremes.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fJHCvd5wQszKZdVZ43U5Wu0k03Z.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/vCOD2t2r8e5e9nCEXrwAqh4wSkt.jpg",
+        "year": 1968
+      },
+      {
+        "id": "305674",
+        "tmdbId": "305674",
+        "isTv": false,
+        "title": "Aniene",
+        "description": "",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ccyRD50XEdUbKO4ns4k9cSfGEzq.jpg",
+        "backdropUrl": "",
+        "year": 2011
+      }
+    ],
+    "genre": [
+      "Comedy"
+    ],
+    "voteAverage": 8.1,
+    "isIframeEmbed": true,
+    "seasons": [],
+    "iframeSrc": "https://111movies.net/movie/1248832"
+  },
+  {
+    "id": "lanterns-tv",
+    "trailerUrl": "https://www.youtube.com/watch?v=7UIBOsuUwc4",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "isTv": true,
+    "tagline": "Only one can wear the ring.",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "originalLanguage": "en",
+    "description": "Two intergalactic cops, new recruit John Stewart and Lantern legend Hal Jordan, are drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "duration": 45,
+    "director": "Damon Lindelof",
+    "cast": [
+      "Kyle Chandler",
+      "Aaron Pierre",
+      "Kelly Macdonald"
+    ],
+    "logoUrl": "https://image.tmdb.org/t/p/w500/kANHXGvFKW13UEkZbYwl9nIJeEl.png",
+    "hasLogo": true,
+    "castDetails": [
+      {
+        "id": "3497",
+        "name": "Kyle Chandler",
+        "role": "Hal Jordan / Halogram",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/66n7XNj1dyYkzCBWR3Lq8Vz4PJ1.jpg"
+      },
+      {
+        "id": "1763709",
+        "name": "Aaron Pierre",
+        "role": "John Stewart",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/hNwZWdT2KxKj1YLbipvtUhNjfAp.jpg"
+      },
+      {
+        "id": "9015",
+        "name": "Kelly Macdonald",
+        "role": "Sheriff Kerry Kane",
+        "imageUrl": "https://image.tmdb.org/t/p/w200/k0yVocTnTMWlNdaeOO7YRViCdhO.jpg"
+      }
+    ],
+    "similar": [
+      {
+        "id": "51-tv",
+        "tmdbId": "51",
+        "isTv": true,
+        "title": "Houston Knights",
+        "description": "Houston Knights is an American crime drama set in Houston, Texas. The show ran on CBS from 1987 to 1988 and had 31 episodes. The core of the show was the partnership between two very different cops from two different cultures. Chicago cop Joey LaFiamma, played by Michael Paré, is transferred to Houston after he kills a mobster from a powerful Mafia family and a contract is put out on him. Once there, he is partnered with Levon Lundy, played by Michael Beck, the grandson of a Texas Ranger.\n\nAlthough as different as night and day, and after a rocky beginning they form a successful partnership and become friends. This is aided to a certain extent by an event where a hitman from Chicago who holds the contract to shoot La Fiamma arrives in Houston and is ultimately killed by Lundy.\n\nDuring the series, it is revealed that both La Fiamma and Lundy have their own personal demons; La Fiamma's Chicago police partner had been killed when he went ahead while La Fiamma had waited for backup to arrive. Lundy's wife had been killed by an explosion that was intended to kill him.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/pzfECkrZHkS3UXRsMcxvCB1O3Al.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/bJpNVnq0Af2COkhpmSmu0Xnkqwy.jpg",
+        "year": 1987
+      },
+      {
+        "id": "52-tv",
+        "tmdbId": "52",
+        "isTv": true,
+        "title": "That '70s Show",
+        "description": "Crank up the 8-track and flash back to a time when platform shoes and puka shells were all the rage in this hilarious retro-sitcom. For Eric, Kelso, Jackie, Hyde, Donna and Fez, a group of high school teens who spend most of their time hanging out in Eric’s basement, life in the ‘70s isn’t always so groovy. But between trying to figure out the meaning of life, avoiding their parents, and dealing with out-of-control hormones, they’ve learned one thing for sure: they’ll always get by with a little help from their friends.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/laEZvTqM80UaplUaDSCCbWhlyEV.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/rf2uHKzPniVL5LvSVxg5ACxv4cS.jpg",
+        "year": 1998
+      },
+      {
+        "id": "125053-tv",
+        "tmdbId": "125053",
+        "isTv": true,
+        "title": "Say Cheese",
+        "description": "Peace Photography Studio is an established but traditional studio founded 80 years ago and had 5 branches in its heyday. Now, there's only a single studio left and is managed by Pan Renyi and daughter Pan Zejia . Pan Zejia quietly helped out at the studio as she feels indebted to Pan Renyi who helped her settle a huge debt 10 years ago, and as a result, she remained single since then.\n\nKe Yuanhang is a newspaper reporter who is kind and magnanimous, although 5 years younger than Pan Zejia, a friendship soon developed. While Pan Zejia is irritable and impatient, Ke Yuanhang is gentle and caring. Their hindrances do not stop there, as Pan Renyi is constantly at loggerheads with Ke Yuanhang's mother, Hong Ziyi. Due to Pan Renyi's temperament, he does not get along with all his children, the matter is made worse when Pan Zejia's mother suddenly died in a car accident.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/1X7odnGYhDwpqfkCZAvndk714ZM.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5yg5tmvYBmcwNV4iYp8eRdnbGhJ.jpg",
+        "year": 2018
+      },
+      {
+        "id": "28727-tv",
+        "tmdbId": "28727",
+        "isTv": true,
+        "title": "Angel Street",
+        "description": "Angel Street is an American crime drama series broadcast  on CBS from September 15—October 3, 1992. Starring Robin Givens and Pamela Gidley as two Chicago homicide detectives, the series was canceled after four episodes aired, leaving four unaired.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/fKSHrrhwUuWEcUyfu1bGrlAiI2i.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/zAYP32L0uBWx136DzKURvpdTVB1.jpg",
+        "year": 1992
+      },
+      {
+        "id": "318-tv",
+        "tmdbId": "318",
+        "isTv": true,
+        "title": "American Gothic",
+        "description": "Everything is not what it seems in Trinity, South Carolina. Sheriff Lucas Buck develops a sinister interest in Caleb. Caleb's cousin Gail tries to protect him, but that's complicated since she has feelings for Sheriff Buck. And Caleb's dead sister, Merlyn, returns as an angel, warning him that Buck is an incarnation of evil - and may not be human.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qajOMTtQ958JEpmokPXTruwA9qp.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/itisXkOIsntQacvuO5BF05xHJ60.jpg",
+        "year": 1995
+      },
+      {
+        "id": "184-tv",
+        "tmdbId": "184",
+        "isTv": true,
+        "title": "Jeremiah",
+        "description": "Jeremiah is an American television series starring Luke Perry and Malcolm-Jamal Warner that ran on the Showtime network from 2002 to 2004. The series takes place in a post-apocalyptic future where most of the adult population has been wiped out by a deadly virus.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/yBaq79cbv8Lmhaa7ej3z6GOp9zK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/dlDynz58qyEqrd3gzxqfYB2JiUW.jpg",
+        "year": 2002
+      },
+      {
+        "id": "156-tv",
+        "tmdbId": "156",
+        "isTv": true,
+        "title": "The Beachcombers",
+        "description": "The Beachcombers is a Canadian comedy-drama television series that ran from October 1, 1972 to December 12, 1990 and is the longest-running dramatic series ever made for English-language Canadian television. In all, 387 episodes were produced.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/y5BAQlD35v8gzOSaHrTw7mcngGS.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/5FQedgC453usxnGsjgBoUDRzaxV.jpg",
+        "year": 1972
+      },
+      {
+        "id": "196-tv",
+        "tmdbId": "196",
+        "isTv": true,
+        "title": "Captain Star",
+        "description": "Captain Star was an animated television series starring Richard E. Grant as Captain Jim Star, based on a comic by Steven Appleby: Rockets Passing Overhead. Only thirteen episodes of thirty-minutes each were produced and aired. The series ran on the British ITV and Canadian TELETOON networks from 1997 to 1998. The show was also later repeated on Nickelodeon UK.",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/w4Q0cfVPFHyvR5tEaoNwvppGGDK.jpg",
+        "backdropUrl": "https://image.tmdb.org/t/p/w780/ketBtREiwFTMUlV9HqRmPxf6gT2.jpg",
+        "year": 1997
+      }
+    ],
+    "genre": [
+      "Drama",
+      "Mystery",
+      "Sci-Fi & Fantasy"
+    ],
+    "voteAverage": 8.307,
+    "isIframeEmbed": true,
+    "seasons": [
+      {
+        "season_number": 1,
+        "name": "Season 1",
+        "episode_count": 8,
+        "air_date": "2026-08-16",
+        "poster_path": "https://image.tmdb.org/t/p/w500/j9PTWG0Xn0NeIRhGGFJbciNYWvS.jpg",
         "episodes": []
       }
     ],

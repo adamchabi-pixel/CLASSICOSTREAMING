@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, ChevronDown, User,
   Key, Tv, Clock, Calendar,
   Sparkles, History, Compass, FilmIcon, BookmarkCheck,
-  Star, CheckCircle, AlertCircle, RefreshCw, X, Shield, Menu, Settings, Loader2, Handshake
+  Star, CheckCircle, AlertCircle, RefreshCw, X, Shield, Menu, Settings, Loader2, Handshake, Smartphone
 } from "lucide-react";
 import { COLLECTIONS as RAW_COLLECTIONS, Movie, Collection } from "./data";
 
@@ -30,6 +30,7 @@ import NotificationDropdown from "./components/NotificationDropdown";
 import UserProfileView from "./components/UserProfileView";
 import RecommendedView from "./components/RecommendedView";
 import PlatformShowcase from "./components/PlatformShowcase";
+import { InstallAppModal, InstallAppHint } from "./components/InstallAppModal";
 
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
@@ -822,12 +823,12 @@ export default function App() {
         const time = timeStr ? parseInt(timeStr) : 0;
         if (Date.now() - time < 2 * 60 * 60 * 1000) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed.slice(0, 10);
         }
       }
     } catch (e) {}
     const defaultTrending = RAW_COLLECTIONS.find(c => c.id === "trending-now")?.movies;
-    return defaultTrending && defaultTrending.length > 0 ? defaultTrending : [];
+    return defaultTrending && defaultTrending.length > 0 ? defaultTrending.slice(0, 10) : [];
   });
 
   const handlePlatformSeeAll = (platformId: number) => {
@@ -905,9 +906,60 @@ export default function App() {
   const [libraryYear, setLibraryYear] = useState<string>("All");
   const [libraryType, setLibraryType] = useState<"all" | "movie" | "tv">("all");
   const [librarySort, setLibrarySort] = useState<"popularity" | "rating" | "year" | "title">("popularity");
-  const [progressData, setProgressData] = useState<Record<string, number>>({});
-  const [watchlist, setWatchlist] = useState<string[]>([]);
-  const [history, setHistory] = useState<string[]>([]);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [progressData, setProgressData] = useState<Record<string, number>>(() => {
+    try {
+      const savedProgress = typeof window !== "undefined" ? localStorage.getItem("classico_progress") : null;
+      if (savedProgress) {
+        const parsed = JSON.parse(savedProgress) || {};
+        const newProgressData: Record<string, number> = {};
+        Object.keys(parsed || {}).forEach(rawK => {
+          let k = rawK;
+          if (k.includes("-tv-tv")) k = k.replace(/(-tv)+$/g, "-tv");
+          let pct = 0;
+          if (typeof parsed[rawK] === 'number') pct = parsed[rawK];
+          else if (parsed[rawK]?.type === "tv") {
+            if (parsed[rawK].show_progress) {
+              const s = parsed[rawK].last_season_watched || 1;
+              const e = parsed[rawK].last_episode_watched || 1;
+              const epProg = parsed[rawK].show_progress[`s${s}e${e}`];
+              if (epProg?.progress?.duration) {
+                pct = epProg.progress.watched / epProg.progress.duration;
+              } else pct = 0.35;
+            } else pct = 0.35;
+          } else if (parsed[rawK]?.duration) {
+            pct = (parsed[rawK].currentTime || 0) / parsed[rawK].duration;
+          }
+          const baseClean = k.replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+          if (pct > (newProgressData[k] || 0) || !newProgressData[k]) newProgressData[k] = pct;
+          if (pct > (newProgressData[`${baseClean}-tv`] || 0) || !newProgressData[`${baseClean}-tv`]) newProgressData[`${baseClean}-tv`] = pct;
+          if (pct > (newProgressData[baseClean] || 0) || !newProgressData[baseClean]) newProgressData[baseClean] = pct;
+        });
+        return newProgressData;
+      }
+    } catch (e) {}
+    return {};
+  });
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_watchlist") : null;
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (Array.isArray(p)) return p;
+      }
+    } catch (e) {}
+    return [];
+  });
+  const [history, setHistory] = useState<string[]>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_history") : null;
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (Array.isArray(p)) return p;
+      }
+    } catch (e) {}
+    return [];
+  });
 
   const {
     user,
@@ -925,41 +977,38 @@ export default function App() {
   } = useAuth();
 
   useEffect(() => {
-    // Graceful cinematic fade-out of the startup screen once App renders
+    // Graceful cinematic fade-out of the startup screen once App renders (slightly slower and smoother transition)
     const startupScreen = document.getElementById("startup-screen");
     if (startupScreen) {
       const timer = setTimeout(() => {
+        startupScreen.style.transition = "opacity 1.35s cubic-bezier(0.22, 1, 0.36, 1), transform 1.35s cubic-bezier(0.22, 1, 0.36, 1)";
         startupScreen.style.opacity = "0";
-        startupScreen.style.transform = "scale(1.04)";
+        startupScreen.style.transform = "scale(1.035)";
         setTimeout(() => {
           try {
             startupScreen.remove();
           } catch(e) {}
-        }, 700);
-      }, 60);
+        }, 1450);
+      }, 120);
       return () => clearTimeout(timer);
     }
   }, []);
 
   useEffect(() => {
-    setWatchlist(authWatchlist || []);
+    if (authWatchlist && authWatchlist.length > 0) {
+      setWatchlist(authWatchlist);
+    }
   }, [authWatchlist]);
 
   useEffect(() => {
-    setHistory(authWatchHistory || []);
+    if (authWatchHistory && authWatchHistory.length > 0) {
+      setHistory(authWatchHistory);
+    }
   }, [authWatchHistory]);
 
   useEffect(() => {
     loadProgress();
   }, [authPlaybackProgress]);
-
-  useEffect(() => {
-    if (!user) {
-      setWatchlist([]);
-      setHistory([]);
-      setProgressData({});
-    }
-  }, [user]);
   
   const [expandedCollections, setExpandedCollections] = useState<Record<string, boolean>>({});
   const isHeroLoading = false;
@@ -1122,7 +1171,7 @@ export default function App() {
 
     const collectionsToUse = COLLECTIONS.map(col => {
       if (col.id === "trending-now" && trendingMovies.length > 0) {
-        return { ...col, movies: trendingMovies };
+        return { ...col, movies: trendingMovies.slice(0, 10) };
       }
       return col;
     });
@@ -1209,8 +1258,21 @@ export default function App() {
         });
       }
 
+      // For trending-now, deduplicate and ensure valid posters for every single title (limit strictly to 10)
+      let finalMovies = enrichedMovies;
+      if (isTrendingCol) {
+        const seenTrendingKeys = new Set<string>();
+        finalMovies = enrichedMovies.filter(m => {
+          if (!m || !m.title) return false;
+          const k = m.tmdbId ? `tmdb_${m.tmdbId}` : `title_${cleanTitle(m.title)}`;
+          if (seenTrendingKeys.has(k)) return false;
+          seenTrendingKeys.add(k);
+          return true;
+        }).slice(0, 10);
+      }
+
       // SORT ACCORDING TO RECOMMENDED CHRONOLOGICAL OR OFFICIAL RELEASE ORDER
-      const sortedMovies = sortSagaMovies(collection.id, enrichedMovies);
+      const sortedMovies = sortSagaMovies(collection.id, finalMovies);
 
       return {
         ...collection,
@@ -1395,7 +1457,7 @@ export default function App() {
       });
       return {
         ...col,
-        movies: uniqueMovies
+        movies: col.id === "trending-now" ? uniqueMovies.slice(0, 10) : uniqueMovies
       };
     }).filter((col) => col.movies.length > 0);
   }, [allMoviesBase, collectionMods, trendingMovies]);
@@ -1816,10 +1878,11 @@ export default function App() {
         }));
 
         if (results.length > 0) {
-          setTrendingMovies(results);
+          const tenResults = results.slice(0, 10);
+          setTrendingMovies(tenResults);
           lastFetched = Date.now();
           try {
-            localStorage.setItem("classico_live_trending_v2", JSON.stringify(results));
+            localStorage.setItem("classico_live_trending_v2", JSON.stringify(tenResults));
             localStorage.setItem("classico_live_trending_time", String(Date.now()));
           } catch (e) {}
           setTmdbCache(prev => {
@@ -1884,10 +1947,11 @@ export default function App() {
               iframeSrc: ""
             }));
             if (formatted.length > 0) {
-              setTrendingMovies(formatted);
+              const tenFormatted = formatted.slice(0, 10);
+              setTrendingMovies(tenFormatted);
               lastFetched = Date.now();
               try {
-                localStorage.setItem("classico_live_trending_v2", JSON.stringify(formatted));
+                localStorage.setItem("classico_live_trending_v2", JSON.stringify(tenFormatted));
                 localStorage.setItem("classico_live_trending_time", String(Date.now()));
               } catch (e) {}
               setTmdbCache(prev => {
@@ -2197,6 +2261,13 @@ export default function App() {
     match = allMovies.find(m => String(m.tmdbId) === clean || String(m.tmdbId) === cleanWithoutTv);
     if (match) return match;
 
+    // 5. Fallback: title search (e.g. lanterns)
+    const cleanLower = cleanWithoutTv.toLowerCase().trim();
+    if (cleanLower.includes("lanterns")) {
+      match = allMovies.find(m => (m.title || "").toLowerCase().includes("lanterns"));
+      if (match) return match;
+    }
+
     return undefined;
   }, [allMovies]);
 
@@ -2260,10 +2331,14 @@ export default function App() {
     }
   }, [targetMovieId, activeMovie]);
 
-  // Fetch missing history movies on mount so Resume Watching is preserved
+  // Fetch missing history & progress movies on mount so Resume Watching is preserved with complete posters
   useEffect(() => {
-    if (history.length > 0 && allMovies.length > 0) {
-      const missingIds = history.filter(id => !allMovies.find(m => m.id === id || m.id === String(id) + "-tv" || m.id === String(id).replace("-tv", "")));
+    const allCandidateIds = Array.from(new Set([...history, ...Object.keys(progressData)]));
+    if (allCandidateIds.length > 0 && allMovies.length > 0) {
+      const missingIds = allCandidateIds.filter(id => {
+        const m = allMovies.find(x => x.id === id || x.id === String(id) + "-tv" || x.id === String(id).replace("-tv", ""));
+        return !m || (!m.posterUrl && !m.backdropUrl);
+      });
       if (missingIds.length > 0) {
         missingIds.forEach(id => {
           fetch(`/api/movie/${id}`)
@@ -2271,20 +2346,129 @@ export default function App() {
             .then(data => {
               if (data.success && data.movie) {
                 setTmdbCache(prev => {
-                  if (prev.find(m => m.id === id)) return prev;
                   const map = new Map(prev.map(m => [m.id, m]));
                   map.set(id, { ...data.movie, id });
+                  map.set(String(id).replace(/-tv$/, ""), { ...data.movie, id: String(id).replace(/-tv$/, "") });
+                  if (data.movie.isTv) {
+                    map.set(`${String(id).replace(/-tv$/, "")}-tv`, { ...data.movie, id: `${String(id).replace(/-tv$/, "")}-tv` });
+                  }
                   const newCache = Array.from(map.values());
                   localStorage.setItem("classico_tmdb_cache_v3", JSON.stringify(newCache));
                   return newCache;
                 });
               }
             })
-            .catch(err => console.error("Failed to fetch missing history movie:", err));
+            .catch(err => console.error("Failed to fetch missing history/progress movie:", err));
         });
       }
     }
-  }, [history, allMovies.length]); // allMovies.length is used so it runs initially when loaded
+  }, [history, Object.keys(progressData).length, allMovies.length]);
+
+  const handleFinishWatching = (movie: Movie) => {
+    const rawId = String(movie.id);
+    const cleanId = rawId.replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+    const tmdbId = movie.tmdbId ? String(movie.tmdbId) : "";
+    const idsToUpdate = new Set<string>([rawId, cleanId, `${cleanId}-tv`]);
+    if (tmdbId) {
+      idsToUpdate.add(tmdbId);
+      idsToUpdate.add(`${tmdbId}-tv`);
+    }
+
+    try {
+      const saved = localStorage.getItem("classico_progress");
+      const parsed = saved ? JSON.parse(saved) : {};
+      idsToUpdate.forEach(id => {
+        parsed[id] = 1.0;
+      });
+      Object.keys(parsed).forEach(k => {
+        if (k.startsWith(cleanId) || (tmdbId && k.startsWith(tmdbId))) {
+          parsed[k] = 1.0;
+        }
+      });
+      localStorage.setItem("classico_progress", JSON.stringify(parsed));
+    } catch (e) {}
+
+    try {
+      const savedHist = localStorage.getItem("classico_history");
+      if (savedHist) {
+        const parsedHist = JSON.parse(savedHist) || [];
+        const filtered = parsedHist.filter((id: string) => 
+          !idsToUpdate.has(id) && !id.startsWith(cleanId) && (!tmdbId || !id.startsWith(tmdbId))
+        );
+        localStorage.setItem("classico_history", JSON.stringify(filtered));
+        setHistory(filtered);
+      }
+    } catch (e) {}
+
+    setProgressData(prev => {
+      const next = { ...prev };
+      idsToUpdate.forEach(id => {
+        next[id] = 1.0;
+      });
+      Object.keys(next).forEach(k => {
+        if (k.startsWith(cleanId) || (tmdbId && k.startsWith(tmdbId))) {
+          next[k] = 1.0;
+        }
+      });
+      return next;
+    });
+
+    window.dispatchEvent(new Event("classico_progress_updated"));
+  };
+
+  const handleRestartWatching = (movie: Movie) => {
+    const rawId = String(movie.id);
+    const cleanId = rawId.replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+    const tmdbId = movie.tmdbId ? String(movie.tmdbId) : "";
+    const idsToDelete = new Set<string>([rawId, cleanId, `${cleanId}-tv`]);
+    if (tmdbId) {
+      idsToDelete.add(tmdbId);
+      idsToDelete.add(`${tmdbId}-tv`);
+    }
+
+    try {
+      const saved = localStorage.getItem("classico_progress");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        idsToDelete.forEach(id => {
+          delete parsed[id];
+        });
+        Object.keys(parsed).forEach(k => {
+          if (k.startsWith(cleanId) || (tmdbId && k.startsWith(tmdbId))) {
+            delete parsed[k];
+          }
+        });
+        localStorage.setItem("classico_progress", JSON.stringify(parsed));
+      }
+    } catch (e) {}
+
+    try {
+      const savedHist = localStorage.getItem("classico_history");
+      if (savedHist) {
+        const parsedHist = JSON.parse(savedHist) || [];
+        const filtered = parsedHist.filter((id: string) => 
+          !idsToDelete.has(id) && !id.startsWith(cleanId) && (!tmdbId || !id.startsWith(tmdbId))
+        );
+        localStorage.setItem("classico_history", JSON.stringify(filtered));
+        setHistory(filtered);
+      }
+    } catch (e) {}
+
+    setProgressData(prev => {
+      const next = { ...prev };
+      idsToDelete.forEach(id => {
+        delete next[id];
+      });
+      Object.keys(next).forEach(k => {
+        if (k.startsWith(cleanId) || (tmdbId && k.startsWith(tmdbId))) {
+          delete next[k];
+        }
+      });
+      return next;
+    });
+
+    window.dispatchEvent(new Event("classico_progress_updated"));
+  };
 
   // Intercept and return the standalone full-screen cinema view with zero overlay UI
 
@@ -2325,11 +2509,8 @@ export default function App() {
       if (cleanTitle && seenTitles.has(cleanTitle)) return;
       
       let p = getProgress(m.id);
-      if (p <= 0 && m.isTv) {
-        p = 0.35;
-      }
       if (p <= 0) return;
-      if (!m.isTv && p >= 0.95) return;
+      if (p >= 0.95) return; // Finished movies are excluded from Continue Watching
 
       seenKeys.add(key);
       if (m.id) seenKeys.add(m.id);
@@ -2719,7 +2900,7 @@ export default function App() {
                 <HeroSkeleton />
               ) : heroMovies.length > 0 && heroMovie ? (
                 <div 
-                  className="relative w-full h-[85vh] [@media(max-height:500px)_and_(orientation:landscape)]:h-[100vh] md:h-screen bg-black overflow-hidden flex items-end select-none"
+                  className="relative w-full h-[90vh] [@media(max-height:500px)_and_(orientation:landscape)]:h-[100vh] md:h-screen bg-black overflow-hidden flex items-end select-none"
                   onTouchStart={(e) => {
                     heroTouchStartX.current = e.touches[0].clientX;
                   }}
@@ -2743,168 +2924,158 @@ export default function App() {
                   }}
                 >
                   
-                  {/* Cover Image Layer with smooth fade and very slow, subtle cinematic zoom-in */}
-                  <AnimatePresence mode="sync" initial={false}>
-                    <motion.div
-                      key={`hero-bg-${heroMovie.id}`}
-                      initial={false}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="absolute inset-0 w-full h-full z-0 overflow-hidden"
-                    >
-                      <motion.img
-                        src={(heroMovie.backdropUrl && heroMovie.backdropUrl.trim()) || CLASSICO_HERO_BACKDROP}
-                        alt={heroMovie.title}
-                        referrerPolicy="no-referrer"
-                        decoding="sync"
-                        loading="eager"
-                        fetchPriority="high"
-                        initial={{ scale: 1.0 }}
-                        animate={{ scale: 1.02 }}
-                        transition={{ duration: 16, ease: "linear" }}
-                        className="w-full h-full object-cover object-center md:object-top select-none pointer-events-none will-change-transform"
-                      />
-                      {/* Gradient isolated strictly on the background image so it never washes over the synopsis or buttons */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-                      <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-                    </motion.div>
-                  </AnimatePresence>
-
-                  {/* Top subtle navbar shadow */}
-                  <div 
-                    className="absolute inset-x-0 top-0 h-36 md:h-48 z-10 pointer-events-none bg-gradient-to-b from-black/80 via-black/25 to-transparent" 
-                  />
-
-                  {/* Shallow bottom connecting fade well underneath the controls */}
-                  <div 
-                    className="absolute inset-x-0 bottom-0 h-16 md:h-20 z-10 pointer-events-none bg-gradient-to-t from-black to-transparent" 
-                  />
-                  
-                  {/* Spotlight Content and Description Box with distinct text entrance transition */}
+                  {/* Single synchronized Hero slide transition: background, title, meta, description & buttons transition smoothly together */}
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
-                      key={`hero-content-${heroMovie.id}`}
-                      initial={false}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                      className="relative z-20 max-w-[1200px] mx-auto w-full px-4 sm:px-8 pb-20 sm:pb-28 md:pb-36 pt-8 flex flex-col items-center text-center justify-center -translate-y-8 sm:-translate-y-14 md:-translate-y-20 [@media(max-height:500px)_and_(orientation:landscape)]:pb-4 [@media(max-height:500px)_and_(orientation:landscape)]:pt-4 [@media(max-height:500px)_and_(orientation:landscape)]:-translate-y-2"
+                      key={`hero-slide-${heroMovie.id}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.35, ease: "easeInOut" }}
+                      className="absolute inset-0 w-full h-full flex flex-col justify-end"
                     >
-                      {/* Text Section Wrapper */}
-                      <div className="space-y-2 sm:space-y-2.5 w-full max-w-xl sm:max-w-2xl mx-auto flex flex-col items-center text-center z-20 [@media(max-height:500px)_and_(orientation:landscape)]:space-y-1">
-                        {/* Title / Logo & Meta grouped tightly together */}
-                        <div className="flex flex-col items-center space-y-1 sm:space-y-1.5 w-full">
-                          {/* Poster Style Cinematic Title or Logo with dynamic fallback to text based styling */}
-                          {heroMovie.hasLogo && heroMovie.logoUrl && heroMovie.logoUrl.trim() && !useTextTitleForHero ? (
-                            <div className="select-none relative group flex flex-col items-center justify-center">
-                              <img 
-                                src={heroMovie.logoUrl.trim()} 
-                                alt={heroMovie.title}
-                                className="h-20 xs:h-24 sm:h-32 md:h-38 lg:h-44 max-h-48 w-auto object-contain max-w-[85%] sm:max-w-[70%] md:max-w-[60%] mx-auto select-none pointer-events-none transition-transform duration-300 hover:scale-102"
-                                referrerPolicy="no-referrer"
-                                decoding="sync"
-                                loading="eager"
-                                fetchPriority="high"
-                                onError={() => {
-                                  setUseTextTitleForHero(true);
-                                }}
-                              />
-                              {/* Subtle user feedback action to bypass logo if it's white or unreadable */}
-                              <button 
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setUseTextTitleForHero(true);
-                                }}
-                                className="absolute -bottom-5 opacity-0 group-hover:opacity-100 text-[9px] font-sans text-zinc-400 hover:text-white transition-opacity bg-black/80 px-2 py-0.5 rounded border border-white/10 pointer-events-auto"
-                              >
-                                Show text title 🗸
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="relative group flex flex-col items-center justify-center">
-                              <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black tracking-tight text-white uppercase italic leading-[1.05] max-w-2xl mx-auto" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.9)" }}>
-                                {heroMovie.title}
-                              </h1>
-                              {heroMovie.hasLogo && heroMovie.logoUrl && (
-                                <button
+                      {/* Cover Image Layer */}
+                      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+                        <img
+                          src={(heroMovie.backdropUrl && heroMovie.backdropUrl.trim()) || CLASSICO_HERO_BACKDROP}
+                          alt={heroMovie.title}
+                          referrerPolicy="no-referrer"
+                          decoding="sync"
+                          loading="eager"
+                          fetchPriority="high"
+                          className="w-full h-full object-cover object-center md:object-top select-none pointer-events-none will-change-transform"
+                        />
+                        {/* Gradient isolated strictly on the background image so it never washes over the synopsis or buttons */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+                      </div>
+
+                      {/* Top subtle navbar shadow */}
+                      <div 
+                        className="absolute inset-x-0 top-0 h-36 md:h-48 z-10 pointer-events-none bg-gradient-to-b from-black/80 via-black/25 to-transparent" 
+                      />
+
+                      {/* Shallow bottom connecting fade well underneath the controls */}
+                      <div 
+                        className="absolute inset-x-0 bottom-0 h-16 md:h-20 z-10 pointer-events-none bg-gradient-to-t from-black to-transparent" 
+                      />
+
+                      {/* Spotlight Content and Description Box with synchronized seamless transition */}
+                      <div className="relative z-20 max-w-[1200px] mx-auto w-full px-4 sm:px-8 pb-20 sm:pb-28 md:pb-36 pt-8 flex flex-col items-center text-center justify-center -translate-y-8 sm:-translate-y-14 md:-translate-y-20 [@media(max-height:500px)_and_(orientation:landscape)]:pb-4 [@media(max-height:500px)_and_(orientation:landscape)]:pt-4 [@media(max-height:500px)_and_(orientation:landscape)]:-translate-y-2">
+                        {/* Text Section Wrapper */}
+                        <div className="space-y-2 sm:space-y-2.5 w-full max-w-xl sm:max-w-2xl mx-auto flex flex-col items-center text-center z-20 [@media(max-height:500px)_and_(orientation:landscape)]:space-y-1">
+                          {/* Title / Logo & Meta grouped tightly together */}
+                          <div className="flex flex-col items-center space-y-1 sm:space-y-1.5 w-full">
+                            {/* Poster Style Cinematic Title or Logo with dynamic fallback to text based styling */}
+                            {heroMovie.hasLogo && heroMovie.logoUrl && heroMovie.logoUrl.trim() && !useTextTitleForHero ? (
+                              <div className="select-none relative group flex flex-col items-center justify-center">
+                                <img 
+                                  src={heroMovie.logoUrl.trim()} 
+                                  alt={heroMovie.title}
+                                  className="h-20 xs:h-24 sm:h-32 md:h-38 lg:h-44 max-h-48 w-auto object-contain max-w-[85%] sm:max-w-[70%] md:max-w-[60%] mx-auto select-none pointer-events-none transition-transform duration-300 hover:scale-102"
+                                  referrerPolicy="no-referrer"
+                                  decoding="sync"
+                                  loading="eager"
+                                  fetchPriority="high"
+                                  onError={() => {
+                                    setUseTextTitleForHero(true);
+                                  }}
+                                />
+                                {/* Subtle user feedback action to bypass logo if it's white or unreadable */}
+                                <button 
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setUseTextTitleForHero(false);
+                                    setUseTextTitleForHero(true);
                                   }}
-                                  className="absolute -bottom-5 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 text-[9px] text-zinc-400 hover:text-white bg-black/80 border border-white/10 px-2 py-0.5 rounded transition-all cursor-pointer font-sans"
+                                  className="absolute -bottom-5 opacity-0 group-hover:opacity-100 text-[9px] font-sans text-zinc-400 hover:text-white transition-opacity bg-black/80 px-2 py-0.5 rounded border border-white/10 pointer-events-auto"
                                 >
-                                  🖼️ Show logo
+                                  Show text title 🗸
                                 </button>
+                              </div>
+                            ) : (
+                              <div className="relative group flex flex-col items-center justify-center">
+                                <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black tracking-tight text-white uppercase italic leading-[1.05] max-w-2xl mx-auto" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.9)" }}>
+                                  {heroMovie.title}
+                                </h1>
+                                {heroMovie.hasLogo && heroMovie.logoUrl && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setUseTextTitleForHero(false);
+                                    }}
+                                    className="absolute -bottom-5 inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 text-[9px] text-zinc-400 hover:text-white bg-black/80 border border-white/10 px-2 py-0.5 rounded transition-all cursor-pointer font-sans"
+                                  >
+                                    🖼️ Show logo
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Refined Minimalist Movie Meta (Tightly grouped below title) */}
+                            <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
+                              <span className="text-zinc-100">
+                                {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || String(heroMovie.id || "").endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
+                                  ? "TV Series"
+                                  : "Movie"
+                                }
+                              </span>
+                              {(heroMovie.year || heroMovie.releaseDate) && (
+                                <>
+                                  <span className="text-zinc-500 select-none">•</span>
+                                  <span className="text-zinc-100">
+                                    {heroMovie.year || heroMovie.releaseDate?.slice(0, 4)}
+                                  </span>
+                                </>
+                              )}
+                              {heroMovie.duration && (
+                                <>
+                                  <span className="text-zinc-500 select-none">•</span>
+                                  <span className="text-zinc-100">{heroMovie.duration}</span>
+                                </>
+                              )}
+                              {heroMovie.rating && heroMovie.rating !== "N/A" && (
+                                <>
+                                  <span className="text-zinc-500 select-none">•</span>
+                                  <span className="text-amber-400 font-bold">
+                                    ★ {heroMovie.rating}
+                                  </span>
+                                </>
                               )}
                             </div>
-                          )}
+                          </div>
 
-                          {/* Refined Minimalist Movie Meta (Tightly grouped below title) */}
-                          <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
-                            <span className="text-zinc-100">
-                              {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || String(heroMovie.id || "").endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
-                                ? "TV Series"
-                                : "Movie"
-                              }
-                            </span>
-                            {(heroMovie.year || heroMovie.releaseDate) && (
-                              <>
-                                <span className="text-zinc-500 select-none">•</span>
-                                <span className="text-zinc-100">
-                                  {heroMovie.year || heroMovie.releaseDate?.slice(0, 4)}
-                                </span>
-                              </>
-                            )}
-                            {heroMovie.duration && (
-                              <>
-                                <span className="text-zinc-500 select-none">•</span>
-                                <span className="text-zinc-100">{heroMovie.duration}</span>
-                              </>
-                            )}
-                            {heroMovie.rating && heroMovie.rating !== "N/A" && (
-                              <>
-                                <span className="text-zinc-500 select-none">•</span>
-                                <span className="text-amber-400 font-bold">
-                                  ★ {heroMovie.rating}
-                                </span>
-                              </>
-                            )}
+                          {/* Movie Description: Full high readability contrast */}
+                          <p 
+                            className="text-stone-100 font-normal text-xs sm:text-[13px] leading-relaxed font-sans line-clamp-2 sm:line-clamp-3 overflow-hidden text-ellipsis max-w-md sm:max-w-xl mx-auto"
+                            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.95)" }}
+                          >
+                            {heroMovie.description}
+                          </p>
+
+                          {/* Rectangular Modern Action Buttons */}
+                          <div className="flex items-center justify-center gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
+                            <button
+                              id="hero-play-btn"
+                              onClick={() => handleOpenMovie(heroMovie, true)}
+                              className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
+                            >
+                              <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
+                              Watch
+                            </button>
+
+                            <button
+                              id="hero-info-btn"
+                              onClick={() => handleOpenMovie(heroMovie, false)}
+                              className="group flex items-center justify-center gap-2 bg-stone-900/80 hover:bg-stone-800/90 backdrop-blur-md border border-white/20 hover:border-white/40 text-white font-sans font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:scale-102 active:scale-98 cursor-pointer"
+                            >
+                              <Info className="w-4 h-4 text-white group-hover:scale-105 transition-transform duration-250" />
+                              More Info
+                            </button>
                           </div>
                         </div>
-
-                        {/* Movie Description: Full high readability contrast */}
-                        <p 
-                          className="text-stone-100 font-normal text-xs sm:text-[13px] leading-relaxed font-sans line-clamp-2 sm:line-clamp-3 overflow-hidden text-ellipsis max-w-md sm:max-w-xl mx-auto"
-                          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.95)" }}
-                        >
-                          {heroMovie.description}
-                        </p>
-
-                        {/* Rectangular Modern Action Buttons */}
-                        <div className="flex items-center justify-center gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
-                          <button
-                            id="hero-play-btn"
-                            onClick={() => handleOpenMovie(heroMovie, true)}
-                            className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
-                          >
-                            <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
-                            Watch
-                          </button>
-
-                          <button
-                            id="hero-info-btn"
-                            onClick={() => handleOpenMovie(heroMovie, false)}
-                            className="group flex items-center justify-center gap-2 bg-stone-900/80 hover:bg-stone-800/90 backdrop-blur-md border border-white/20 hover:border-white/40 text-white font-sans font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:scale-102 active:scale-98 cursor-pointer"
-                          >
-                            <Info className="w-4 h-4 text-white group-hover:scale-105 transition-transform duration-250" />
-                            More Info
-                          </button>
-                        </div>
                       </div>
-
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -2961,12 +3132,13 @@ export default function App() {
                         {resumeMovies.map((movie, idx) => (
                           <LazyVirtualCard 
                             key={`resume-${movie.id}-${idx}`} 
-                            priority={idx < 6}
+                            priority={idx < 8}
                             className="shrink-0 flex items-start"
                             placeholderClassName="w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px] aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30"
                           >
                             <MovieCard
                               movie={movie}
+                              priority={idx < 8}
                               variant="rectangular"
                               expandOnHover={true}
                               cardWidthClass="w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px]"
@@ -2974,6 +3146,8 @@ export default function App() {
                               onSelect={(m) => handleOpenMovie(m, false)}
                               onPlay={(m) => handleOpenMovie(m, false)}
                               progressPercent={getProgress(movie.id)}
+                              onFinishWatching={handleFinishWatching}
+                              onRestartWatching={handleRestartWatching}
                             />
                           </LazyVirtualCard>
                         ))}
@@ -2984,8 +3158,8 @@ export default function App() {
 
                 {(
                   <>
-                    {/* Premium Discord Community Banner */}
-                    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-zinc-900 via-[#1e1f24] to-zinc-900 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] group">
+                    {/* Premium Discord Community Banner - hidden on mobile as requested */}
+                    <div className="hidden md:block relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-zinc-900 via-[#1e1f24] to-zinc-900 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] group">
                       {/* Subtle Background Glow */}
                       <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#5865F2]/10 to-transparent opacity-50 pointer-events-none blur-3xl"></div>
                       <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-[#5865F2]/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-[#5865F2]/30 transition-colors duration-700"></div>
@@ -3095,7 +3269,7 @@ export default function App() {
                               }}
                               className="flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar pt-4 px-1 pb-6 sm:pb-10"
                             >
-                              {collection.movies.slice(0, 40).map((movie, idx) => {
+                              {collection.movies.slice(0, collection.id === "trending-now" ? 10 : 40).map((movie, idx) => {
                                 const isTrending = collection.id === "trending-now";
                                 const cardWidth = isTrending 
                                   ? "w-[170px] min-[400px]:w-[200px] sm:w-[240px] md:w-[260px]" 
@@ -3110,6 +3284,7 @@ export default function App() {
                                   >
                                     <MovieCard
                                       movie={movie}
+                                      priority={idx < 6}
                                       variant="rectangular"
                                       expandOnHover={true}
                                       cardWidthClass={cardWidth}
@@ -3123,6 +3298,40 @@ export default function App() {
                             </MomentumCarousel>
                           </div>
                         </div>
+
+                        {/* Mobile Discord Banner - positioned after Trending Now so it is present on mobile but never appears on initial hero landing */}
+                        {idx === 0 && (
+                          <div className="block md:hidden pt-2 pb-1">
+                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-zinc-900 via-[#1e1f24] to-zinc-900 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] group">
+                              <div className="absolute top-0 right-0 w-48 h-full bg-gradient-to-l from-[#5865F2]/10 to-transparent opacity-50 pointer-events-none blur-2xl"></div>
+                              <div className="relative px-3.5 py-3 flex flex-row items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-[#5865F2]/15 border border-[#5865F2]/30 text-[#5865F2]">
+                                    <svg className="w-5 h-5 text-[#5865F2]" fill="currentColor" viewBox="0 0 127.14 96.36">
+                                      <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.1,46,96,53,91,65.69,84.69,65.69Z"/>
+                                    </svg>
+                                  </div>
+                                  <div className="min-w-0">
+                                    <h4 className="text-[12.5px] font-sans font-bold text-white leading-tight truncate">
+                                      Join the Classico Community!
+                                    </h4>
+                                    <p className="text-[10px] text-zinc-400 font-sans leading-tight truncate mt-0.5">
+                                      Request films, report bugs, discover releases
+                                    </p>
+                                  </div>
+                                </div>
+                                <a
+                                  href="https://discord.gg/bzbtZFUpxK"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-shrink-0 inline-flex items-center justify-center bg-[#5865F2] hover:bg-[#4752C4] text-white font-sans font-bold px-3 py-1.5 rounded-lg text-[11px] tracking-wide shadow-md active:scale-95 transition-all"
+                                >
+                                  Join Discord
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Directly after Best Comedy Gold: Platform Showcase */}
                         {isComedyGold && (
@@ -3445,6 +3654,14 @@ export default function App() {
       />
 
       
+
+      {/* Discreet floating mobile install hint at bottom-left */}
+      <InstallAppHint onClick={() => setIsInstallModalOpen(true)} />
+
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
 
       <AuthModal />
     </div>

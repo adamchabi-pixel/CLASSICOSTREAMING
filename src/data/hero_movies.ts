@@ -3,6 +3,75 @@ export const heroMoviesData = {
   "heroes": [
     {
       "hasLogo": true,
+      "logoUrl": "https://image.tmdb.org/t/p/w500/kANHXGvFKW13UEkZbYwl9nIJeEl.png",
+      "id": "95350-tv",
+      "tmdbId": "95350",
+      "imdbId": "95350",
+      "title": "Lanterns",
+      "originalTitle": "Lanterns",
+      "description": "Two intergalactic cops, new recruit John Stewart and Lantern legend Hal Jordan, are drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+      "year": 2026,
+      "releaseDate": "2026-08-16",
+      "duration": "55 min",
+      "voteAverage": 7.8,
+      "rating": "7.8",
+      "language": "en",
+      "isTv": true,
+      "status": "In Production",
+      "genre": [
+        "Sci-Fi & Fantasy",
+        "Action & Adventure",
+        "Crime",
+        "Mystery"
+      ],
+      "director": "Chris Mundy & Damon Lindelof",
+      "cast": [
+        "Kyle Chandler",
+        "Aaron Pierre",
+        "Kelly Macdonald"
+      ],
+      "tagline": "Only one can wear the ring.",
+      "isIframeEmbed": true,
+      "iframeSrc": ""
+    },
+    {
+      "hasLogo": true,
+      "logoUrl": "https://image.tmdb.org/t/p/w500/hBLQZmtZQ0DsCdsihNrGKeUnPL1.png",
+      "id": "1375441",
+      "tmdbId": "1375441",
+      "imdbId": "tt34206385",
+      "title": "Primetime",
+      "originalTitle": "Primetime",
+      "description": "In 2006, To Catch a Predator host Chris Hansen sets out to make television history, turning an undercover investigation into one of the most controversial cultural phenomena of the decade.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/lmrulvLbmaejTix1YaMxo1oGhH1.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/original/4E5RVsSUG1A4Adwbqupu5w6kofZ.jpg",
+      "year": 2026,
+      "releaseDate": "2026-09-04",
+      "duration": "115 min",
+      "voteAverage": 7.5,
+      "rating": "7.5",
+      "language": "en",
+      "isTv": false,
+      "status": "Released",
+      "genre": [
+        "Crime",
+        "Thriller",
+        "Drama"
+      ],
+      "director": "Lance Oppenheim",
+      "cast": [
+        "Robert Pattinson",
+        "Skyler Gisondo",
+        "Merritt Wever"
+      ],
+      "tagline": "The story behind television's most infamous sting.",
+      "isIframeEmbed": true,
+      "iframeSrc": ""
+    },
+    {
+      "hasLogo": true,
       "logoUrl": "https://image.tmdb.org/t/p/w500/kysDTCloxUPJ1BILI4f8gs74fcr.png",
       "id": "df874a8ad2ee97ac6649de109d956ecc",
       "tmdbId": "238",
@@ -178,35 +247,37 @@ export const heroMoviesData = {
   ],
   "hero": {
     "hasLogo": true,
-    "logoUrl": "https://image.tmdb.org/t/p/w500/kysDTCloxUPJ1BILI4f8gs74fcr.png",
-    "id": "df874a8ad2ee97ac6649de109d956ecc",
-    "tmdbId": "238",
-    "imdbId": "tt0068646",
-    "title": "The Godfather",
-    "originalTitle": "The Godfather",
-    "description": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the would-be killers, launching a campaign of bloody revenge.",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-    "backdropUrl": "https://image.tmdb.org/t/p/w1280/tSPT36ZKlP2WVHJLM4cQPLSzv3b.jpg",
-    "year": 1972,
-    "releaseDate": "1972-03-14",
-    "duration": "175 min",
-    "voteAverage": 8.7,
-    "rating": "8.7",
+    "logoUrl": "https://image.tmdb.org/t/p/w500/kANHXGvFKW13UEkZbYwl9nIJeEl.png",
+    "id": "95350-tv",
+    "tmdbId": "95350",
+    "imdbId": "95350",
+    "title": "Lanterns",
+    "originalTitle": "Lanterns",
+    "description": "Two intergalactic cops, new recruit John Stewart and Lantern legend Hal Jordan, are drawn into a dark, Earth-based mystery as they investigate a murder in the American heartland.",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg",
+    "backdropUrl": "https://image.tmdb.org/t/p/original/6gqezQJ2mkm4jreWwLyOZy2Vf6i.jpg",
+    "year": 2026,
+    "releaseDate": "2026-08-16",
+    "duration": "55 min",
+    "voteAverage": 7.8,
+    "rating": "7.8",
     "language": "en",
-    "status": "Released",
+    "isTv": true,
+    "status": "In Production",
     "genre": [
-      "Drama",
-      "Crime"
+      "Sci-Fi & Fantasy",
+      "Action & Adventure",
+      "Crime",
+      "Mystery"
     ],
-    "director": "Francis Ford Coppola",
+    "director": "Chris Mundy & Damon Lindelof",
     "cast": [
-      "Marlon Brando",
-      "Al Pacino",
-      "James Caan",
-      "Robert Duvall"
+      "Kyle Chandler",
+      "Aaron Pierre",
+      "Kelly Macdonald"
     ],
-    "streamUrl": "https://jellyfin-jacklumber00.siren.mygiga.cloud/Videos/df874a8ad2ee97ac6649de109d956ecc/stream.mp4?Static=true&api_key=a2aac09e434e4bcc897c1b181ca197eb",
-    "tagline": "An offer you can't refuse.",
-    "isIframeEmbed": false
+    "tagline": "Only one can wear the ring.",
+    "isIframeEmbed": true,
+    "iframeSrc": ""
   }
 };

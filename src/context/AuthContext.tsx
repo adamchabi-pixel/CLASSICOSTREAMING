@@ -73,11 +73,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeProfile, setActiveProfile] = useState<Profile | null>(null);
   const [isProfileSelectorOpen, setIsProfileSelectorOpen] = useState<boolean>(false);
 
-  // Profile-specific state
-  const [watchHistory, setWatchHistory] = useState<string[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [watchlist, setWatchlist] = useState<string[]>([]);
-  const [playbackProgress, setPlaybackProgress] = useState<Record<string, any>>({});
+  // Profile-specific state (synchronously loaded from localStorage for instant 0ms frame rendering)
+  const [watchHistory, setWatchHistory] = useState<string[]>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_history") : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_favorites") : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_watchlist") : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+  const [playbackProgress, setPlaybackProgress] = useState<Record<string, any>>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("classico_progress") : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") return parsed;
+      }
+    } catch {}
+    return {};
+  });
 
   // Interplatform cloud synchronization refs & debouncing
   const pendingCloudSyncRef = useRef<{

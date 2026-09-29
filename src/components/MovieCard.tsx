@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Play, Clock, CheckCircle, Info } from "lucide-react";
+import { Star, Play, Clock, CheckCircle, Info, RotateCcw } from "lucide-react";
 import { Movie } from "../data";
 
 interface MovieCardProps {
@@ -14,7 +14,34 @@ interface MovieCardProps {
   hideBadge?: boolean;
   expandOnHover?: boolean;
   cardWidthClass?: string;
+  priority?: boolean;
+  onFinishWatching?: (movie: Movie) => void;
+  onRestartWatching?: (movie: Movie) => void;
 }
+
+const optimizePosterUrl = (url: string | null | undefined): string | null => {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  // If it's a TMDB image that is requesting original or w1280, scale down to w500 for posters to dramatically speed up loading
+  if (trimmed.includes("image.tmdb.org/t/p/original/")) {
+    return trimmed.replace("/t/p/original/", "/t/p/w500/");
+  }
+  if (trimmed.includes("image.tmdb.org/t/p/w1280/")) {
+    return trimmed.replace("/t/p/w1280/", "/t/p/w500/");
+  }
+  return trimmed;
+};
+
+const getMoviePoster = (movie: Movie): string | null => {
+  if (!movie) return null;
+  const title = (movie.title || (movie as any).name || "").toLowerCase().trim();
+  const idStr = String(movie.id || "").toLowerCase();
+  if (title === "lanterns" || idStr.includes("lanterns") || String(movie.tmdbId) === "95350") {
+    return "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg";
+  }
+  return optimizePosterUrl(movie.posterUrl) || optimizePosterUrl(movie.backdropUrl) || null;
+};
 
 export default function MovieCard({
   movie,
@@ -25,7 +52,10 @@ export default function MovieCard({
   variant = "rectangular",
   hideBadge = false,
   expandOnHover = false,
-  cardWidthClass
+  cardWidthClass,
+  priority = false,
+  onFinishWatching,
+  onRestartWatching
 }: MovieCardProps) {
   if (!movie) return null;
 
@@ -40,12 +70,8 @@ export default function MovieCard({
 
   const handleMouseEnter = () => {
     if (!expandOnHover) return;
-    if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = setTimeout(() => {
-        setIsHovered(true);
-      }, 35);
-    }
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
@@ -97,7 +123,7 @@ export default function MovieCard({
   // If rectangular variant, vertical rectangle with sharp corners (unrounded / rounded-none)
   // With title in white below, and director and date directly underneath
   if (variant === "rectangular") {
-    const posterSrc = (movie.posterUrl && movie.posterUrl.trim()) || (movie.backdropUrl && movie.backdropUrl.trim()) || null;
+    const posterSrc = getMoviePoster(movie);
     const baseWidth = cardWidthClass || "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px]";
 
     return (
@@ -135,14 +161,23 @@ export default function MovieCard({
                 src={posterSrc}
                 alt={movie.title || "Title"}
                 className="w-full h-full object-cover rounded-none transition-transform duration-500 ease-out group-hover/card:scale-105"
-                loading="lazy"
+                loading={priority ? "eager" : "lazy"}
+                fetchPriority={priority ? "high" : "auto"}
                 decoding="async"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
-                  if (movie.backdropUrl && e.currentTarget.src !== movie.backdropUrl) {
-                    e.currentTarget.src = movie.backdropUrl;
-                  } else {
-                    e.currentTarget.style.display = 'none';
+                  const currentSrc = e.currentTarget.src;
+                  const title = (movie.title || (movie as any).name || "").toLowerCase().trim();
+                  if (title === "lanterns" || String(movie.id).includes("lanterns")) {
+                    if (!currentSrc.includes("j9PTWG0Xn0NeIRhGGFJbciNYWvS")) {
+                      e.currentTarget.src = "https://image.tmdb.org/t/p/w500/j9PTWG0Xn0NeIRhGGFJbciNYWvS.jpg";
+                      return;
+                    }
+                  }
+                  if (movie.backdropUrl && currentSrc !== movie.backdropUrl) {
+                    e.currentTarget.src = optimizePosterUrl(movie.backdropUrl) || movie.backdropUrl;
+                  } else if (movie.posterUrl && currentSrc !== movie.posterUrl) {
+                    e.currentTarget.src = optimizePosterUrl(movie.posterUrl) || movie.posterUrl;
                   }
                 }}
               />
@@ -192,6 +227,40 @@ export default function MovieCard({
                     <Info className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Quick action bar directly on poster hover for resume watching items */}
+            {(onFinishWatching || onRestartWatching) && (
+              <div className="absolute inset-x-0 bottom-2 z-30 flex items-center justify-center gap-1.5 px-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 pointer-events-none">
+                {onFinishWatching && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onFinishWatching(movie);
+                    }}
+                    className="pointer-events-auto flex-1 py-1 px-1 bg-black/90 hover:bg-emerald-950 border border-emerald-500/80 text-emerald-300 hover:text-white text-[8px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg backdrop-blur-sm active:scale-95 cursor-pointer"
+                    title="Finish Watching"
+                  >
+                    <CheckCircle className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">Finish</span>
+                  </button>
+                )}
+                {onRestartWatching && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRestartWatching(movie);
+                    }}
+                    className="pointer-events-auto flex-1 py-1 px-1 bg-black/90 hover:bg-amber-950 border border-amber-500/80 text-amber-300 hover:text-white text-[8px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg backdrop-blur-sm active:scale-95 cursor-pointer"
+                    title="Restart"
+                  >
+                    <RotateCcw className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                    <span className="truncate">Restart</span>
+                  </button>
+                )}
               </div>
             )}
 
@@ -278,36 +347,74 @@ export default function MovieCard({
 
               {/* Middle: Description with ellipsis if too long */}
               <div className="my-auto py-1">
-                <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed font-sans line-clamp-5 sm:line-clamp-6 md:line-clamp-7 overflow-hidden text-ellipsis">
+                <p className={`text-[11px] sm:text-xs text-zinc-300 leading-relaxed font-sans overflow-hidden text-ellipsis ${
+                  (onFinishWatching || onRestartWatching) ? "line-clamp-2 sm:line-clamp-3" : "line-clamp-5 sm:line-clamp-6 md:line-clamp-7"
+                }`}>
                   {movie.description || (movie as any).overview || "No synopsis available."}
                 </p>
               </div>
 
               {/* Bottom: Quick Play & Info Buttons */}
-              <div className="pt-2 flex items-center gap-2 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onPlay) onPlay(movie);
-                    else onSelect(movie);
-                  }}
-                  className="flex-1 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-[10px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-colors shadow-md active:scale-95 cursor-pointer"
-                >
-                  <Play className="w-3 h-3 fill-current" />
-                  Watch
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect(movie);
-                  }}
-                  className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-zinc-300 hover:text-white rounded-none border border-white/10 transition-colors cursor-pointer"
-                  title="Details & Info"
-                >
-                  <Info className="w-3.5 h-3.5" />
-                </button>
+              <div className="pt-2 flex flex-col gap-1.5 border-t border-white/10 shrink-0">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onPlay) onPlay(movie);
+                      else onSelect(movie);
+                    }}
+                    className="flex-1 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-[10px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-colors shadow-md active:scale-95 cursor-pointer"
+                  >
+                    <Play className="w-3 h-3 fill-current" />
+                    Watch
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(movie);
+                    }}
+                    className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-zinc-300 hover:text-white rounded-none border border-white/10 transition-colors cursor-pointer"
+                    title="Details & Info"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Les deux encadrés: Finish Watching & Restart Buttons requested by user */}
+                {(onFinishWatching || onRestartWatching) && (
+                  <div className="flex items-center gap-1.5 pt-0.5">
+                    {onFinishWatching && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onFinishWatching(movie);
+                        }}
+                        className="flex-1 py-1.5 px-1 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/80 hover:border-emerald-400 text-emerald-300 hover:text-white text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
+                        title="Finish Watching"
+                      >
+                        <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <span className="truncate">Finish Watching</span>
+                      </button>
+                    )}
+                    {onRestartWatching && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRestartWatching(movie);
+                        }}
+                        className="flex-1 py-1.5 px-1 bg-amber-950/80 hover:bg-amber-900 border border-amber-500/80 hover:border-amber-400 text-amber-300 hover:text-white text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
+                        title="Restart from Beginning"
+                      >
+                        <RotateCcw className="w-3 h-3 text-amber-400 shrink-0" />
+                        <span className="truncate">Restart</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Bottom glowing golden signature line */}
@@ -319,7 +426,7 @@ export default function MovieCard({
     );
   }
 
-  const posterSrc = typeof movie.posterUrl === "string" && movie.posterUrl.trim().length > 0 ? movie.posterUrl.trim() : null;
+  const posterSrc = getMoviePoster(movie);
 
   return (
     <div
@@ -352,10 +459,23 @@ export default function MovieCard({
               src={posterSrc}
               alt={movie.title || "Title"}
               className="w-full h-full object-cover transition-transform duration-700 ease-out "
-              loading="lazy"
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
               decoding="async" referrerPolicy="no-referrer"
               onError={(e) => {
-                e.currentTarget.style.display = 'none';
+                const currentSrc = e.currentTarget.src;
+                const title = (movie.title || (movie as any).name || "").toLowerCase().trim();
+                if (title === "lanterns" || String(movie.id).includes("lanterns")) {
+                  if (!currentSrc.includes("j9PTWG0Xn0NeIRhGGFJbciNYWvS")) {
+                    e.currentTarget.src = "https://image.tmdb.org/t/p/w500/j9PTWG0Xn0NeIRhGGFJbciNYWvS.jpg";
+                    return;
+                  }
+                }
+                if (movie.backdropUrl && currentSrc !== movie.backdropUrl) {
+                  e.currentTarget.src = optimizePosterUrl(movie.backdropUrl) || movie.backdropUrl;
+                } else if (movie.posterUrl && currentSrc !== movie.posterUrl) {
+                  e.currentTarget.src = optimizePosterUrl(movie.posterUrl) || movie.posterUrl;
+                }
               }}
             />
           ) : null}

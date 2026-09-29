@@ -148,9 +148,17 @@ app.get("/api/trending", async (req, res) => {
 
     const resultsByPage = await Promise.all(pages.map(fetchPage));
     const combinedResults = resultsByPage.flat();
-    const validResults = combinedResults.filter((m: any) => !isAnimeOrAdult(m));
+    const validResults = combinedResults.filter((m: any) => !isAnimeOrAdult(m) && (m.poster_path || m.backdrop_path));
     
-    const enrichedResults = validResults.slice(0, 50).map((m: any) => {
+    // Deduplicate by ID
+    const seenIds = new Set<number>();
+    const deduplicatedResults = validResults.filter((m: any) => {
+      if (seenIds.has(m.id)) return false;
+      seenIds.add(m.id);
+      return true;
+    });
+
+    const enrichedResults = deduplicatedResults.slice(0, 50).map((m: any) => {
       const title = m.title || m.name || m.original_title || m.original_name;
       const isTv = (m.media_type === "tv" || type === "tv");
       const genres = (m.genre_ids || []).map((gid: number) => TMDB_GENRES_MAP[gid]).filter(Boolean);
@@ -273,6 +281,28 @@ app.get("/api/movie/:id", async (req, res) => {
       if (match && (match.tmdbId || (match.providerIds && match.providerIds.Tmdb))) {
         actualId = match.tmdbId || match.providerIds.Tmdb;
         if (match.isTv) isTv = true;
+      }
+    }
+
+    // If actualId is not a numeric TMDB id, search TMDB for the title slug (e.g. lanterns -> 95350)
+    if (isNaN(Number(actualId))) {
+      try {
+        const cleanQuery = actualId.replace(/[-_]/g, " ").trim();
+        const searchUrl = `https://api.tmdb.org/3/search/multi?query=${encodeURIComponent(cleanQuery)}&language=en-US&page=1`;
+        const searchRes = await fetch(searchUrl, {
+          headers: { "Authorization": `Bearer ${TMDB_ACCESS_TOKEN}`, "Accept": "application/json" }
+        });
+        if (searchRes.ok) {
+          const searchData = await searchRes.json();
+          const match = (searchData.results || []).find((r: any) => (r.media_type === "tv" || r.media_type === "movie") && !isAnimeOrAdult(r)) || searchData.results?.[0];
+          if (match) {
+            actualId = String(match.id);
+            if (match.media_type === "tv") isTv = true;
+            else if (match.media_type === "movie") isTv = false;
+          }
+        }
+      } catch (err) {
+        console.error("TMDB slug search fallback error:", err);
       }
     }
 

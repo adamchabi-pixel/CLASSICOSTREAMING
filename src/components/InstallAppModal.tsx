@@ -202,26 +202,45 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
 }
 
 export function InstallAppHint({ onClick }: { onClick: () => void }) {
-  const [isStandalone, setIsStandalone] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+  const [isStandalone] = useState(() => {
+    try {
+      return typeof window !== "undefined" && (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        (window.navigator as any).standalone === true
+      );
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const [isDismissed, setIsDismissed] = useState(() => {
+    try {
+      return typeof window !== "undefined" && localStorage.getItem("classico_download_hint_dismissed") === "true";
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // Keep completely unmounted during the initial loading/startup screen to eliminate any flash or lag
+  const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-    setIsStandalone(standalone);
-
-    try {
-      if (localStorage.getItem("classico_download_hint_dismissed") === "true") {
-        setIsDismissed(true);
-      }
-    } catch(e) {}
+    // Only reveal the hint 2.4s after initial mount, well after the startup screen has completely faded out
+    const timer = setTimeout(() => {
+      setIsAppReady(true);
+    }, 2400);
+    return () => clearTimeout(timer);
   }, []);
 
-  if (isStandalone || isDismissed) return null;
+  if (isStandalone || isDismissed || !isAppReady) return null;
 
   return (
-    <div className="md:hidden fixed bottom-4 left-3 z-40 flex items-center select-none">
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="md:hidden fixed bottom-4 left-3 z-40 flex items-center select-none"
+    >
       <div className="relative flex items-center bg-black/92 border border-amber-500/50 hover:border-amber-400 rounded-md shadow-[0_6px_20px_rgba(0,0,0,0.9),0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md overflow-hidden">
         {/* Subtle top golden light reflection */}
         <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/70 to-transparent pointer-events-none" />
@@ -264,7 +283,7 @@ export function InstallAppHint({ onClick }: { onClick: () => void }) {
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

@@ -977,19 +977,21 @@ export default function App() {
   } = useAuth();
 
   useEffect(() => {
-    // Graceful cinematic fade-out of the startup screen once App renders (slightly slower and smoother transition)
+    // Graceful cinematic fade-out of the startup screen once App renders (smoother and slightly longer on mobile as requested)
     const startupScreen = document.getElementById("startup-screen");
     if (startupScreen) {
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      const duration = isMobile ? 1.7 : 1.35;
       const timer = setTimeout(() => {
-        startupScreen.style.transition = "opacity 1.35s cubic-bezier(0.22, 1, 0.36, 1), transform 1.35s cubic-bezier(0.22, 1, 0.36, 1)";
+        startupScreen.style.transition = `opacity ${duration}s cubic-bezier(0.16, 1, 0.3, 1), transform ${duration}s cubic-bezier(0.16, 1, 0.3, 1)`;
         startupScreen.style.opacity = "0";
-        startupScreen.style.transform = "scale(1.035)";
+        startupScreen.style.transform = "scale(1.02)";
         setTimeout(() => {
           try {
             startupScreen.remove();
           } catch(e) {}
-        }, 1450);
-      }, 120);
+        }, duration * 1000 + 100);
+      }, 140);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -2569,7 +2571,7 @@ export default function App() {
       <header 
         className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-all duration-500 ease-in-out ${
           isHeroView && !isScrolled
-            ? "bg-transparent"
+            ? "bg-gradient-to-b from-black via-black/80 to-transparent pb-3 md:pb-0 md:bg-transparent"
             : "bg-black/95 backdrop-blur-md border-b border-white/5 shadow-2xl"
         }`}
       >
@@ -2950,9 +2952,9 @@ export default function App() {
                         <div className="absolute inset-0 bg-black/20 pointer-events-none" />
                       </div>
 
-                      {/* Top subtle navbar shadow */}
+                      {/* Top navbar shadow - prominent on mobile for clear readability */}
                       <div 
-                        className="absolute inset-x-0 top-0 h-36 md:h-48 z-10 pointer-events-none bg-gradient-to-b from-black/80 via-black/25 to-transparent" 
+                        className="absolute inset-x-0 top-0 h-44 sm:h-52 z-10 pointer-events-none bg-gradient-to-b from-black via-black/80 via-35% md:via-black/25 to-transparent" 
                       />
 
                       {/* Shallow bottom connecting fade well underneath the controls */}

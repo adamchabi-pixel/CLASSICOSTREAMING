@@ -16,6 +16,15 @@ export interface AppNotification {
 
 export const APP_NOTIFICATIONS: AppNotification[] = [
   {
+    id: "notif-updates-optimizations-20260929",
+    title: "Optimisations du Site & Amélioration du Lecteur",
+    date: "2026/09/29",
+    badge: "UPDATE",
+    badgeColor: "emerald",
+    content: "• Mode Plein Écran : Nouveau bouton de bascule plein écran direct sur PC et mobile avec compatibilité améliorée.\n• Affiches & Collections : Chargement instantané des affiches (Godzilla, sagas cultes, catalogue) sans délai gris.\n• Menu Mobile : Interface épurée et navigation harmonisée.",
+    author: "The Classico Team"
+  },
+  {
     id: "notif-account-creation-20260923",
     title: "Classico Accounts & Cult Avatars Available",
     date: "2026/09/23",

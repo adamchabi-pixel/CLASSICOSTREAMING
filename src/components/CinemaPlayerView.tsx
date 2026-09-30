@@ -42,7 +42,7 @@ const safeSession = {
 };
 import { 
   Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Languages, 
-  Maximize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film, Tv, Server
+  Maximize2, Minimize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film, Tv, Server
 } from "lucide-react";
 import EmbedPlayer from "./EmbedPlayer";
 import { allMoviesData } from "../data/all_movies";
@@ -294,7 +294,7 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
     // 4: CinemaOS (no 404 direct routes)
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&color=%23f59e0b&continueprompt=false&autonext=true&back=close${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&color=%23f59e0b&continueprompt=false&back=close${tParam}`, stars: 3 },
         { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
         { name: "Server 3", url: `https://vidsrc.me/embed/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://cinemaos.live/watch/tv/${cleanId}?season=${s}&episode=${e}`, stars: 3 }
@@ -581,6 +581,7 @@ export default function CinemaPlayerView({
   const [volume, setVolume] = useState(85);
   const [muted, setMuted] = useState(false); // Commencer non-muet par défaut
   const [fullscreen, setFullscreen] = useState(false);
+  const [isPseudoFullscreen, setIsPseudoFullscreen] = useState(false);
   const [objectFit, setObjectFit] = useState<"contain" | "cover">("contain");
 
   // Buffer and Safety Timeout States
@@ -1805,11 +1806,45 @@ export default function CinemaPlayerView({
   // Monitor document change for ESC key or native exit-fullscreen actions
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setFullscreen(!!document.fullscreenElement);
+      const isFs = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
+      setFullscreen(isFs);
+      if (!isFs) {
+        setIsPseudoFullscreen(false);
+      }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+    };
   }, []);
+
+  // Listen for ESC key when in pseudo-fullscreen fallback and lock body scroll
+  useEffect(() => {
+    if (!isPseudoFullscreen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsPseudoFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isPseudoFullscreen]);
 
   // 3. AUTO-HIDE MOUSE CURSOR AND CONTROLS ON INACTIVITY
   const resetInactivityTimer = () => {
@@ -2520,32 +2555,75 @@ export default function CinemaPlayerView({
 
   // Toggle Fullscreen explicitly
   const toggleFullscreen = () => {
-    if (!viewportRef.current || !videoRef.current) return;
+    if (!viewportRef.current) return;
     
-    const vid = videoRef.current as any;
-    const isIPhone = /iPhone|iPod/i.test(navigator.userAgent);
-    
-    // 1. Force Apple's native player on iPhone/iPod ONLY
-    if (isIPhone && vid.webkitEnterFullscreen) {
-      try {
-        vid.webkitEnterFullscreen();
-      } catch (e) {
-      }
-      return;
-    }
-    
-    // 2. For all other devices (iPad, Mac, PC, Android), use standard fullscreen on the wrapper
     const doc = document as any;
     const viewport = viewportRef.current as any;
+    const vid = videoRef.current as any;
+    const isIPhone = typeof navigator !== "undefined" && /iPhone|iPod/i.test(navigator.userAgent);
+    
+    // 1. Force Apple's native player on iPhone/iPod ONLY if video element exists
+    if (isIPhone && vid && vid.webkitEnterFullscreen) {
+      try {
+        vid.webkitEnterFullscreen();
+        return;
+      } catch (e) {
+      }
+    }
+    
+    // 2. Standard Fullscreen API with vendor prefixes & pseudo-fullscreen fallback for mobile/PC
+    const isCurrentlyFullscreen = !!(
+      doc.fullscreenElement || 
+      doc.webkitFullscreenElement || 
+      doc.mozFullScreenElement || 
+      doc.msFullscreenElement
+    );
 
-    if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+    if (!isCurrentlyFullscreen && !isPseudoFullscreen) {
       if (viewport.requestFullscreen) {
+        viewport.requestFullscreen().catch(() => {
+          setIsPseudoFullscreen(true);
+        });
       } else if (viewport.webkitRequestFullscreen) {
+        try {
+          viewport.webkitRequestFullscreen();
+        } catch (e) {
+          setIsPseudoFullscreen(true);
+        }
+      } else if (viewport.mozRequestFullScreen) {
+        try {
+          viewport.mozRequestFullScreen();
+        } catch (e) {
+          setIsPseudoFullscreen(true);
+        }
+      } else if (viewport.msRequestFullscreen) {
+        try {
+          viewport.msRequestFullscreen();
+        } catch (e) {
+          setIsPseudoFullscreen(true);
+        }
+      } else if (vid && vid.webkitEnterFullscreen) {
+        try {
+          vid.webkitEnterFullscreen();
+        } catch (e) {
+          setIsPseudoFullscreen(true);
+        }
+      } else {
+        setIsPseudoFullscreen(true);
       }
     } else {
-      if (doc.exitFullscreen) {
-      } else if (doc.webkitExitFullscreen) {
+      if (doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement) {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {});
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          doc.msExitFullscreen();
+        }
       }
+      setIsPseudoFullscreen(false);
     }
   };
 
@@ -2662,7 +2740,7 @@ export default function CinemaPlayerView({
                   <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
                   <Play className="w-4 h-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" />
                   <span className="font-sans text-base text-zinc-100 group-hover:text-white font-bold tracking-wider">
-                    Click to continue ({adClicks + 1}/2)
+                    Click to continue ({adClicks}/2)
                   </span>
                   <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />
                 </button>
@@ -2688,7 +2766,7 @@ export default function CinemaPlayerView({
                   <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
                   <Play className="w-4 h-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" />
                   <span className="font-sans text-base text-zinc-100 group-hover:text-white font-bold tracking-wider">
-                    Click to continue ({adClicks + 1}/3)
+                    Click to continue ({adClicks}/3)
                   </span>
                   <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />
                 </button>
@@ -2816,7 +2894,12 @@ export default function CinemaPlayerView({
             
             {/* Player Container */}
             <div className="w-full flex flex-col gap-6">
-              <div ref={viewportRef} className="w-full aspect-video bg-[#050505] rounded-xl overflow-hidden shadow-2xl border border-white/5 relative group">
+              <div 
+                ref={viewportRef} 
+                className={`w-full aspect-video bg-[#050505] rounded-xl overflow-hidden shadow-2xl border border-white/5 relative group ${
+                  (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[99999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none' : ''
+                }`}
+              >
                 {!serverSelected ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent">
                     <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mb-4 border border-white/5">
@@ -2865,9 +2948,39 @@ export default function CinemaPlayerView({
                     )}
                   </div>
                 ) : null}
+
+                {/* Floating Dedicated Fullscreen Button on Viewport */}
+                {serverSelected && isAdGateUnlocked && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFullscreen();
+                    }}
+                    className={`absolute z-[48] p-2 sm:p-2.5 rounded-lg bg-black/80 hover:bg-black/95 text-stone-200 hover:text-amber-400 border border-white/20 hover:border-amber-400/50 shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                      fullscreen || isPseudoFullscreen 
+                        ? "top-4 right-4" 
+                        : "bottom-3 right-3 opacity-90 group-hover:opacity-100"
+                    }`}
+                    title={fullscreen || isPseudoFullscreen ? "Exit Fullscreen (ESC)" : "Full Screen"}
+                    aria-label={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Full Screen"}
+                  >
+                    {fullscreen || isPseudoFullscreen ? (
+                      <>
+                        <Minimize2 className="w-4 h-4 text-amber-400" />
+                        <span className="hidden sm:inline text-[11px] font-sans font-bold text-amber-300">Exit</span>
+                      </>
+                    ) : (
+                      <>
+                        <Maximize2 className="w-4 h-4" />
+                        <span className="hidden sm:inline text-[11px] font-sans font-bold">Fullscreen</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
-              {/* Mobile Server Selector Button (Under the film - mobile only) */}
+              {/* Mobile Server Selector Bar (Under the film - mobile only) */}
               <div className="xl:hidden w-full mt-3 flex items-center justify-between gap-3 bg-[#111111]/90 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse shrink-0" />
@@ -2878,15 +2991,17 @@ export default function CinemaPlayerView({
                     </span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsMobileServerModalOpen(true)}
-                  className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-sans font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
-                >
-                  <Server className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Change Server</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-amber-400" />
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileServerModalOpen(true)}
+                    className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-sans font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
+                  >
+                    <Server className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Change</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-amber-400" />
+                  </button>
+                </div>
               </div>
 
               {/* SERIES ONLY: Minimalist Season & Episode Selector Bars */}

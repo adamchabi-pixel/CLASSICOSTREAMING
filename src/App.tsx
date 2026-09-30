@@ -14,7 +14,7 @@ import { COLLECTIONS as RAW_COLLECTIONS, Movie, Collection } from "./data";
 
 const COLLECTIONS: Collection[] = [...RAW_COLLECTIONS].sort((a, b) => { if (a.id === "trending-now") return -1; if (b.id === "trending-now") return 1; return a.title.localeCompare(b.title); });
 
-import MovieCard from "./components/MovieCard";
+import MovieCard, { getNotOutYetInfo } from "./components/MovieCard";
 import { MomentumCarousel } from "./components/MomentumCarousel";
 import LibraryView from "./components/LibraryView";
 const MovieModal = React.lazy(() => import("./components/MovieModal"));
@@ -2569,7 +2569,7 @@ export default function App() {
       {/* 1. FIXED GLASS HEADER BAR                                 */}
       {/* ========================================================== */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-all duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter,box-shadow] duration-500 ease-in-out ${
           isHeroView && !isScrolled
             ? "bg-gradient-to-b from-black via-black/80 to-transparent pb-3 md:pb-0 md:bg-transparent"
             : "bg-black/95 backdrop-blur-md border-b border-white/5 shadow-2xl"
@@ -2586,7 +2586,7 @@ export default function App() {
             }}
           >
             <div className="relative overflow-hidden flex items-center">
-              <span className="font-cinzel font-bold text-[17px] sm:text-lg md:text-xl tracking-[0.22em] gold-metallic-text uppercase leading-none transition-all duration-300 group-hover:scale-102">
+              <span className="font-cinzel font-bold text-[17px] sm:text-lg md:text-xl tracking-[0.22em] gold-metallic-text uppercase leading-none transition-transform duration-300 group-hover:scale-102">
                 CLASSICO
               </span>
               <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-300 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-center" />
@@ -2764,7 +2764,6 @@ export default function App() {
                 ].map((tab) => {
                   const IconComp = tab.icon;
                   const isActive = activeTab === tab.id && searchQuery === "";
-                  const isRec = tab.id === "recommended";
                   return (
                     <button
                       key={tab.id}
@@ -2784,10 +2783,10 @@ export default function App() {
                       }`}
                     >
                       <IconComp
-                        strokeWidth={isRec ? 2.5 : 2}
-                        className={`${isRec ? "w-6 h-6 text-amber-400 shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" : `w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-zinc-400"}`}`}
+                        strokeWidth={2}
+                        className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-zinc-400"}`}
                       />
-                      <span className={isRec ? "font-semibold text-amber-100" : ""}>{tab.label}</span>
+                      <span>{tab.label}</span>
                       {isActive && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />}
                     </button>
                   );
@@ -3016,36 +3015,46 @@ export default function App() {
                             )}
 
                             {/* Refined Minimalist Movie Meta (Tightly grouped below title) */}
-                            <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
-                              <span className="text-zinc-100">
-                                {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || String(heroMovie.id || "").endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
-                                  ? "TV Series"
-                                  : "Movie"
-                                }
-                              </span>
-                              {(heroMovie.year || heroMovie.releaseDate) && (
-                                <>
-                                  <span className="text-zinc-500 select-none">•</span>
+                            {(() => {
+                              const heroNotOut = getNotOutYetInfo(heroMovie);
+                              return (
+                                <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-2.5 text-xs sm:text-[13px] font-display font-semibold uppercase tracking-[0.16em] text-zinc-200 pt-0.5">
+                                  {heroNotOut.isNotOut && (
+                                    <span className="text-amber-400 font-bold bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 rounded text-[11px] font-mono tracking-wider">
+                                      NOT OUT YET {heroNotOut.releaseLabel ? `• ${heroNotOut.releaseLabel}` : ""}
+                                    </span>
+                                  )}
                                   <span className="text-zinc-100">
-                                    {heroMovie.year || heroMovie.releaseDate?.slice(0, 4)}
+                                    {(heroMovie.isTv || (heroMovie as any).media_type === "tv" || String(heroMovie.id || "").endsWith("-tv") || ((heroMovie as any).seasons && (heroMovie as any).seasons.length > 0))
+                                      ? "TV Series"
+                                      : "Movie"
+                                    }
                                   </span>
-                                </>
-                              )}
-                              {heroMovie.duration && (
-                                <>
-                                  <span className="text-zinc-500 select-none">•</span>
-                                  <span className="text-zinc-100">{heroMovie.duration}</span>
-                                </>
-                              )}
-                              {heroMovie.rating && heroMovie.rating !== "N/A" && (
-                                <>
-                                  <span className="text-zinc-500 select-none">•</span>
-                                  <span className="text-amber-400 font-bold">
-                                    ★ {heroMovie.rating}
-                                  </span>
-                                </>
-                              )}
-                            </div>
+                                  {(heroMovie.year || heroMovie.releaseDate) && (
+                                    <>
+                                      <span className="text-zinc-500 select-none">•</span>
+                                      <span className="text-zinc-100">
+                                        {heroMovie.year || heroMovie.releaseDate?.slice(0, 4)}
+                                      </span>
+                                    </>
+                                  )}
+                                  {heroMovie.duration && (
+                                    <>
+                                      <span className="text-zinc-500 select-none">•</span>
+                                      <span className="text-zinc-100">{heroMovie.duration}</span>
+                                    </>
+                                  )}
+                                  {heroMovie.rating && heroMovie.rating !== "N/A" && (
+                                    <>
+                                      <span className="text-zinc-500 select-none">•</span>
+                                      <span className="text-amber-400 font-bold">
+                                        ★ {heroMovie.rating}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            })()}
                           </div>
 
                           {/* Movie Description: Full high readability contrast */}
@@ -3058,14 +3067,19 @@ export default function App() {
 
                           {/* Rectangular Modern Action Buttons */}
                           <div className="flex items-center justify-center gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
-                            <button
-                              id="hero-play-btn"
-                              onClick={() => handleOpenMovie(heroMovie, true)}
-                              className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
-                            >
-                              <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
-                              Watch
-                            </button>
+                            {(() => {
+                              const heroNotOut = getNotOutYetInfo(heroMovie);
+                              return (
+                                <button
+                                  id="hero-play-btn"
+                                  onClick={() => handleOpenMovie(heroMovie, true)}
+                                  className="group flex items-center justify-center gap-2 bg-white hover:bg-neutral-200 text-stone-950 font-sans font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] hover:scale-102 active:scale-98 cursor-pointer"
+                                >
+                                  <Play className="w-4 h-4 fill-current text-stone-950 group-hover:scale-105 transition-transform duration-250" />
+                                  <span>{heroNotOut.isNotOut ? `NOT OUT YET ${heroNotOut.releaseLabel ? `(${heroNotOut.releaseLabel})` : ""}` : "Watch"}</span>
+                                </button>
+                              );
+                            })()}
 
                             <button
                               id="hero-info-btn"
@@ -3277,16 +3291,18 @@ export default function App() {
                                   ? "w-[170px] min-[400px]:w-[200px] sm:w-[240px] md:w-[260px]" 
                                   : "w-[145px] min-[400px]:w-[165px] sm:w-[195px] md:w-[215px]";
 
+                                const isPriorityCard = collection.id === "godzilla" || collection.id === "trending-now" || idx < 12;
+
                                 return (
                                   <LazyVirtualCard 
                                     key={`${collection.id}-${movie.id}`}
-                                    priority={idx < 6}
+                                    priority={isPriorityCard}
                                     className={`shrink-0 flex items-start ${isTrending ? "mr-8 sm:mr-12" : ""}`}
                                     placeholderClassName={`${cardWidth} aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30`}
                                   >
                                     <MovieCard
                                       movie={movie}
-                                      priority={idx < 6}
+                                      priority={isPriorityCard}
                                       variant="rectangular"
                                       expandOnHover={true}
                                       cardWidthClass={cardWidth}

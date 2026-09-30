@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Play, ChevronDown, Award, Users, Film, ArrowLeft, Star, Clock, Heart, X, User, ChevronLeft, ChevronRight, Download, CheckCircle } from "lucide-react";
+import { Plus, Play, ChevronDown, Award, Users, Film, ArrowLeft, Star, Clock, Heart, X, User, ChevronLeft, ChevronRight, Download, CheckCircle, Calendar } from "lucide-react";
 import { Movie } from "../data";
 import { useAuth } from "../context/AuthContext";
+import { getNotOutYetInfo } from "./MovieCard";
 
 interface MovieDetailViewProps {
   movie: Movie;
@@ -122,6 +123,8 @@ export default function MovieDetailView({
   React.useEffect(() => {
     setFullMovie(movie);
   }, [movie]);
+
+  const notOutInfo = React.useMemo(() => getNotOutYetInfo(fullMovie || movie), [fullMovie, movie]);
 
   const initialProgress = React.useMemo(() => resolveTvProgress(movie, fullMovie), [movie, fullMovie]);
   const [lastWatched, setLastWatched] = React.useState<{season: number, episode: number} | null>(initialProgress);
@@ -368,7 +371,22 @@ export default function MovieDetailView({
         <div className="relative z-10 max-w-[2000px] mx-auto w-full px-4 sm:px-8 pb-8 sm:pb-12 [@media(max-height:500px)_and_(orientation:landscape)]:pb-2 flex flex-col [@media(max-height:500px)_and_(orientation:landscape)]:flex-row items-start [@media(max-height:500px)_and_(orientation:landscape)]:items-center gap-4 sm:gap-6 [@media(max-height:500px)_and_(orientation:landscape)]:gap-6 text-left [@media(max-height:500px)_and_(orientation:landscape)]:h-auto ">
           
           {poster ? (
-            <img src={poster} referrerPolicy="no-referrer" alt={fullMovie.title} className="hidden [@media(max-height:500px)_and_(orientation:landscape)]:block h-[80vh] max-h-[280px] w-auto object-contain rounded-lg shadow-2xl shrink-0" />
+            <div className="relative shrink-0 hidden [@media(max-height:500px)_and_(orientation:landscape)]:block">
+              <img 
+                src={poster} 
+                referrerPolicy="no-referrer" 
+                alt={fullMovie.title} 
+                className={`h-[80vh] max-h-[280px] w-auto object-contain rounded-lg shadow-2xl ${notOutInfo.isNotOut ? "opacity-75 grayscale-[35%]" : ""}`} 
+              />
+              {notOutInfo.isNotOut && (
+                <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center pointer-events-none">
+                  <div className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-amber-500/60 rounded text-center">
+                    <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">NOT OUT YET</span>
+                    {notOutInfo.releaseLabel && <span className="text-[8px] font-mono text-zinc-300">{notOutInfo.releaseLabel}</span>}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : null}
 
           {/* Core Text & CTAs Details Box */}
@@ -380,6 +398,12 @@ export default function MovieDetailView({
               <span className="bg-zinc-900/80 border border-zinc-700 text-zinc-300 px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase shadow-sm">
                 {formatDuration(fullMovie.duration)}
               </span>
+              {notOutInfo.isNotOut && (
+                <span className="bg-amber-500/20 border border-amber-500/50 text-amber-300 px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase font-bold flex items-center gap-1 shadow-sm">
+                  <Calendar className="w-3 h-3 text-amber-400" />
+                  <span>NOT OUT YET {notOutInfo.releaseLabel ? `• ${notOutInfo.releaseLabel}` : ""}</span>
+                </span>
+              )}
             </div>
 
             {fullMovie.hasLogo && fullMovie.logoUrl && fullMovie.logoUrl.trim() ? (
@@ -446,7 +470,7 @@ export default function MovieDetailView({
                         <span>PLAY S{String(selectedSeason || 1).padStart(2, '0')}E01</span>
                       )
                     ) : (
-                      <span>Watch</span>
+                      <span>{notOutInfo.isNotOut ? `NOT OUT YET ${notOutInfo.releaseLabel ? `• ${notOutInfo.releaseLabel}` : ''}` : "Watch"}</span>
                     )}
                   </span>
                   <span className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.85)] group-hover:via-amber-300 transition-colors" />

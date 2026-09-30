@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   X, Play, Star, Clock, User, Film, Info, 
   Volume2, VolumeX, Pause, RotateCcw, Captions,
-  Maximize2, Check, Plus, AlertCircle, Sparkles, ArrowLeft, Loader2
+  Maximize2, Check, Plus, AlertCircle, Sparkles, ArrowLeft, Loader2, Calendar
 } from "lucide-react";
 import { Movie } from "../data";
+import { getNotOutYetInfo } from "./MovieCard";
 
 interface MovieModalProps {
   movie: Movie | null;
@@ -99,6 +100,7 @@ export default function MovieModal({
   }, [movie]);
 
   const displayMovie = fullMovie || movie;
+  const notOutInfo = displayMovie ? getNotOutYetInfo(displayMovie) : { isNotOut: false, releaseLabel: null };
 
   const [jellyfinStreamUrl, setJellyfinStreamUrl] = useState<string | null>(null);
   const [checkingJellyfin, setCheckingJellyfin] = useState(false);
@@ -220,6 +222,12 @@ export default function MovieModal({
                 )}
                 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-mono tracking-widest text-zinc-300 pt-1 uppercase">
+                  {notOutInfo.isNotOut && (
+                    <span className="bg-amber-500/20 border border-amber-500/50 text-amber-300 px-2.5 py-0.5 rounded text-[11px] font-mono tracking-widest uppercase font-bold flex items-center gap-1 shadow-sm">
+                      <Calendar className="w-3 h-3 text-amber-400" />
+                      <span>NOT OUT YET {notOutInfo.releaseLabel ? `• ${notOutInfo.releaseLabel}` : ""}</span>
+                    </span>
+                  )}
                   <span className="text-amber-400 font-extrabold flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">
                     <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
                     {displayMovie.rating || displayMovie.voteAverage}
@@ -256,6 +264,8 @@ export default function MovieModal({
                       <Loader2 className="w-4 h-4 animate-spin opacity-70" />
                       Loading...
                     </>
+                  ) : notOutInfo.isNotOut ? (
+                    <span>Not Out Yet {notOutInfo.releaseLabel ? `(${notOutInfo.releaseLabel})` : ""}</span>
                   ) : (
                     "Watch"
                   )}

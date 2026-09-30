@@ -101,11 +101,9 @@ export default function NotificationDropdown() {
       >
         <Bell className="w-5 h-5 transition-transform group-hover:rotate-12" />
         
-        {/* Unread Glowing Badge */}
+        {/* Unread Static Red Dot (no number, no blinking) */}
         {unreadCount > 0 && (
-          <span className="absolute top-0.5 right-0.5 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-black font-mono shadow-[0_0_10px_rgba(245,158,11,0.8)] border border-black animate-pulse">
-            {unreadCount}
-          </span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)] border border-black pointer-events-none" />
         )}
       </button>
 

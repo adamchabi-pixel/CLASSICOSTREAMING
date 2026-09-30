@@ -33,6 +33,8 @@ export interface Movie {
   studios?: string[];
   providerIds?: Record<string, string>;
   isTv?: boolean;
+  status?: string;
+  releaseDate?: string;
   seasons?: { season_number: number, name: string, episode_count: number, posterUrl?: string }[];
 }
 

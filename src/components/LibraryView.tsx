@@ -453,14 +453,16 @@ export default function LibraryView({
                   </div>
              ) : (
                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-6">
-                    {movies.map(movie => (
+                    {movies.map((movie, idx) => (
                        <LazyVirtualCard 
                           key={movie.id} 
+                          priority={idx < 12}
                           className="w-full flex flex-col"
                           placeholderClassName="w-full aspect-[2/3] rounded-none bg-neutral-900 border border-neutral-800/40 opacity-30"
                        >
                           <MovieCard
                             movie={movie}
+                            priority={idx < 12}
                             variant="rectangular"
                             onSelect={onSelect}
                             onPlay={onSelect}

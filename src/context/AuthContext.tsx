@@ -341,21 +341,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } else {
       loadedUserIdRef.current = null;
-      // Disconnected / guest mode: completely wipe session data
       setProfiles([]);
       setActiveProfile(null);
-      setWatchHistory([]);
-      setPlaybackProgress({});
-      setFavorites([]);
-      setWatchlist([]);
-      try {
-        localStorage.removeItem("classico_progress");
-        localStorage.removeItem("classico_history");
-        localStorage.removeItem("classico_watchlist");
-        localStorage.removeItem("classico_favorites");
-        localStorage.removeItem("classico_tv_state");
-        window.dispatchEvent(new CustomEvent("classico_progress_updated"));
-      } catch (e) {}
     }
   }, [user, loadProfiles]);
 

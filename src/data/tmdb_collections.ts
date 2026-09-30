@@ -23,7 +23,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-25",
+        "status": "Released"
       },
       {
         "id": "1377237",
@@ -42,7 +44,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-07",
+        "status": "Released"
       },
       {
         "id": "1423191",
@@ -61,7 +65,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-16",
+        "status": "Released"
       },
       {
         "id": "1032863",
@@ -80,7 +86,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-23",
+        "status": "Released"
       },
       {
         "id": "1339713",
@@ -99,7 +107,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-05-13",
+        "status": "Released"
       },
       {
         "id": "1084244",
@@ -118,7 +128,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-06-17",
+        "status": "Released"
       },
       {
         "id": "1263337",
@@ -137,7 +149,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-19",
+        "status": "Released"
       },
       {
         "id": "1083381",
@@ -156,7 +170,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-05-27",
+        "status": "Released"
       },
       {
         "id": "1375441",
@@ -175,7 +191,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-23",
+        "status": "Released"
       },
       {
         "id": "969681",
@@ -194,7 +212,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-07-29",
+        "status": "Released"
       },
       {
         "id": "1368337",
@@ -213,7 +233,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-07-15",
+        "status": "Released"
       },
       {
         "id": "1465063",
@@ -232,7 +254,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-10",
+        "status": "Released"
       },
       {
         "id": "1607127",
@@ -251,7 +275,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-22",
+        "status": "Released"
       },
       {
         "id": "1248832",
@@ -270,7 +296,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-28",
+        "status": "Released"
       },
       {
         "id": "1101383",
@@ -289,7 +317,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-08-12",
+        "status": "Released"
       },
       {
         "id": "1003596",
@@ -308,7 +338,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-12-15",
+        "status": "Post Production"
       },
       {
         "id": "1284465",
@@ -327,7 +359,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-06-18",
+        "status": "Released"
       },
       {
         "id": "1108427",
@@ -346,7 +380,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-07-08",
+        "status": "Released"
       },
       {
         "id": "1283515",
@@ -365,7 +401,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-30",
+        "status": "Released"
       },
       {
         "id": "1291366",
@@ -384,7 +422,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-25",
+        "status": "Released"
       },
       {
         "id": "1291366",
@@ -403,7 +443,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-25",
+        "status": "Released"
       },
       {
         "id": "1422041",
@@ -422,7 +464,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-09-25",
+        "status": "Released"
       },
       {
         "id": "1477712",
@@ -441,7 +485,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-08-03",
+        "status": "Released"
       },
       {
         "id": "687163",
@@ -460,7 +506,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-03-15",
+        "status": "Released"
       },
       {
         "id": "1242876",
@@ -479,7 +527,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-05-15",
+        "status": "Released"
       },
       {
         "id": "1240889",
@@ -498,7 +548,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-08-06",
+        "status": "Released"
       },
       {
         "id": "1421903",
@@ -517,7 +569,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-12-25",
+        "status": "Post Production"
       },
       {
         "id": "1212763",
@@ -536,7 +590,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-07-07",
+        "status": "Released"
       },
       {
         "id": "1375646",
@@ -555,7 +611,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-05-21",
+        "status": "Released"
       },
       {
         "id": "445466",
@@ -574,7 +632,9 @@ export const TMDB_COLLECTIONS: Collection[] = [
         "genre": [
           "Trending"
         ],
-        "tagline": "Currently trending worldwide"
+        "tagline": "Currently trending worldwide",
+        "releaseDate": "2026-08-20",
+        "status": "Released"
       }
     ]
   },

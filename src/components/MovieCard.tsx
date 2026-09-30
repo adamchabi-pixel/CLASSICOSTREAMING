@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Play, Clock, CheckCircle, Info, RotateCcw } from "lucide-react";
+import { Star, Play, Clock, CheckCircle, Info, RotateCcw, Calendar } from "lucide-react";
 import { Movie } from "../data";
 
 interface MovieCardProps {
@@ -23,12 +23,15 @@ const optimizePosterUrl = (url: string | null | undefined): string | null => {
   if (!url) return null;
   const trimmed = url.trim();
   if (!trimmed) return null;
-  // If it's a TMDB image that is requesting original or w1280, scale down to w500 for posters to dramatically speed up loading
+  // If it's a TMDB image that is requesting original, w1280, or w500, scale down to w342 for posters to dramatically speed up loading
   if (trimmed.includes("image.tmdb.org/t/p/original/")) {
-    return trimmed.replace("/t/p/original/", "/t/p/w500/");
+    return trimmed.replace("/t/p/original/", "/t/p/w342/");
   }
   if (trimmed.includes("image.tmdb.org/t/p/w1280/")) {
-    return trimmed.replace("/t/p/w1280/", "/t/p/w500/");
+    return trimmed.replace("/t/p/w1280/", "/t/p/w342/");
+  }
+  if (trimmed.includes("image.tmdb.org/t/p/w500/")) {
+    return trimmed.replace("/t/p/w500/", "/t/p/w342/");
   }
   return trimmed;
 };
@@ -41,6 +44,95 @@ const getMoviePoster = (movie: Movie): string | null => {
     return "https://image.tmdb.org/t/p/w500/gpC7h43xPMEV3goYMQShfJbTtLq.jpg";
   }
   return optimizePosterUrl(movie.posterUrl) || optimizePosterUrl(movie.backdropUrl) || null;
+};
+
+// Known future unreleased movies with verified ISO release dates (YYYY-MM-DD)
+export const KNOWN_UPCOMING_DATES: Record<string, string> = {
+  "avengers: doomsday": "2026-12-15",
+  "werwulf": "2026-12-25",
+  "the batman: part ii": "2028-02-17",
+  "the batman part ii": "2028-02-17",
+  "shrek 5": "2027-06-30",
+  "avengers: secret wars": "2027-12-15",
+  "dune: messiah": "2026-12-18",
+};
+
+export const formatReleaseDate = (dateStr?: string): string | null => {
+  if (!dateStr) return null;
+  try {
+    const parts = dateStr.split("-");
+    if (parts.length >= 1) {
+      const year = parseInt(parts[0], 10);
+      const month = parts.length >= 2 ? parseInt(parts[1], 10) - 1 : null;
+      const day = parts.length >= 3 ? parseInt(parts[2], 10) : null;
+      if (month !== null && !isNaN(month)) {
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        if (day !== null && !isNaN(day)) {
+          return `${day} ${monthNames[month]} ${year}`;
+        }
+        return `${monthNames[month]} ${year}`;
+      }
+      return String(year);
+    }
+  } catch {
+    return dateStr;
+  }
+  return dateStr;
+};
+
+export const getNotOutYetInfo = (movie: Movie): { isNotOut: boolean; releaseLabel: string | null } => {
+  if (!movie) return { isNotOut: false, releaseLabel: null };
+
+  // If already available on the streaming server (e.g. Jellyfin) or streamable, it is definitely already out!
+  if (movie.isJellyfin || movie.streamUrl) {
+    return { isNotOut: false, releaseLabel: null };
+  }
+
+  // Get current date string in YYYY-MM-DD format dynamically
+  const now = new Date();
+  const yearStr = now.getFullYear();
+  const monthStr = String(now.getMonth() + 1).padStart(2, "0");
+  const dayStr = String(now.getDate()).padStart(2, "0");
+  const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
+
+  const titleLower = (movie.title || (movie as any).name || "").toLowerCase().trim();
+  const statusLower = (movie.status || "").toLowerCase().trim();
+
+  // If status is "Released", the film is released unless an explicit future releaseDate is provided
+  if (statusLower === "released") {
+    if (!movie.releaseDate || movie.releaseDate <= todayStr) {
+      return { isNotOut: false, releaseLabel: null };
+    }
+  }
+
+  // 1. Check exact movie releaseDate dynamically against todayStr:
+  // If releaseDate has passed or is today, it is OUT -> automatically returns isNotOut: false!
+  if (movie.releaseDate) {
+    if (movie.releaseDate > todayStr) {
+      return { isNotOut: true, releaseLabel: formatReleaseDate(movie.releaseDate) };
+    }
+    return { isNotOut: false, releaseLabel: null };
+  }
+
+  // 2. Check known upcoming future releases map
+  for (const [key, dateStr] of Object.entries(KNOWN_UPCOMING_DATES)) {
+    if (titleLower === key || titleLower.includes(key)) {
+      if (dateStr > todayStr) {
+        return { isNotOut: true, releaseLabel: formatReleaseDate(dateStr) };
+      }
+      return { isNotOut: false, releaseLabel: null };
+    }
+  }
+
+  // 3. Check explicitly unreleased production status
+  if (["in production", "post production", "planned", "upcoming", "unreleased"].includes(statusLower)) {
+    if (movie.year && movie.year > now.getFullYear()) {
+      return { isNotOut: true, releaseLabel: String(movie.year) };
+    }
+    return { isNotOut: true, releaseLabel: "Coming Soon" };
+  }
+
+  return { isNotOut: false, releaseLabel: null };
 };
 
 export default function MovieCard({
@@ -60,7 +152,10 @@ export default function MovieCard({
   if (!movie) return null;
 
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isImageLoaded, setIsImageLoaded] = React.useState(false);
   const hoverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const { isNotOut, releaseLabel } = React.useMemo(() => getNotOutYetInfo(movie), [movie]);
 
   React.useEffect(() => {
     return () => {
@@ -155,17 +250,32 @@ export default function MovieCard({
                </div>
             )}
 
+            {/* Subtle animated skeleton background while image is downloading */}
+            {!isImageLoaded && posterSrc && (
+              <div className="absolute inset-0 bg-neutral-900 animate-pulse flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full border border-amber-500/20 bg-amber-500/5 flex items-center justify-center text-amber-500/40 text-[10px] font-mono">
+                  ★
+                </div>
+              </div>
+            )}
+
             {/* Cinematic Poster Image */}
             {posterSrc ? (
               <img
                 src={posterSrc}
                 alt={movie.title || "Title"}
-                className="w-full h-full object-cover rounded-none transition-transform duration-500 ease-out group-hover/card:scale-105"
-                loading={priority ? "eager" : "lazy"}
+                className={`w-full h-full object-cover rounded-none transition-all duration-300 ease-out group-hover/card:scale-105 ${
+                  isImageLoaded 
+                    ? (isNotOut ? "opacity-75 grayscale-[35%] contrast-[0.95] group-hover/card:opacity-90 group-hover/card:grayscale-[15%]" : "opacity-100") 
+                    : "opacity-0"
+                }`}
+                loading="eager"
                 fetchPriority={priority ? "high" : "auto"}
                 decoding="async"
                 referrerPolicy="no-referrer"
+                onLoad={() => setIsImageLoaded(true)}
                 onError={(e) => {
+                  setIsImageLoaded(true);
                   const currentSrc = e.currentTarget.src;
                   const title = (movie.title || (movie as any).name || "").toLowerCase().trim();
                   if (title === "lanterns" || String(movie.id).includes("lanterns")) {
@@ -182,6 +292,23 @@ export default function MovieCard({
                 }}
               />
             ) : null}
+
+            {/* NOT OUT YET Overlay Badge */}
+            {isNotOut && (
+              <div className="absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center text-center pointer-events-none">
+                <div className="px-2.5 py-1.5 bg-black/85 backdrop-blur-md border border-amber-500/60 shadow-[0_4px_25px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center gap-0.5 rounded-none max-w-[95%]">
+                  <span className="text-[10px] min-[400px]:text-[11px] font-black tracking-widest text-amber-400 font-['Montserrat',sans-serif] uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-nowrap">
+                    NOT OUT YET
+                  </span>
+                  {releaseLabel && (
+                    <span className="text-[8.5px] min-[400px]:text-[9.5px] font-semibold tracking-wide text-zinc-300 flex items-center gap-1 font-mono whitespace-nowrap">
+                      <Calendar className="w-2.5 h-2.5 text-amber-400/90 shrink-0" />
+                      <span>{releaseLabel}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Placeholder if no image */}
             <div className={`absolute inset-0 flex flex-col justify-between rounded-none ${!posterSrc ? (movie.gradient || 'bg-gradient-to-br from-zinc-900 to-neutral-950') : ''}`}>
@@ -298,8 +425,14 @@ export default function MovieCard({
             </h4>
             <p className="text-xs text-zinc-400 font-sans truncate flex items-center gap-1.5">
               <span className="truncate">{directorText || (movie.isTv ? "Series" : "Movie")}</span>
-              {dateText && <span className="text-zinc-600 font-bold">•</span>}
-              {dateText && <span className="shrink-0">{dateText}</span>}
+              <span className="text-zinc-600 font-bold">•</span>
+              {isNotOut ? (
+                <span className="text-amber-400/95 font-mono text-[10px] tracking-wider uppercase font-semibold shrink-0">
+                  {releaseLabel ? releaseLabel : "Coming Soon"}
+                </span>
+              ) : (
+                dateText && <span className="shrink-0">{dateText}</span>
+              )}
             </p>
           </div>
         </div>
@@ -454,15 +587,30 @@ export default function MovieCard({
              </div>
           )}
 
+          {/* Subtle animated skeleton background while image is downloading */}
+          {!isImageLoaded && posterSrc && (
+            <div className="absolute inset-0 bg-neutral-900 animate-pulse flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full border border-amber-500/20 bg-amber-500/5 flex items-center justify-center text-amber-500/40 text-[10px] font-mono">
+                ★
+              </div>
+            </div>
+          )}
+
           {posterSrc ? (
             <img
               src={posterSrc}
               alt={movie.title || "Title"}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out "
-              loading={priority ? "eager" : "lazy"}
+              className={`w-full h-full object-cover transition-all duration-300 ease-out ${
+                isImageLoaded 
+                  ? (isNotOut ? "opacity-75 grayscale-[35%] contrast-[0.95] group-hover/card:opacity-90 group-hover/card:grayscale-[15%]" : "opacity-100") 
+                  : "opacity-0"
+              }`}
+              loading="eager"
               fetchPriority={priority ? "high" : "auto"}
               decoding="async" referrerPolicy="no-referrer"
+              onLoad={() => setIsImageLoaded(true)}
               onError={(e) => {
+                setIsImageLoaded(true);
                 const currentSrc = e.currentTarget.src;
                 const title = (movie.title || (movie as any).name || "").toLowerCase().trim();
                 if (title === "lanterns" || String(movie.id).includes("lanterns")) {
@@ -479,6 +627,23 @@ export default function MovieCard({
               }}
             />
           ) : null}
+
+          {/* NOT OUT YET Badge Overlay */}
+          {isNotOut && (
+            <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 z-25 flex flex-col items-center justify-center text-center pointer-events-none">
+              <div className="w-auto max-w-[90%] px-3 py-1.5 bg-black/85 backdrop-blur-md border border-amber-500/60 shadow-[0_4px_25px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center gap-0.5 rounded-lg">
+                <span className="text-[10px] sm:text-xs font-black tracking-widest text-amber-400 font-['Montserrat',sans-serif] uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-nowrap">
+                  NOT OUT YET
+                </span>
+                {releaseLabel && (
+                  <span className="text-[8.5px] sm:text-[9.5px] font-semibold tracking-wide text-zinc-300 flex items-center gap-1 font-mono whitespace-nowrap">
+                    <Calendar className="w-2.5 h-2.5 text-amber-400/90 shrink-0" />
+                    <span>{releaseLabel}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
           
           <div className={`absolute inset-0 flex flex-col justify-between ${!posterSrc ? (movie.gradient || 'bg-gradient-to-br from-zinc-900 to-neutral-950') : ''}`}>
             
@@ -518,7 +683,7 @@ export default function MovieCard({
             {/* Always visible base info */}
             <div className="space-y-1 transform transition-transform duration-300">
               <p className="text-[10px] font-mono uppercase tracking-widest font-extrabold bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] bg-clip-text text-transparent drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                {getSubtitle()}
+                {isNotOut ? (releaseLabel ? `Unreleased • ${releaseLabel}` : "NOT OUT YET") : getSubtitle()}
               </p>
               <h3 className="text-sm sm:text-base font-display font-extrabold text-white leading-tight line-clamp-2 drop-shadow-lg">
                 {movie.title || movie.originalTitle || "Movie"}

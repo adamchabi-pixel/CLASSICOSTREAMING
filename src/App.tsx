@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, ChevronDown, User,
   Key, Tv, Clock, Calendar,
   Sparkles, History, Compass, FilmIcon, BookmarkCheck,
-  Star, CheckCircle, AlertCircle, RefreshCw, X, Shield, Menu, Settings, Loader2, Handshake, Smartphone
+  Star, CheckCircle, AlertCircle, RefreshCw, X, Shield, Menu, Settings, Loader2, Handshake, Smartphone, Download
 } from "lucide-react";
 import { COLLECTIONS as RAW_COLLECTIONS, Movie, Collection } from "./data";
 
@@ -976,24 +976,42 @@ export default function App() {
     openAuthModal
   } = useAuth();
 
+  const [isInitialLoadDone, setIsInitialLoadDone] = useState(() => {
+    if (typeof document === 'undefined') return true;
+    return !document.getElementById("startup-screen");
+  });
+
   useEffect(() => {
-    // Graceful cinematic fade-out of the startup screen once App renders (smoother and slightly longer on mobile as requested)
     const startupScreen = document.getElementById("startup-screen");
-    if (startupScreen) {
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      const duration = isMobile ? 1.7 : 1.35;
-      const timer = setTimeout(() => {
-        startupScreen.style.transition = `opacity ${duration}s cubic-bezier(0.16, 1, 0.3, 1), transform ${duration}s cubic-bezier(0.16, 1, 0.3, 1)`;
+    if (!startupScreen) {
+      setIsInitialLoadDone(true);
+      return;
+    }
+
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    // Long, luxurious and ultra-smooth cinematic fade out
+    const fadeDuration = isMobile ? 1.5 : 1.35;
+    const holdDuration = isMobile ? 300 : 220;
+
+    const timer = setTimeout(() => {
+      // 1. Mount Resume Watching while still completely hidden underneath the solid black startup screen
+      setIsInitialLoadDone(true);
+
+      // 2. Allow the browser to commit layout before starting the long, silky smooth fade-out
+      requestAnimationFrame(() => {
+        startupScreen.style.pointerEvents = "none";
+        startupScreen.style.transition = `opacity ${fadeDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
         startupScreen.style.opacity = "0";
-        startupScreen.style.transform = "scale(1.02)";
+
         setTimeout(() => {
           try {
             startupScreen.remove();
-          } catch(e) {}
-        }, duration * 1000 + 100);
-      }, 140);
-      return () => clearTimeout(timer);
-    }
+          } catch (e) {}
+        }, fadeDuration * 1000 + 80);
+      });
+    }, holdDuration);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -2492,6 +2510,8 @@ export default function App() {
   };
 
   const resumeMovies = React.useMemo(() => {
+    if (!isInitialLoadDone) return [];
+
     const rawIds = [...history, ...Object.keys(progressData)];
     const seenKeys = new Set<string>();
     const seenTitles = new Set<string>();
@@ -2511,7 +2531,7 @@ export default function App() {
       if (cleanTitle && seenTitles.has(cleanTitle)) return;
       
       let p = getProgress(m.id);
-      if (p <= 0) return;
+      if (p <= 0.02) return;
       if (p >= 0.95) return; // Finished movies are excluded from Continue Watching
 
       seenKeys.add(key);
@@ -2522,7 +2542,7 @@ export default function App() {
     });
 
     return list;
-  }, [history, progressData, findMovieById, getCanonicalMovieKey, getProgress]);
+  }, [isInitialLoadDone, history, progressData, findMovieById, getCanonicalMovieKey, getProgress]);
 
   const recentlyViewedMovies = React.useMemo(() => {
     const seenKeys = new Set<string>();
@@ -2791,6 +2811,22 @@ export default function App() {
                     </button>
                   );
                 })}
+
+                {/* Download / Install App item in mobile menu */}
+                <div className="my-1 border-t border-white/10" />
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsInstallModalOpen(true);
+                  }}
+                  className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium tracking-wide text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all duration-300 w-full text-left cursor-pointer"
+                >
+                  <Download
+                    strokeWidth={2}
+                    className="w-4 h-4 shrink-0 text-amber-400"
+                  />
+                  <span>Download / Install App</span>
+                </button>
               </nav>
             </motion.div>
           )}
@@ -3098,12 +3134,12 @@ export default function App() {
               ) : null}
               
 
-               {/* Collections Segment block - Horizontal Carousels grouped by Collection */}
+                {/* Collections Segment block - Horizontal Carousels grouped by Collection */}
               <div className="max-w-[2000px] mx-auto px-4 sm:px-8 space-y-12 pb-16">
                 
-                {/* Reprendre la lecture Section */}
-                {resumeMovies.length > 0 && (
-                  <div className="space-y-4 text-left pt-6 sm:pt-8">
+                {/* Reprendre la lecture Section (Only appears after initial load completes) */}
+                {isInitialLoadDone && resumeMovies.length > 0 && (
+                  <div className="space-y-4 text-left pt-6 sm:pt-8 animate-in fade-in duration-300">
                     <div className="flex flex-row items-center sm:items-end justify-between gap-2 sm:gap-3 border-b border-zinc-900 pb-2 sm:pb-3">
                       <div className="space-y-0.5 max-w-[80%]">
                         <span className="text-[8px] sm:text-[9px] font-mono tracking-[2px] sm:tracking-[3px] text-amber-500 uppercase font-bold">
@@ -3216,10 +3252,10 @@ export default function App() {
 
                     <div className="text-left py-1 select-none">
                       <h2 className="font-cinzel font-bold text-[17px] sm:text-2xl tracking-[0.1em] sm:tracking-[0.22em] gold-metallic-text uppercase leading-none whitespace-nowrap">
-                        STRAIGHT BANGERS
+                        CINEMA SELECTIONS
                       </h2>
                       <span className="block font-signature text-[18px] sm:text-[23px] text-[#f4ecd8] leading-none mt-1 filter drop-shadow-[0_0_4px_rgba(244,236,216,0.2)]">
-                        Cinema Selections
+                        The Best Movies
                       </span>
                     </div>
 
@@ -3365,7 +3401,7 @@ export default function App() {
                   })}
                 </div>
 
-                {/* OTHER BANGERS Section Removed */}
+                {/* Collections Section End */}
                   </>
                 )}
               </div>
@@ -3674,7 +3710,7 @@ export default function App() {
       
 
       {/* Discreet floating mobile install hint at bottom-left */}
-      <InstallAppHint onClick={() => setIsInstallModalOpen(true)} />
+      <InstallAppHint onClick={() => setIsInstallModalOpen(true)} isInitialLoadDone={isInitialLoadDone} />
 
       <InstallAppModal
         isOpen={isInstallModalOpen}

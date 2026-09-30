@@ -2949,35 +2949,7 @@ export default function CinemaPlayerView({
                   </div>
                 ) : null}
 
-                {/* Floating Dedicated Fullscreen Button on Viewport */}
-                {serverSelected && isAdGateUnlocked && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFullscreen();
-                    }}
-                    className={`absolute z-[48] p-2 sm:p-2.5 rounded-lg bg-black/80 hover:bg-black/95 text-stone-200 hover:text-amber-400 border border-white/20 hover:border-amber-400/50 shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 ${
-                      fullscreen || isPseudoFullscreen 
-                        ? "top-4 right-4" 
-                        : "bottom-3 right-3 opacity-90 group-hover:opacity-100"
-                    }`}
-                    title={fullscreen || isPseudoFullscreen ? "Exit Fullscreen (ESC)" : "Full Screen"}
-                    aria-label={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Full Screen"}
-                  >
-                    {fullscreen || isPseudoFullscreen ? (
-                      <>
-                        <Minimize2 className="w-4 h-4 text-amber-400" />
-                        <span className="hidden sm:inline text-[11px] font-sans font-bold text-amber-300">Exit</span>
-                      </>
-                    ) : (
-                      <>
-                        <Maximize2 className="w-4 h-4" />
-                        <span className="hidden sm:inline text-[11px] font-sans font-bold">Fullscreen</span>
-                      </>
-                    )}
-                  </button>
-                )}
+                {/* Player End */}
               </div>
 
               {/* Mobile Server Selector Bar (Under the film - mobile only) */}

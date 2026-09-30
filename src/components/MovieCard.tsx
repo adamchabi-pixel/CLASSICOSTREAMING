@@ -175,6 +175,20 @@ export default function MovieCard({
     setIsHovered(false);
   };
 
+  React.useEffect(() => {
+    if (!isHovered) return;
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      const cardEl = document.getElementById(`movie-card-${movie.id || 'item'}`);
+      if (cardEl && !cardEl.contains(e.target as Node)) {
+        setIsHovered(false);
+      }
+    };
+    document.addEventListener("pointerdown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsideClick);
+    };
+  }, [isHovered, movie.id]);
+
   const progressState = React.useMemo(() => {
     if (typeof progressPercent === "number") {
       if (progressPercent >= 0.95) return 'watched';
@@ -234,7 +248,16 @@ export default function MovieCard({
         {/* Main Movie Poster Column */}
         <div
           className={`${expandOnHover ? baseWidth : "w-full"} shrink-0 cursor-pointer group/card flex flex-col transition-all duration-300 ease-out`}
-          onClick={() => onSelect(movie)}
+          onClick={(e) => {
+            if (expandOnHover && typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: none)').matches) {
+              if (!isHovered) {
+                e.stopPropagation();
+                setIsHovered(true);
+                return;
+              }
+            }
+            onSelect(movie);
+          }}
         >
           {/* Vertical Rectangle Poster Container with sharp corners (no border-radius) */}
           <div className="relative w-full aspect-[2/3] bg-neutral-900 border border-neutral-800/80 group-hover/card:border-amber-500/60 rounded-none overflow-hidden shadow-lg transition-all duration-300 will-change-transform group-hover/card:scale-[1.02]">
@@ -437,41 +460,41 @@ export default function MovieCard({
           </div>
         </div>
 
-        {/* Expandable Description Rectangle on Hover */}
+        {/* Expandable Description Rectangle on Hover - exact same size as poster */}
         {expandOnHover && (
           <div
             className={`transition-[width,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden flex flex-col shrink-0 will-change-[width,opacity] transform-gpu pointer-events-none ${
               isHovered
-                ? `${baseWidth} opacity-100 ml-3 sm:ml-4 !pointer-events-auto`
+                ? `${baseWidth} opacity-100 ml-2 sm:ml-3 !pointer-events-auto`
                 : "w-0 opacity-0 ml-0"
             }`}
           >
             <div
               onClick={() => onSelect(movie)}
-              className={`${baseWidth} aspect-[2/3] shrink-0 bg-[#121214] border border-amber-500/40 hover:border-amber-400/80 rounded-none shadow-[0_10px_35px_rgba(0,0,0,0.9)] p-3 sm:p-4 flex flex-col justify-between text-left cursor-pointer relative overflow-hidden group/detail transition-colors`}
+              className={`${baseWidth} aspect-[2/3] shrink-0 bg-[#121214] border border-amber-500/40 hover:border-amber-400/80 rounded-none shadow-[0_10px_35px_rgba(0,0,0,0.9)] p-2 sm:p-2.5 flex flex-col justify-between text-left cursor-pointer relative overflow-hidden group/detail transition-colors`}
             >
               {/* Top reflection sheen line */}
               <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent pointer-events-none" />
 
               {/* Header: Genre, Rating & Title */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between gap-1 text-[10px] font-mono text-zinc-400">
-                  <span className="text-amber-400 font-bold uppercase tracking-wider text-[9px] truncate">
+              <div className="space-y-0.5 shrink-0">
+                <div className="flex items-center justify-between gap-1 text-[9px] font-mono text-zinc-400">
+                  <span className="text-amber-400 font-bold uppercase tracking-wider text-[8px] sm:text-[9px] truncate">
                     {Array.isArray(movie.genre) ? movie.genre[0] : (movie.genre || (movie.isTv ? "Series" : "Movie"))}
                   </span>
                   {(movie.voteAverage || movie.rating) && (
-                    <span className="flex items-center gap-1 font-bold text-zinc-200 shrink-0">
+                    <span className="flex items-center gap-0.5 font-bold text-zinc-200 shrink-0 text-[8px] sm:text-[9px]">
                       <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                       {movie.voteAverage || movie.rating}
                     </span>
                   )}
                 </div>
 
-                <h4 className="text-xs sm:text-sm font-bold text-white font-cinzel line-clamp-2 leading-tight tracking-wide group-hover/detail:text-amber-400 transition-colors">
+                <h4 className="text-[11px] sm:text-xs font-bold text-white font-cinzel line-clamp-1 leading-tight tracking-wide group-hover/detail:text-amber-400 transition-colors">
                   {movie.title}
                 </h4>
 
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
+                <div className="flex items-center gap-1 text-[8.5px] sm:text-[9px] font-mono text-zinc-400">
                   {dateText && <span>{dateText}</span>}
                   {movie.duration && <span>• {movie.duration}</span>}
                   {movie.isTv && <span>• Series</span>}
@@ -479,17 +502,17 @@ export default function MovieCard({
               </div>
 
               {/* Middle: Description with ellipsis if too long */}
-              <div className="my-auto py-1">
-                <p className={`text-[11px] sm:text-xs text-zinc-300 leading-relaxed font-sans overflow-hidden text-ellipsis ${
-                  (onFinishWatching || onRestartWatching) ? "line-clamp-2 sm:line-clamp-3" : "line-clamp-5 sm:line-clamp-6 md:line-clamp-7"
+              <div className="my-auto py-0.5 overflow-hidden">
+                <p className={`text-[9px] sm:text-[10px] text-zinc-300 leading-snug font-sans overflow-hidden text-ellipsis ${
+                  (onFinishWatching || onRestartWatching) ? "line-clamp-2" : "line-clamp-4 sm:line-clamp-5"
                 }`}>
                   {movie.description || (movie as any).overview || "No synopsis available."}
                 </p>
               </div>
 
               {/* Bottom: Quick Play & Info Buttons */}
-              <div className="pt-2 flex flex-col gap-1.5 border-t border-white/10 shrink-0">
-                <div className="flex items-center gap-2">
+              <div className="pt-1.5 flex flex-col gap-1 border-t border-white/10 shrink-0 w-full">
+                <div className="flex items-center gap-1.5 w-full">
                   <button
                     type="button"
                     onClick={(e) => {
@@ -497,10 +520,10 @@ export default function MovieCard({
                       if (onPlay) onPlay(movie);
                       else onSelect(movie);
                     }}
-                    className="flex-1 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-[10px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 transition-colors shadow-md active:scale-95 cursor-pointer"
+                    className="flex-1 py-1 px-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-colors shadow-md active:scale-95 cursor-pointer"
                   >
-                    <Play className="w-3 h-3 fill-current" />
-                    Watch
+                    <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current shrink-0" />
+                    <span>Watch</span>
                   </button>
                   <button
                     type="button"
@@ -508,16 +531,16 @@ export default function MovieCard({
                       e.stopPropagation();
                       onSelect(movie);
                     }}
-                    className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-zinc-300 hover:text-white rounded-none border border-white/10 transition-colors cursor-pointer"
+                    className="p-1 sm:p-1.5 bg-neutral-800 hover:bg-neutral-700 text-zinc-300 hover:text-white rounded-none border border-white/10 transition-colors cursor-pointer shrink-0"
                     title="Details & Info"
                   >
-                    <Info className="w-3.5 h-3.5" />
+                    <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
 
                 {/* Les deux encadrés: Finish Watching & Restart Buttons requested by user */}
                 {(onFinishWatching || onRestartWatching) && (
-                  <div className="flex items-center gap-1.5 pt-0.5">
+                  <div className="flex flex-col gap-1 w-full pt-0.5">
                     {onFinishWatching && (
                       <button
                         type="button"
@@ -525,11 +548,11 @@ export default function MovieCard({
                           e.stopPropagation();
                           onFinishWatching(movie);
                         }}
-                        className="flex-1 py-1.5 px-1 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/80 hover:border-emerald-400 text-emerald-300 hover:text-white text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
+                        className="w-full py-0.5 sm:py-1 px-1.5 bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-500/80 hover:border-emerald-400 text-emerald-300 hover:text-white text-[8px] sm:text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
                         title="Finish Watching"
                       >
-                        <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
-                        <span className="truncate">Finish Watching</span>
+                        <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400 shrink-0" />
+                        <span className="whitespace-nowrap">Finish Watching</span>
                       </button>
                     )}
                     {onRestartWatching && (
@@ -539,11 +562,11 @@ export default function MovieCard({
                           e.stopPropagation();
                           onRestartWatching(movie);
                         }}
-                        className="flex-1 py-1.5 px-1 bg-amber-950/80 hover:bg-amber-900 border border-amber-500/80 hover:border-amber-400 text-amber-300 hover:text-white text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
+                        className="w-full py-0.5 sm:py-1 px-1.5 bg-amber-950/90 hover:bg-amber-900 border border-amber-500/80 hover:border-amber-400 text-amber-300 hover:text-white text-[8px] sm:text-[9px] font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md active:scale-95"
                         title="Restart from Beginning"
                       >
-                        <RotateCcw className="w-3 h-3 text-amber-400 shrink-0" />
-                        <span className="truncate">Restart</span>
+                        <RotateCcw className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400 shrink-0" />
+                        <span className="whitespace-nowrap">Restart</span>
                       </button>
                     )}
                   </div>

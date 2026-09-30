@@ -201,7 +201,7 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
   );
 }
 
-export function InstallAppHint({ onClick }: { onClick: () => void }) {
+export function InstallAppHint({ onClick, isInitialLoadDone = true }: { onClick: () => void; isInitialLoadDone?: boolean }) {
   const [isStandalone] = useState(() => {
     try {
       return typeof window !== "undefined" && (
@@ -213,33 +213,50 @@ export function InstallAppHint({ onClick }: { onClick: () => void }) {
     }
   });
 
-  const [isDismissed, setIsDismissed] = useState(() => {
-    try {
-      return typeof window !== "undefined" && localStorage.getItem("classico_download_hint_dismissed") === "true";
-    } catch (e) {
-      return false;
-    }
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
   });
+
+  const [isDismissed, setIsDismissed] = useState(false);
 
   // Keep completely unmounted during the initial loading/startup screen to eliminate any flash or lag
   const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
-    // Only reveal the hint 2.4s after initial mount, well after the startup screen has completely faded out
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Clear any previous permanent dismissal so the user always has access to the download button
+    try {
+      localStorage.removeItem("classico_download_hint_dismissed");
+    } catch (e) {}
+
+    // Reveal the hint shortly after the startup screen has smoothly faded out
     const timer = setTimeout(() => {
       setIsAppReady(true);
-    }, 2400);
+    }, 1800);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isStandalone || isDismissed || !isAppReady) return null;
+  // Strictly mobile only, never during loading, not in standalone/PWA, and not if dismissed
+  if (!isMobile || isStandalone || isDismissed || !isAppReady || !isInitialLoadDone) return null;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="md:hidden fixed bottom-4 left-3 z-40 flex items-center select-none"
+      className="fixed bottom-4 left-3 z-50 flex md:hidden items-center select-none"
+      style={{
+        bottom: "max(1rem, env(safe-area-inset-bottom, 1rem))",
+        left: "max(0.75rem, env(safe-area-inset-left, 0.75rem))",
+      }}
     >
       <div className="relative flex items-center bg-black/92 border border-amber-500/50 hover:border-amber-400 rounded-md shadow-[0_6px_20px_rgba(0,0,0,0.9),0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md overflow-hidden">
         {/* Subtle top golden light reflection */}
@@ -266,19 +283,16 @@ export function InstallAppHint({ onClick }: { onClick: () => void }) {
           </div>
         </button>
 
-        {/* Divider & Definite Dismiss Button */}
+        {/* Divider & Close Button */}
         <div className="h-5 w-[1px] bg-white/10" />
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setIsDismissed(true);
-            try {
-              localStorage.setItem("classico_download_hint_dismissed", "true");
-            } catch(e) {}
           }}
           className="px-2 py-2 text-zinc-400 hover:text-white transition-colors cursor-pointer active:scale-90"
-          title="Dismiss permanently"
+          title="Close hint"
         >
           <X className="w-3.5 h-3.5" />
         </button>

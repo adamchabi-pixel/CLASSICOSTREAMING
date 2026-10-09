@@ -45,6 +45,10 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
       setIsInstalled(true);
+      try {
+        localStorage.setItem("classico_app_downloaded", "true");
+        window.dispatchEvent(new Event("classico_download_event"));
+      } catch (e) {}
       setDeferredPrompt(null);
       onClose();
     }
@@ -190,7 +194,13 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
 
           {/* Dismiss button */}
           <button
-            onClick={onClose}
+            onClick={() => {
+              try {
+                localStorage.setItem("classico_app_downloaded", "true");
+                window.dispatchEvent(new Event("classico_download_event"));
+              } catch (e) {}
+              onClose();
+            }}
             className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white font-medium text-xs sm:text-sm transition-colors cursor-pointer"
           >
             Got it
@@ -202,97 +212,92 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
 }
 
 export function InstallAppHint({ onClick, isInitialLoadDone = true }: { onClick: () => void; isInitialLoadDone?: boolean }) {
-  const [isStandalone] = useState(() => {
+  const [isDownloaded, setIsDownloaded] = useState(() => {
     try {
-      return typeof window !== "undefined" && (
+      if (typeof window === "undefined") return false;
+      const standalone =
         window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone === true
-      );
+        (window.navigator as any).standalone === true;
+      const downloaded = localStorage.getItem("classico_app_downloaded") === "true";
+      return standalone || downloaded;
     } catch (e) {
       return false;
     }
   });
 
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.innerWidth < 768;
-  });
-
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Keep completely unmounted during the initial loading/startup screen to eliminate any flash or lag
-  const [isAppReady, setIsAppReady] = useState(false);
-
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+    const handleCheck = () => {
+      try {
+        const standalone =
+          window.matchMedia("(display-mode: standalone)").matches ||
+          (window.navigator as any).standalone === true;
+        const downloaded = localStorage.getItem("classico_app_downloaded") === "true";
+        if (standalone || downloaded) {
+          setIsDownloaded(true);
+        }
+      } catch (e) {}
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("storage", handleCheck);
+    window.addEventListener("classico_download_event", handleCheck);
+    return () => {
+      window.removeEventListener("storage", handleCheck);
+      window.removeEventListener("classico_download_event", handleCheck);
+    };
   }, []);
 
-  useEffect(() => {
-    // Clear any previous permanent dismissal so the user always has access to the download button
-    try {
-      localStorage.removeItem("classico_download_hint_dismissed");
-    } catch (e) {}
-
-    // Reveal the hint shortly after the startup screen has smoothly faded out
-    const timer = setTimeout(() => {
-      setIsAppReady(true);
-    }, 1800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Strictly mobile only, never during loading, not in standalone/PWA, and not if dismissed
-  if (!isMobile || isStandalone || isDismissed || !isAppReady || !isInitialLoadDone) return null;
+  // When downloaded (or standalone PWA), it disappears!
+  // During startup screen loading, it stays unmounted until isInitialLoadDone is true.
+  if (isDownloaded || isDismissed || !isInitialLoadDone) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed bottom-4 left-3 z-50 flex md:hidden items-center select-none"
+      exit={{ opacity: 0, y: 15, scale: 0.95 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed bottom-4 left-3 sm:bottom-5 sm:left-4 z-50 flex md:hidden items-center select-none"
       style={{
         bottom: "max(1rem, env(safe-area-inset-bottom, 1rem))",
         left: "max(0.75rem, env(safe-area-inset-left, 0.75rem))",
       }}
     >
-      <div className="relative flex items-center bg-black/92 border border-amber-500/50 hover:border-amber-400 rounded-md shadow-[0_6px_20px_rgba(0,0,0,0.9),0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md overflow-hidden">
+      <div className="relative flex items-center bg-zinc-950/95 border border-amber-500/70 hover:border-amber-400 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.95),0_0_20px_rgba(245,158,11,0.3)] backdrop-blur-md overflow-hidden">
         {/* Subtle top golden light reflection */}
-        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/70 to-transparent pointer-events-none" />
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400 to-transparent pointer-events-none" />
 
         <button
           onClick={onClick}
-          className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 cursor-pointer active:scale-95 transition-transform"
+          className="flex items-center gap-2.5 pl-3 pr-2.5 py-2 cursor-pointer active:scale-95 transition-transform"
           title="Download Classico App"
         >
-          {/* Compact download icon */}
-          <div className="w-5 h-5 rounded-sm bg-gradient-to-tr from-amber-500 to-amber-400 text-black flex items-center justify-center shrink-0 shadow-sm">
-            <Download className="w-3 h-3 stroke-[2.5]" />
+          {/* Animated download icon badge */}
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-amber-400 text-black flex items-center justify-center shrink-0 shadow-md">
+            <Download className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
 
-          {/* Clean modern sans-serif typography */}
+          {/* Typography */}
           <div className="flex flex-col text-left">
-            <span className="font-sans font-bold text-[10px] tracking-wide text-zinc-100 uppercase leading-none">
-              Download Classico
+            <span className="font-sans font-bold text-[11px] sm:text-xs tracking-wide text-white uppercase leading-none">
+              Download App
             </span>
-            <span className="font-sans font-medium text-[8px] text-amber-400/90 leading-none mt-0.5">
+            <span className="font-sans font-medium text-[9px] text-amber-400/95 leading-none mt-1">
               Add to Home Screen
             </span>
           </div>
         </button>
 
         {/* Divider & Close Button */}
-        <div className="h-5 w-[1px] bg-white/10" />
+        <div className="h-6 w-[1px] bg-white/10" />
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setIsDismissed(true);
           }}
-          className="px-2 py-2 text-zinc-400 hover:text-white transition-colors cursor-pointer active:scale-90"
-          title="Close hint"
+          className="px-2.5 py-2 text-zinc-400 hover:text-white transition-colors cursor-pointer active:scale-90"
+          title="Close"
         >
           <X className="w-3.5 h-3.5" />
         </button>

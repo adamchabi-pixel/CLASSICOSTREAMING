@@ -229,23 +229,6 @@ const normalizeEmbedUrl = (rawUrl: string): string => {
     return `https://frembed.surf/embed/serie/${frembedTvMatch[1]}`;
   }
 
-  // Ensure cinemaos routes directly to watch player
-  if (rawUrl.includes("cinemaos.live/embed/movie/")) {
-    return rawUrl.replace("cinemaos.live/embed/movie/", "cinemaos.live/watch/movie/");
-  }
-  if (rawUrl.includes("cinemaos.live/movie/")) {
-    return rawUrl.replace("cinemaos.live/movie/", "cinemaos.live/watch/movie/");
-  }
-  if (rawUrl.includes("cinemaos.live/embed/tv/")) {
-    return rawUrl.replace("cinemaos.live/embed/tv/", "cinemaos.live/watch/tv/").replace(/\/(\d+)\/(\d+)$/, "?season=$1&episode=$2");
-  }
-  if (rawUrl.includes("cinemaos.live/tv/")) {
-    const match = rawUrl.match(/cinemaos\.live\/tv\/(\d+)-(\d+)-(\d+)/);
-    if (match) {
-      return `https://cinemaos.live/watch/tv/${match[1]}?season=${match[2]}&episode=${match[3]}`;
-    }
-  }
-
   // Support old or alternative frembed.pro/api/film.php?id=...
   if (rawUrl.includes("frembed.pro/api/film.php") || rawUrl.includes("frembed.surf/api/film.php")) {
     try {
@@ -253,6 +236,14 @@ const normalizeEmbedUrl = (rawUrl: string): string => {
       const id = parsed.searchParams.get("id");
       if (id) return `https://frembed.surf/embed/movie/${id}`;
     } catch (_) {}
+  }
+
+  // Videasy normalization
+  if (rawUrl.includes("videasy.xyz/embed/movie/")) {
+    return rawUrl.replace("videasy.xyz/embed/movie/", "player.videasy.net/movie/");
+  }
+  if (rawUrl.includes("videasy.xyz/embed/tv/")) {
+    return rawUrl.replace("videasy.xyz/embed/tv/", "player.videasy.net/tv/");
   }
 
   // Support frembed serie.php
@@ -276,35 +267,38 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
   const tParam = timeParam || "";
 
   if (lang === "fr") {
-    // Only FrEmbed for French
+    // FrEmbed for French (VF) + Videasy fallback
     if (isTv) {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 }
+        { name: "Server 1", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 },
+        { name: "Server 2", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
       ];
     } else {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 }
+        { name: "Server 1", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 },
+        { name: "Server 2", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
       ];
     }
   } else {
     // English servers:
-    // 1: CineSrc (events & progress tracking)
+    // 1: CineSrc (fast embed with native events & full controls)
     // 2: Peachify (progress tracking)
-    // 3: VidSrc (no 404)
-    // 4: CinemaOS (no 404 direct routes)
+    // 3: VidLink (fast failover backup)
+    // 4: Videasy (multi-provider player)
+    const movieTime = tParam ? (tParam.startsWith("&") ? `?${tParam.slice(1)}` : tParam) : "";
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&color=%23f59e0b&continueprompt=false&back=close${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}${tParam}`, stars: 3 },
         { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
-        { name: "Server 3", url: `https://vidsrc.me/embed/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://cinemaos.live/watch/tv/${cleanId}?season=${s}&episode=${e}`, stars: 3 }
+        { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
+        { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?color=%23f59e0b&continueprompt=false&back=close${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}${movieTime}`, stars: 3 },
         { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
-        { name: "Server 3", url: `https://vidsrc.me/embed/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://cinemaos.live/watch/movie/${cleanId}`, stars: 3 }
+        { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
+        { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
       ];
     }
   }
@@ -1846,6 +1840,22 @@ export default function CinemaPlayerView({
     };
   }, [isPseudoFullscreen]);
 
+  // Synchronize fullscreen state with document.body class to guarantee the navbar is hidden
+  useEffect(() => {
+    const isAnyFs = !!(fullscreen || isPseudoFullscreen);
+    if (isAnyFs) {
+      document.body.classList.add("cinema-fullscreen-active");
+    } else {
+      document.body.classList.remove("cinema-fullscreen-active");
+    }
+    window.dispatchEvent(new CustomEvent("cinema-fullscreen-change", { detail: { active: isAnyFs } }));
+
+    return () => {
+      document.body.classList.remove("cinema-fullscreen-active");
+      window.dispatchEvent(new CustomEvent("cinema-fullscreen-change", { detail: { active: false } }));
+    };
+  }, [fullscreen, isPseudoFullscreen]);
+
   // 3. AUTO-HIDE MOUSE CURSOR AND CONTROLS ON INACTIVITY
   const resetInactivityTimer = () => {
     setControlsVisible(true);
@@ -2419,8 +2429,14 @@ export default function CinemaPlayerView({
         }
       }
 
-      // 2. Peachify loading / play screen logic
-      if (event.origin === 'https://peachify.pro' || (parsedData.type === 'PLAYER_EVENT' && parsedData.data?.event === 'play')) {
+      // 2. Videasy & Peachify loading / play screen logic
+      if (
+        event.origin === 'https://player.videasy.net' ||
+        event.origin === 'https://player.videasy.to' ||
+        event.origin === 'https://peachify.pro' ||
+        (parsedData.type === 'PLAYER_EVENT' && parsedData.data?.event === 'play') ||
+        parsedData.event === 'play'
+      ) {
         setIsIframeLoading(false);
       }
 
@@ -2689,9 +2705,6 @@ export default function CinemaPlayerView({
     }
   };
 
-  const isCineSrc = (language === "en" && activeServerIndex === 0) || (playbackInfo?.iframeSrc ? playbackInfo.iframeSrc.includes("cinesrc.st") : false);
-  const isCinemaOS = (language === "en" && activeServerIndex === 3) || (playbackInfo?.iframeSrc ? playbackInfo.iframeSrc.includes("cinemaos.live") : false);
-
   return (
     <div className="w-full min-h-[calc(100vh-64px)] bg-[#0a0a0a] text-stone-100 flex flex-col select-none relative animate-in fade-in duration-300">
       
@@ -2892,14 +2905,40 @@ export default function CinemaPlayerView({
           {/* Center Column: Player, Synopsis & Details */}
           <div className="w-full xl:max-w-[840px] flex-1 order-1 xl:order-2 flex flex-col items-center">
             
-            {/* Player Container */}
+              {/* Player Container */}
             <div className="w-full flex flex-col gap-6">
               <div 
                 ref={viewportRef} 
                 className={`w-full aspect-video bg-[#050505] rounded-xl overflow-hidden shadow-2xl border border-white/5 relative group ${
-                  (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[99999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none' : ''
+                  (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[999999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none !bg-black' : ''
                 }`}
               >
+                {/* Floating Fullscreen / Exit Button (Bottom Right of screen/player) */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFullscreen();
+                  }}
+                  className={`absolute bottom-3 right-3 z-50 p-2 sm:p-2.5 rounded-xl bg-black/80 hover:bg-black/95 text-zinc-200 hover:text-amber-400 border border-white/15 hover:border-amber-400/50 transition-all backdrop-blur-md shadow-2xl cursor-pointer flex items-center gap-1.5 active:scale-95 group ${
+                    fullscreen || isPseudoFullscreen ? 'opacity-100 ring-1 ring-amber-400/50' : 'opacity-85 hover:opacity-100'
+                  }`}
+                  title={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  aria-label={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                >
+                  {fullscreen || isPseudoFullscreen ? (
+                    <>
+                      <Minimize2 className="w-4 h-4 text-amber-400" />
+                      <span className="hidden sm:inline text-xs font-sans font-semibold text-zinc-200">Exit</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="w-4 h-4 text-white group-hover:text-amber-400" />
+                      <span className="hidden sm:inline text-xs font-sans font-semibold text-zinc-200">Full screen</span>
+                    </>
+                  )}
+                </button>
+
                 {!serverSelected ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent">
                     <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mb-4 border border-white/5">
@@ -2922,14 +2961,9 @@ export default function CinemaPlayerView({
                         src={normalizeEmbedUrl(playbackInfo.iframeSrc.trim())}
                         allowFullScreen={true}
                         scrolling="no"
-                        sandbox={isCineSrc ? "allow-scripts allow-same-origin allow-forms" : undefined}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                         onLoad={() => setIsIframeLoading(false)}
-                        className={`border-0 absolute transition-all duration-300 ${
-                          isCinemaOS 
-                            ? "w-full -top-16 sm:-top-18 h-[calc(100%+120px)] left-0" 
-                            : "w-full h-full inset-0"
-                        }`}
+                        className="w-full h-full inset-0 border-0 absolute"
                         style={{ overflow: 'hidden' }}
                         // @ts-ignore
                         webkitallowfullscreen="true"
@@ -2952,12 +2986,12 @@ export default function CinemaPlayerView({
                 {/* Player End */}
               </div>
 
-              {/* Mobile Server Selector Bar (Under the film - mobile only) */}
-              <div className="xl:hidden w-full mt-3 flex items-center justify-between gap-3 bg-[#111111]/90 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg">
+              {/* Server & Fullscreen Controls Bar Under Player */}
+              <div className="w-full mt-3 flex items-center justify-between gap-3 bg-[#111111]/90 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse shrink-0" />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] uppercase font-sans text-zinc-400 tracking-wider font-semibold">Server</span>
+                    <span className="text-[10px] uppercase font-sans text-zinc-400 tracking-wider font-semibold">Active Server</span>
                     <span className="text-xs font-sans font-bold text-amber-300 truncate">
                       {availableServers[activeServerIndex]?.name?.split(' (')[0] || `Server ${activeServerIndex + 1}`} ({language.toUpperCase()})
                     </span>
@@ -2967,7 +3001,7 @@ export default function CinemaPlayerView({
                   <button
                     type="button"
                     onClick={() => setIsMobileServerModalOpen(true)}
-                    className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-sans font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
+                    className="xl:hidden px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 border border-amber-500/30 text-amber-300 rounded-lg text-xs font-sans font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
                   >
                     <Server className="w-3.5 h-3.5 text-amber-400" />
                     <span>Change</span>

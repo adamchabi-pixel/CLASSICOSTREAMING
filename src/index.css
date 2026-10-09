@@ -217,3 +217,16 @@
   background-color: black !important;
 }
 
+:fullscreen header,
+:-webkit-full-screen header,
+:-moz-full-screen header,
+:-ms-fullscreen header,
+body.cinema-fullscreen-active header,
+body.cinema-fullscreen-active nav {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+

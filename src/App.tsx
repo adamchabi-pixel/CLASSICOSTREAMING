@@ -981,6 +981,37 @@ export default function App() {
     return !document.getElementById("startup-screen");
   });
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      const isFs = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement ||
+        document.body.classList.contains("cinema-fullscreen-active")
+      );
+      setIsFullscreen(isFs);
+    };
+
+    const handleCinemaFsEvent = (e: any) => {
+      setIsFullscreen(!!e.detail?.active);
+    };
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
+    document.addEventListener("mozfullscreenchange", handleFsChange);
+    window.addEventListener("cinema-fullscreen-change", handleCinemaFsEvent);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
+      document.removeEventListener("webkitfullscreenchange", handleFsChange);
+      document.removeEventListener("mozfullscreenchange", handleFsChange);
+      window.removeEventListener("cinema-fullscreen-change", handleCinemaFsEvent);
+    };
+  }, []);
+
   useEffect(() => {
     const startupScreen = document.getElementById("startup-screen");
     if (!startupScreen) {
@@ -989,25 +1020,22 @@ export default function App() {
     }
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    // Long, luxurious and ultra-smooth cinematic fade out
-    const fadeDuration = isMobile ? 1.5 : 1.35;
-    const holdDuration = isMobile ? 300 : 220;
+    // Solid loading screen with CLASSICO while background assets settle, then smooth 60fps GPU fade out without mobile jank
+    const holdDuration = isMobile ? 650 : 550;
 
     const timer = setTimeout(() => {
-      // 1. Mount Resume Watching while still completely hidden underneath the solid black startup screen
-      setIsInitialLoadDone(true);
-
-      // 2. Allow the browser to commit layout before starting the long, silky smooth fade-out
       requestAnimationFrame(() => {
-        startupScreen.style.pointerEvents = "none";
-        startupScreen.style.transition = `opacity ${fadeDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
-        startupScreen.style.opacity = "0";
+        startupScreen.classList.add("fade-out");
 
-        setTimeout(() => {
+        const onDone = () => {
           try {
             startupScreen.remove();
           } catch (e) {}
-        }, fadeDuration * 1000 + 80);
+          setIsInitialLoadDone(true);
+        };
+
+        startupScreen.addEventListener("transitionend", onDone, { once: true });
+        setTimeout(onDone, 1150);
       });
     }, holdDuration);
 
@@ -2589,7 +2617,9 @@ export default function App() {
       {/* 1. FIXED GLASS HEADER BAR                                 */}
       {/* ========================================================== */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter,box-shadow] duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-[9999] pt-[env(safe-area-inset-top)] transition-[background-color,border-color,backdrop-filter,box-shadow,opacity] duration-300 ease-in-out ${
+          isFullscreen ? '!hidden !opacity-0 !pointer-events-none' : ''
+        } ${
           isHeroView && !isScrolled
             ? "bg-gradient-to-b from-black via-black/80 to-transparent pb-3 md:pb-0 md:bg-transparent"
             : "bg-black/95 backdrop-blur-md border-b border-white/5 shadow-2xl"

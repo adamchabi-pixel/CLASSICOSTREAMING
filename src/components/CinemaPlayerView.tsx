@@ -260,47 +260,74 @@ const normalizeEmbedUrl = (rawUrl: string): string => {
   return rawUrl;
 };
 
+const getResumeSeconds = (id: string, isSeries: boolean, sVal: number, eVal: number): number => {
+  try {
+    const raw = safeStorage.getItem("classico_progress");
+    if (!raw) return 0;
+    const data = JSON.parse(raw);
+    const cleanBase = id.replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+    const item = data[id] || data[cleanBase] || data[`${cleanBase}-tv`];
+    if (!item) return 0;
+    if (isSeries && item.show_progress) {
+      const ep = item.show_progress[`s${sVal}e${eVal}`];
+      if (ep?.progress?.watched > 0) return Math.floor(ep.progress.watched);
+      if (ep?.currentTime > 0) return Math.floor(ep.currentTime);
+    } else {
+      if (item.currentTime > 0) return Math.floor(item.currentTime);
+      if (item.progress?.watched > 0) return Math.floor(item.progress.watched);
+    }
+  } catch(e) {}
+  return 0;
+};
+
 const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any, episode?: any, imdbId?: any, timeParam?: any) => {
   const cleanId = String(tmdbId || "").replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
   const s = Number(season) || 1;
   const e = Number(episode) || 1;
-  const tParam = timeParam || "";
+
+  // Auto-resume: calculate saved watched seconds
+  const explicitTime = timeParam ? Number(String(timeParam).match(/t=(\d+)/)?.[1]) : 0;
+  const resumeSec = explicitTime > 0 ? explicitTime : getResumeSeconds(cleanId, isTv, s, e);
+
+  // CineSrc params: autoplay=true, orange color FF9900, auto-resume with continueprompt=false
+  const cinesrcResume = resumeSec > 0 ? `&t=${resumeSec}&continueprompt=false` : "&continueprompt=false";
+  const peachifyResume = resumeSec > 0 ? `&t=${resumeSec}` : "";
 
   if (lang === "fr") {
-    // FrEmbed for French (VF) + backups
+    // Server 1 is CineSrc with autoplay, orange color, and auto-resume
+    // Backup VF server available on Server 4
     if (isTv) {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900${peachifyResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
+        { name: "Server 4", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 }
       ];
     } else {
       return [ 
-        { name: "Server 1", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900${peachifyResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
+        { name: "Server 4", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 }
       ];
     }
   } else {
     // English servers:
-    // 1: CineSrc (fast embed with native events & full controls, autoplay & orange color)
+    // 1: CineSrc (fast embed, autoplay=true, orange color FF9900, auto-resume)
     // 2: Peachify (progress tracking)
     // 3: VidLink (fast failover backup)
     // 4: Videasy (multi-provider player)
-    const cinesrcMovieTime = tParam ? (tParam.startsWith("&") ? tParam : `&${tParam.replace(/^\?/, "")}`) : "";
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${tParam}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900${peachifyResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcMovieTime}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900${peachifyResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
       ];
@@ -650,6 +677,17 @@ export default function CinemaPlayerView({
       const sep = targetUrl.includes("?") ? "&" : "?";
       targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
     }
+    if (!isProxyStream && targetUrl.includes("cinesrc.st")) {
+      if (!targetUrl.includes("autoplay=")) {
+        targetUrl += `${targetUrl.includes("?") ? "&" : "?"}autoplay=true`;
+      }
+      if (!targetUrl.includes("color=")) {
+        targetUrl += `&color=FF9900`;
+      }
+      if (!targetUrl.includes("continueprompt=")) {
+        targetUrl += `&continueprompt=false`;
+      }
+    }
     
     if (isProxyStream) {
       setServerSelected(true);
@@ -676,14 +714,19 @@ export default function CinemaPlayerView({
         });
     } else {
       const cleanUrl = normalizeEmbedUrl(targetUrl);
-      if (playbackInfo) {
-        setPlaybackInfo({
-          ...playbackInfo,
-          isIframeEmbed: true,
-          iframeSrc: cleanUrl,
-          streamUrl: cleanUrl
-        });
-      }
+      setPlaybackInfo(prev => ({
+        ...(prev || {
+          id: movieId,
+          streamUrl: cleanUrl,
+          duration: 0,
+          container: "iframe",
+          title: movieTitle || "Film",
+          isDirect: false,
+        }),
+        isIframeEmbed: true,
+        iframeSrc: cleanUrl,
+        streamUrl: cleanUrl
+      }));
       safeStorage.setItem("classico_global_server_index", String(idx));
       setServerSelected(true);
       setIsIframeLoading(true);
@@ -2978,8 +3021,8 @@ export default function CinemaPlayerView({
                   (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[999999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none !bg-black' : ''
                 }`}
               >
-                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden */}
-                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && (
+                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden (servers other than Server 1) */}
+                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && activeServerIndex !== 0 && (
                   <div
                     onClick={(e) => {
                       e.stopPropagation();
@@ -2995,34 +3038,36 @@ export default function CinemaPlayerView({
                   />
                 )}
 
-                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only) */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFullscreen();
-                    showFullscreenButtonTemporarily(2000);
-                  }}
-                  style={{
-                    top: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))',
-                    left: 'max(0.75rem, env(safe-area-inset-left, 0.75rem))',
-                  }}
-                  className={`absolute z-50 p-2 sm:p-2.5 rounded-xl bg-black/80 hover:bg-black/95 text-white border border-white/20 hover:border-white/50 backdrop-blur-md shadow-2xl cursor-pointer flex items-center justify-center active:scale-95 transition-all duration-300 ${
-                    (fullscreen || isPseudoFullscreen)
-                      ? isFullscreenBtnVisible
-                        ? 'opacity-100 translate-y-0 pointer-events-auto ring-1 ring-white/30 scale-100'
-                        : 'opacity-0 -translate-y-2 pointer-events-none scale-95'
-                      : 'opacity-90 hover:opacity-100 pointer-events-auto translate-y-0 scale-100'
-                  }`}
-                  title={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
-                  aria-label={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
-                >
-                  {fullscreen || isPseudoFullscreen ? (
-                    <Minimize2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
-                  ) : (
-                    <Maximize2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
-                  )}
-                </button>
+                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only, hidden for Server 1) */}
+                {activeServerIndex !== 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFullscreen();
+                      showFullscreenButtonTemporarily(2000);
+                    }}
+                    style={{
+                      top: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))',
+                      left: 'max(0.75rem, env(safe-area-inset-left, 0.75rem))',
+                    }}
+                    className={`absolute z-[60] p-2.5 rounded-xl bg-black/85 hover:bg-black/95 text-white border border-white/25 hover:border-white/50 backdrop-blur-md shadow-2xl cursor-pointer flex items-center justify-center active:scale-95 transition-all duration-300 ${
+                      (fullscreen || isPseudoFullscreen)
+                        ? isFullscreenBtnVisible
+                          ? 'opacity-100 translate-y-0 pointer-events-auto ring-1 ring-white/30 scale-100'
+                          : 'opacity-0 -translate-y-2 pointer-events-none scale-95'
+                        : 'opacity-90 hover:opacity-100 pointer-events-auto translate-y-0 scale-100'
+                    }`}
+                    title={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                    aria-label={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                  >
+                    {fullscreen || isPseudoFullscreen ? (
+                      <Minimize2 className="w-5 h-5 text-white" strokeWidth={2.2} />
+                    ) : (
+                      <Maximize2 className="w-5 h-5 text-white" strokeWidth={2.2} />
+                    )}
+                  </button>
+                )}
 
                 {!serverSelected ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent">

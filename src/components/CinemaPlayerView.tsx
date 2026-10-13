@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Hls from "hls.js";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -267,35 +267,39 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
   const tParam = timeParam || "";
 
   if (lang === "fr") {
-    // FrEmbed for French (VF) + Videasy fallback
+    // FrEmbed for French (VF) + backups
     if (isTv) {
       return [ 
         { name: "Server 1", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 },
-        { name: "Server 2", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
+        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
+        { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
       ];
     } else {
       return [ 
         { name: "Server 1", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 },
-        { name: "Server 2", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
+        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
+        { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
+        { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
       ];
     }
   } else {
     // English servers:
-    // 1: CineSrc (fast embed with native events & full controls)
+    // 1: CineSrc (fast embed with native events & full controls, autoplay & orange color)
     // 2: Peachify (progress tracking)
     // 3: VidLink (fast failover backup)
     // 4: Videasy (multi-provider player)
-    const movieTime = tParam ? (tParam.startsWith("&") ? `?${tParam.slice(1)}` : tParam) : "";
+    const cinesrcMovieTime = tParam ? (tParam.startsWith("&") ? tParam : `&${tParam.replace(/^\?/, "")}`) : "";
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}${tParam}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${tParam}`, stars: 3 },
         { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}${movieTime}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcMovieTime}`, stars: 3 },
         { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900&servers=hide${tParam}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
@@ -535,7 +539,7 @@ export default function CinemaPlayerView({
 
   const [isCurtainOpen, setIsCurtainOpen] = useState(false);
   const [forceJellyfin, setForceJellyfin] = useState(false);
-    const [activeServerIndex, setActiveServerIndex] = useState(0);
+  const [activeServerIndex, setActiveServerIndex] = useState(0); // Default to Server 1 (CineSrc / FrEmbed)
   const [serverSelected, setServerSelected] = useState(true);
   const [language, setLanguage] = useState<"en" | "fr">("en");
   const [availableServers, setAvailableServers] = useState<{name: string, url: string, stars?: number}[]>(() => {
@@ -576,6 +580,18 @@ export default function CinemaPlayerView({
   const [muted, setMuted] = useState(false); // Commencer non-muet par défaut
   const [fullscreen, setFullscreen] = useState(false);
   const [isPseudoFullscreen, setIsPseudoFullscreen] = useState(false);
+  const [isFullscreenBtnVisible, setIsFullscreenBtnVisible] = useState(true);
+  const hideFullscreenBtnTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showFullscreenButtonTemporarily = useCallback((duration = 2000) => {
+    setIsFullscreenBtnVisible(true);
+    if (hideFullscreenBtnTimeoutRef.current) {
+      clearTimeout(hideFullscreenBtnTimeoutRef.current);
+    }
+    hideFullscreenBtnTimeoutRef.current = setTimeout(() => {
+      setIsFullscreenBtnVisible(false);
+    }, duration);
+  }, []);
   const [objectFit, setObjectFit] = useState<"contain" | "cover">("contain");
 
   // Buffer and Safety Timeout States
@@ -1856,6 +1872,49 @@ export default function CinemaPlayerView({
     };
   }, [fullscreen, isPseudoFullscreen]);
 
+  // Fullscreen button auto-hide logic:
+  // - In regular player tab view: PERMANENTLY visible (never auto-hides)
+  // - In fullscreen mode: auto-hides after 2 seconds, and reappears on tap/click anywhere on screen
+  useEffect(() => {
+    const isAnyFs = !!(fullscreen || isPseudoFullscreen);
+    if (!isAnyFs) {
+      setIsFullscreenBtnVisible(true);
+      if (hideFullscreenBtnTimeoutRef.current) {
+        clearTimeout(hideFullscreenBtnTimeoutRef.current);
+      }
+      return;
+    }
+
+    // Entering fullscreen: auto-hide after 2 seconds
+    showFullscreenButtonTemporarily(2000);
+
+    const handleScreenActivity = () => {
+      showFullscreenButtonTemporarily(2000);
+    };
+
+    // When user taps inside the embedded iframe, window fires blur
+    const handleWindowBlur = () => {
+      showFullscreenButtonTemporarily(2000);
+    };
+
+    window.addEventListener("pointerdown", handleScreenActivity, { passive: true });
+    window.addEventListener("touchstart", handleScreenActivity, { passive: true });
+    window.addEventListener("click", handleScreenActivity, { passive: true });
+    window.addEventListener("mousemove", handleScreenActivity, { passive: true });
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("pointerdown", handleScreenActivity);
+      window.removeEventListener("touchstart", handleScreenActivity);
+      window.removeEventListener("click", handleScreenActivity);
+      window.removeEventListener("mousemove", handleScreenActivity);
+      window.removeEventListener("blur", handleWindowBlur);
+      if (hideFullscreenBtnTimeoutRef.current) {
+        clearTimeout(hideFullscreenBtnTimeoutRef.current);
+      }
+    };
+  }, [fullscreen, isPseudoFullscreen, showFullscreenButtonTemporarily]);
+
   // 3. AUTO-HIDE MOUSE CURSOR AND CONTROLS ON INACTIVITY
   const resetInactivityTimer = () => {
     setControlsVisible(true);
@@ -2909,33 +2968,59 @@ export default function CinemaPlayerView({
             <div className="w-full flex flex-col gap-6">
               <div 
                 ref={viewportRef} 
+                onClick={() => {
+                  showFullscreenButtonTemporarily(2000);
+                }}
+                onTouchStart={() => {
+                  showFullscreenButtonTemporarily(2000);
+                }}
                 className={`w-full aspect-video bg-[#050505] rounded-xl overflow-hidden shadow-2xl border border-white/5 relative group ${
                   (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[999999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none !bg-black' : ''
                 }`}
               >
-                {/* Floating Fullscreen / Exit Button (Bottom Right of screen/player) */}
+                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden */}
+                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showFullscreenButtonTemporarily(2000);
+                    }}
+                    onTouchStart={(e) => {
+                      e.stopPropagation();
+                      showFullscreenButtonTemporarily(2000);
+                    }}
+                    className="absolute inset-0 w-full h-full z-[48] cursor-pointer bg-transparent"
+                    title="Cliquer pour afficher les commandes"
+                    aria-label="Cliquer pour afficher les commandes"
+                  />
+                )}
+
+                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only) */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFullscreen();
+                    showFullscreenButtonTemporarily(2000);
                   }}
-                  className={`absolute bottom-3 right-3 z-50 p-2 sm:p-2.5 rounded-xl bg-black/80 hover:bg-black/95 text-zinc-200 hover:text-amber-400 border border-white/15 hover:border-amber-400/50 transition-all backdrop-blur-md shadow-2xl cursor-pointer flex items-center gap-1.5 active:scale-95 group ${
-                    fullscreen || isPseudoFullscreen ? 'opacity-100 ring-1 ring-amber-400/50' : 'opacity-85 hover:opacity-100'
+                  style={{
+                    top: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))',
+                    left: 'max(0.75rem, env(safe-area-inset-left, 0.75rem))',
+                  }}
+                  className={`absolute z-50 p-2 sm:p-2.5 rounded-xl bg-black/80 hover:bg-black/95 text-white border border-white/20 hover:border-white/50 backdrop-blur-md shadow-2xl cursor-pointer flex items-center justify-center active:scale-95 transition-all duration-300 ${
+                    (fullscreen || isPseudoFullscreen)
+                      ? isFullscreenBtnVisible
+                        ? 'opacity-100 translate-y-0 pointer-events-auto ring-1 ring-white/30 scale-100'
+                        : 'opacity-0 -translate-y-2 pointer-events-none scale-95'
+                      : 'opacity-90 hover:opacity-100 pointer-events-auto translate-y-0 scale-100'
                   }`}
-                  title={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                  aria-label={fullscreen || isPseudoFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  title={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                  aria-label={fullscreen || isPseudoFullscreen ? "Quitter le plein écran" : "Plein écran"}
                 >
                   {fullscreen || isPseudoFullscreen ? (
-                    <>
-                      <Minimize2 className="w-4 h-4 text-amber-400" />
-                      <span className="hidden sm:inline text-xs font-sans font-semibold text-zinc-200">Exit</span>
-                    </>
+                    <Minimize2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   ) : (
-                    <>
-                      <Maximize2 className="w-4 h-4 text-white group-hover:text-amber-400" />
-                      <span className="hidden sm:inline text-xs font-sans font-semibold text-zinc-200">Full screen</span>
-                    </>
+                    <Maximize2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
                   )}
                 </button>
 

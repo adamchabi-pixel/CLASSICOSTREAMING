@@ -976,10 +976,7 @@ export default function App() {
     openAuthModal
   } = useAuth();
 
-  const [isInitialLoadDone, setIsInitialLoadDone] = useState(() => {
-    if (typeof document === 'undefined') return true;
-    return !document.getElementById("startup-screen");
-  });
+  const [isInitialLoadDone, setIsInitialLoadDone] = useState(false);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -1019,25 +1016,21 @@ export default function App() {
       return;
     }
 
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    // Solid loading screen with CLASSICO while background assets settle, then smooth 60fps GPU fade out without mobile jank
-    const holdDuration = isMobile ? 650 : 550;
-
     const timer = setTimeout(() => {
-      requestAnimationFrame(() => {
-        startupScreen.classList.add("fade-out");
+      startupScreen.classList.add("fade-out");
 
-        const onDone = () => {
-          try {
-            startupScreen.remove();
-          } catch (e) {}
-          setIsInitialLoadDone(true);
-        };
+      const onDone = () => {
+        try {
+          if (startupScreen && startupScreen.parentNode) {
+            startupScreen.parentNode.removeChild(startupScreen);
+          }
+        } catch (e) {}
+        setIsInitialLoadDone(true);
+      };
 
-        startupScreen.addEventListener("transitionend", onDone, { once: true });
-        setTimeout(onDone, 1150);
-      });
-    }, holdDuration);
+      startupScreen.addEventListener("transitionend", onDone, { once: true });
+      setTimeout(onDone, 900);
+    }, 600);
 
     return () => clearTimeout(timer);
   }, []);

@@ -247,9 +247,19 @@ export function InstallAppHint({ onClick, isInitialLoadDone = true }: { onClick:
     };
   }, []);
 
+  const [canShowAfterLoad, setCanShowAfterLoad] = useState(false);
+
+  useEffect(() => {
+    if (!isInitialLoadDone) return;
+    const timer = setTimeout(() => {
+      setCanShowAfterLoad(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [isInitialLoadDone]);
+
   // When downloaded (or standalone PWA), it disappears!
-  // During startup screen loading, it stays unmounted until isInitialLoadDone is true.
-  if (isDownloaded || isDismissed || !isInitialLoadDone) return null;
+  // During startup screen loading, it stays unmounted until isInitialLoadDone is true and page has settled.
+  if (isDownloaded || isDismissed || !isInitialLoadDone || !canShowAfterLoad) return null;
 
   return (
     <motion.div

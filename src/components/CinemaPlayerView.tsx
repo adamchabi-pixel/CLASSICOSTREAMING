@@ -216,44 +216,64 @@ const TrackName = ({ track }: { track: any }) => {
 const normalizeEmbedUrl = (rawUrl: string): string => {
   if (!rawUrl) return rawUrl;
   
-  // Transform full Frembed movie page (e.g. https://frembed.surf/movies/black-panther/284054 or /movies/284054)
-  // into the direct clean embed player: https://frembed.surf/embed/movie/284054
+  // Transform full Frembed movie page into direct embed
   const frembedMovieMatch = rawUrl.match(/frembed\.[a-z]+\/movies\/(?:[^\/]+\/)?([0-9]+)/i);
   if (frembedMovieMatch) {
-    return `https://frembed.surf/embed/movie/${frembedMovieMatch[1]}`;
+    return `https://frembed.bar/embed/movie/${frembedMovieMatch[1]}`;
   }
 
   // Transform full Frembed TV series page into direct embed
   const frembedTvMatch = rawUrl.match(/frembed\.[a-z]+\/series\/(?:[^\/]+\/)?([0-9]+)/i);
   if (frembedTvMatch) {
-    return `https://frembed.surf/embed/serie/${frembedTvMatch[1]}`;
+    return `https://frembed.bar/embed/serie/${frembedTvMatch[1]}`;
+  }
+
+  // Transform CinemaOS web URLs to official embed player
+  const cinemaosTvMatch = rawUrl.match(/cinemaos\.[a-z]+\/(?:watch\/tv|player)\/([0-9]+)\/([0-9]+)\/([0-9]+)/i);
+  if (cinemaosTvMatch) {
+    return `https://cinemaos.tech/player/${cinemaosTvMatch[1]}/${cinemaosTvMatch[2]}/${cinemaosTvMatch[3]}?theme=ffffff&autoPlay=true`;
+  }
+
+  const cinemaosMovieMatch = rawUrl.match(/cinemaos\.[a-z]+\/(?:watch\/movie|player)\/([0-9]+)/i);
+  if (cinemaosMovieMatch) {
+    return `https://cinemaos.tech/player/${cinemaosMovieMatch[1]}?theme=ffffff&autoPlay=true`;
   }
 
   // Support old or alternative frembed.pro/api/film.php?id=...
-  if (rawUrl.includes("frembed.pro/api/film.php") || rawUrl.includes("frembed.surf/api/film.php")) {
+  if (rawUrl.includes("frembed.pro/api/film.php") || rawUrl.includes("frembed.surf/api/film.php") || rawUrl.includes("frembed.bar/api/film.php")) {
     try {
       const parsed = new URL(rawUrl);
       const id = parsed.searchParams.get("id");
-      if (id) return `https://frembed.surf/embed/movie/${id}`;
+      if (id) return `https://frembed.bar/embed/movie/${id}`;
     } catch (_) {}
   }
 
-  // Videasy normalization
-  if (rawUrl.includes("videasy.xyz/embed/movie/")) {
-    return rawUrl.replace("videasy.xyz/embed/movie/", "player.videasy.net/movie/");
+  // Normalize frembed domains to frembed.bar
+  if (rawUrl.includes("frembed.surf/embed/")) {
+    rawUrl = rawUrl.replace("frembed.surf/embed/", "frembed.bar/embed/");
   }
-  if (rawUrl.includes("videasy.xyz/embed/tv/")) {
-    return rawUrl.replace("videasy.xyz/embed/tv/", "player.videasy.net/tv/");
+
+  // Videasy normalization to active player.videasy.to
+  if (rawUrl.includes("videasy.xyz/embed/movie/") || rawUrl.includes("player.videasy.net/movie/")) {
+    return rawUrl.replace("videasy.xyz/embed/movie/", "player.videasy.to/movie/").replace("player.videasy.net/movie/", "player.videasy.to/movie/");
+  }
+  if (rawUrl.includes("videasy.xyz/embed/tv/") || rawUrl.includes("player.videasy.net/tv/")) {
+    return rawUrl.replace("videasy.xyz/embed/tv/", "player.videasy.to/tv/").replace("player.videasy.net/tv/", "player.videasy.to/tv/");
+  }
+
+  // VidSrc redirection normalization to vidsrc.sh
+  if (rawUrl.includes("vidsrc.me/embed/")) {
+    rawUrl = rawUrl.replace("vidsrc.me/embed/", "vidsrc.sh/embed/");
   }
 
   // Support frembed serie.php
-  if (rawUrl.includes("frembed.pro/api/serie.php") || rawUrl.includes("frembed.surf/api/serie.php")) {
+  if (rawUrl.includes("frembed.pro/api/serie.php") || rawUrl.includes("frembed.surf/api/serie.php") || rawUrl.includes("frembed.bar/api/serie.php")) {
     try {
       const parsed = new URL(rawUrl);
       const id = parsed.searchParams.get("id");
       const sa = parsed.searchParams.get("sa") || "1";
       const epi = parsed.searchParams.get("epi") || "1";
-      if (id) return `https://frembed.surf/embed/serie/${id}?id=${id}&sa=${sa}&epi=${epi}`;
+      if (id) return `https://frembed.bar/embed/serie/${id}?sa=${sa}&epi=${epi}`;
     } catch (_) {}
   }
 
@@ -291,45 +311,46 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
 
   // CineSrc params: autoplay=true, orange color FF9900, auto-resume with continueprompt=false
   const cinesrcResume = resumeSec > 0 ? `&t=${resumeSec}&continueprompt=false` : "&continueprompt=false";
-  const peachifyResume = resumeSec > 0 ? `&t=${resumeSec}` : "";
 
   if (lang === "fr") {
-    // Server 1 is CineSrc with autoplay, orange color, and auto-resume
-    // Backup VF server available on Server 4
+    // Server 1 is CineSrc with autoplay, orange color, and auto-resume (Default)
+    // Server 2 is CinemaOS Player (cinemaos.tech embed)
+    // Server 3 is VidLink
+    // Server 4 is FrEmbed VF backup
     if (isTv) {
       return [ 
         { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900${peachifyResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://frembed.surf/embed/serie/${cleanId}?id=${cleanId}&sa=${s}&epi=${e}`, stars: 3 }
+        { name: "Server 4", url: `https://frembed.bar/embed/serie/${cleanId}?sa=${s}&epi=${e}`, stars: 3 }
       ];
     } else {
       return [ 
         { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900${peachifyResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://frembed.surf/embed/movie/${cleanId}`, stars: 3 }
+        { name: "Server 4", url: `https://frembed.bar/embed/movie/${cleanId}`, stars: 3 }
       ];
     }
   } else {
     // English servers:
     // 1: CineSrc (fast embed, autoplay=true, orange color FF9900, auto-resume)
-    // 2: Peachify (progress tracking)
+    // 2: CinemaOS Player (cinemaos.tech embed)
     // 3: VidLink (fast failover backup)
-    // 4: Videasy (multi-provider player)
+    // 4: SmashyStream (fast streaming embed)
     if (isTv) {
       return [
         { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/tv/${cleanId}/${s}/${e}?accent=FF9900${peachifyResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://player.videasy.net/tv/${cleanId}/${s}/${e}?color=f59e0b`, stars: 3 }
+        { name: "Server 4", url: `https://player.smashystream.com/tv/${cleanId}/${s}/${e}`, stars: 3 }
       ];
     } else {
       return [
         { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://peachify.pro/embed/movie/${cleanId}?accent=FF9900${peachifyResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://player.videasy.net/movie/${cleanId}?color=f59e0b`, stars: 3 }
+        { name: "Server 4", url: `https://player.smashystream.com/movie/${cleanId}`, stars: 3 }
       ];
     }
   }
@@ -3021,8 +3042,8 @@ export default function CinemaPlayerView({
                   (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[999999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none !bg-black' : ''
                 }`}
               >
-                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden (servers other than Server 1) */}
-                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && activeServerIndex !== 0 && (
+                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden (servers other than Server 1 and CinemaOS) */}
+                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && activeServerIndex !== 0 && activeServerIndex !== 1 && !playbackInfo?.iframeSrc?.includes("cinemaos") && (
                   <div
                     onClick={(e) => {
                       e.stopPropagation();
@@ -3038,8 +3059,8 @@ export default function CinemaPlayerView({
                   />
                 )}
 
-                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only, hidden for Server 1) */}
-                {activeServerIndex !== 0 && (
+                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only, hidden for Server 1 and CinemaOS) */}
+                {activeServerIndex !== 0 && activeServerIndex !== 1 && !playbackInfo?.iframeSrc?.includes("cinemaos") && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -3087,10 +3108,15 @@ export default function CinemaPlayerView({
                   <div className="absolute inset-0 w-full h-full z-40 opacity-100 pointer-events-auto overflow-hidden bg-black">
                     {playbackInfo?.iframeSrc && playbackInfo.iframeSrc.trim() && normalizeEmbedUrl(playbackInfo.iframeSrc.trim()) ? (
                       <iframe
-                        key={`${playbackInfo.iframeSrc.trim()}-${iframeKey}`}
+                        key={`${playbackInfo.iframeSrc.trim()}-${activeServerIndex}-${iframeKey}`}
                         src={normalizeEmbedUrl(playbackInfo.iframeSrc.trim())}
                         allowFullScreen={true}
                         scrolling="no"
+                        sandbox={
+                          activeServerIndex === 0 && (playbackInfo.iframeSrc.includes("cinesrc") || normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc"))
+                            ? "allow-scripts allow-same-origin allow-forms allow-presentation"
+                            : undefined
+                        }
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                         onLoad={() => setIsIframeLoading(false)}
                         className="w-full h-full inset-0 border-0 absolute"

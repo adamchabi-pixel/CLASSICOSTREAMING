@@ -26,33 +26,29 @@
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        z-index: 999999 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        height: 100vh !important;
+        z-index: 2147483647 !important;
+        background: #000000 !important;
         background-color: #000000 !important;
-        opacity: 1;
-        user-select: none;
-        pointer-events: auto;
-        contain: strict !important;
-        isolation: isolate !important;
-        transform: translate3d(0, 0, 0) !important;
-        -webkit-transform: translate3d(0, 0, 0) !important;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        will-change: opacity;
-        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        -webkit-transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        opacity: 1 !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        pointer-events: auto !important;
+        transition: opacity 0.65s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        -webkit-transition: opacity 0.65s cubic-bezier(0.25, 1, 0.5, 1) !important;
       }
       #startup-screen.fade-out {
         opacity: 0 !important;
         pointer-events: none !important;
       }
       #startup-content {
-        position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        -webkit-transform: translate(-50%, -50%) !important;
+        position: relative !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -60,28 +56,21 @@
         text-align: center !important;
         width: 100% !important;
         max-width: 320px !important;
+        margin: 0 auto !important;
         pointer-events: none !important;
       }
       @keyframes illuminate { 0%, 100% { opacity: 0.2; transform: scale3d(0.8, 0.8, 1); } 50% { opacity: 1; transform: scale3d(1.2, 1.2, 1); } }
-      @media (min-width: 640px) {
-        #startup-content span.logo-title { font-size: 2.25rem !important; }
-        #startup-content span.logo-sub { font-size: 1.5rem !important; }
-      }
-      @media (min-width: 768px) {
-        #startup-content span.logo-title { font-size: 3rem !important; }
-        #startup-content span.logo-sub { font-size: 1.875rem !important; }
-      }
     </style>
   </head>
   <body class="bg-black text-white">
     <div id="startup-screen">
       <div id="startup-content">
-        <div style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;height:42px;line-height:42px;">
-          <span class="logo-title" style="font-family:'Cinzel',serif;font-weight:700;font-size:1.875rem;letter-spacing:0.22em;text-transform:uppercase;line-height:1;display:inline-block;background:linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        <div style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;height:40px;line-height:40px;">
+          <span class="logo-title" style="font-family:'Cinzel',serif;font-weight:700;font-size:2rem;letter-spacing:0.22em;text-transform:uppercase;line-height:1;display:inline-block;background:linear-gradient(135deg, #bf953f 0%, #fcf6ba 15%, #b38728 35%, #fbf5b7 55%, #aa771c 75%, #fcf6ba 90%, #bf953f 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
             CLASSICO
           </span>
         </div>
-        <div style="height:28px;display:flex;align-items:center;justify-content:center;margin-top:2px;">
+        <div style="height:26px;display:flex;align-items:center;justify-content:center;margin-top:2px;">
           <span class="logo-sub" style="font-family:'Pinyon Script',cursive;display:inline-block;font-size:1.25rem;color:#f4ecd8;line-height:1;user-select:none;text-align:center;transform:translateX(-3px);-webkit-transform:translateX(-3px);filter:drop-shadow(0 0 4px rgba(244,236,216,0.2));">
             The Best
           </span>
@@ -95,17 +84,24 @@
     </div>
     <script>
       (function() {
-        // Guaranteed safety fade out if React initialization is delayed
-        window.addEventListener('DOMContentLoaded', function() {
+        window.dismissClassicoStartup = function() {
+          var screen = document.getElementById('startup-screen');
+          if (!screen || screen.dataset.dismissing === 'true') return;
+          screen.dataset.dismissing = 'true';
+          screen.classList.add('fade-out');
           setTimeout(function() {
-            var screen = document.getElementById('startup-screen');
-            if (screen && !screen.classList.contains('fade-out')) {
-              screen.classList.add('fade-out');
-              setTimeout(function() {
-                if (screen && screen.parentNode) screen.parentNode.removeChild(screen);
-              }, 850);
+            try {
+              if (screen && screen.parentNode) screen.parentNode.removeChild(screen);
+            } catch (e) {}
+          }, 700);
+        };
+        // Guaranteed safety fade out if React initialization is delayed
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            if (window.dismissClassicoStartup) {
+              window.dismissClassicoStartup();
             }
-          }, 1400);
+          }, 1800);
         });
       })();
     </script>

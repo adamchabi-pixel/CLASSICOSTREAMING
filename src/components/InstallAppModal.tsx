@@ -253,7 +253,7 @@ export function InstallAppHint({ onClick, isInitialLoadDone = true }: { onClick:
     if (!isInitialLoadDone) return;
     const timer = setTimeout(() => {
       setCanShowAfterLoad(true);
-    }, 2500);
+    }, 6000);
     return () => clearTimeout(timer);
   }, [isInitialLoadDone]);
 

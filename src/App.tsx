@@ -1017,19 +1017,19 @@ export default function App() {
     }
 
     const timer = setTimeout(() => {
-      startupScreen.classList.add("fade-out");
-
-      const onDone = () => {
-        try {
-          if (startupScreen && startupScreen.parentNode) {
-            startupScreen.parentNode.removeChild(startupScreen);
-          }
-        } catch (e) {}
-        setIsInitialLoadDone(true);
-      };
-
-      startupScreen.addEventListener("transitionend", onDone, { once: true });
-      setTimeout(onDone, 900);
+      if (typeof (window as any).dismissClassicoStartup === "function") {
+        (window as any).dismissClassicoStartup();
+      } else {
+        startupScreen.classList.add("fade-out");
+        setTimeout(() => {
+          try {
+            if (startupScreen && startupScreen.parentNode) {
+              startupScreen.parentNode.removeChild(startupScreen);
+            }
+          } catch (e) {}
+        }, 700);
+      }
+      setIsInitialLoadDone(true);
     }, 600);
 
     return () => clearTimeout(timer);
@@ -3733,7 +3733,9 @@ export default function App() {
       
 
       {/* Discreet floating mobile install hint at bottom-left */}
-      <InstallAppHint onClick={() => setIsInstallModalOpen(true)} isInitialLoadDone={isInitialLoadDone} />
+      {isInitialLoadDone && activeTab !== "player" && (
+        <InstallAppHint onClick={() => setIsInstallModalOpen(true)} isInitialLoadDone={isInitialLoadDone} />
+      )}
 
       <InstallAppModal
         isOpen={isInstallModalOpen}

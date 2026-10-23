@@ -311,44 +311,46 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
 
   // CineSrc params: autoplay=true, orange color FF9900, auto-resume with continueprompt=false
   const cinesrcResume = resumeSec > 0 ? `&t=${resumeSec}&continueprompt=false` : "&continueprompt=false";
+  // CinemaOS params: startTime=${resumeSec}
+  const cinemaosResume = resumeSec > 0 ? `&startTime=${Math.floor(resumeSec)}` : "";
 
   if (lang === "fr") {
-    // Server 1 is CineSrc with autoplay, orange color, and auto-resume (Default)
-    // Server 2 is CinemaOS Player (cinemaos.tech embed)
+    // Server 1 is CinemaOS Player (Default)
+    // Server 2 is CineSrc with autoplay, orange color, and auto-resume
     // Server 3 is VidLink
     // Server 4 is FrEmbed VF backup
     if (isTv) {
       return [ 
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true`, stars: 3 },
+        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://frembed.bar/embed/serie/${cleanId}?sa=${s}&epi=${e}`, stars: 3 }
       ];
     } else {
       return [ 
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true`, stars: 3 },
+        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://frembed.bar/embed/movie/${cleanId}`, stars: 3 }
       ];
     }
   } else {
     // English servers:
-    // 1: CineSrc (fast embed, autoplay=true, orange color FF9900, auto-resume)
-    // 2: CinemaOS Player (cinemaos.tech embed)
+    // 1: CinemaOS Player (Default)
+    // 2: CineSrc (autoplay=true, orange color FF9900, auto-resume)
     // 3: VidLink (fast failover backup)
     // 4: SmashyStream (fast streaming embed)
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true`, stars: 3 },
+        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://player.smashystream.com/tv/${cleanId}/${s}/${e}`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true`, stars: 3 },
+        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://player.smashystream.com/movie/${cleanId}`, stars: 3 }
       ];
@@ -693,10 +695,14 @@ export default function CinemaPlayerView({
     const server = serversList[idx];
     if (!server) return;
     const isProxyStream = server.url.startsWith("/api/stream-proxy") || server.url.startsWith("/api/extract-stream-view");
-    let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "");
+    let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "").replace(/[&?]startTime=\d+/, "");
     if (!isProxyStream && savedRestoreTimeRef.current > 0) {
       const sep = targetUrl.includes("?") ? "&" : "?";
-      targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
+      if (targetUrl.includes("cinemaos")) {
+        targetUrl += `${sep}startTime=${Math.floor(savedRestoreTimeRef.current)}`;
+      } else {
+        targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
+      }
     }
     if (!isProxyStream && targetUrl.includes("cinesrc.st")) {
       if (!targetUrl.includes("autoplay=")) {
@@ -2507,6 +2513,84 @@ export default function CinemaPlayerView({
     }
   }, [volume, muted]);
 
+  // Helper to persist playback progress across all matching IDs (cleanId, with -tv, and tmdbId)
+  const persistProgress = useCallback((
+    curTime: number,
+    durVal: number,
+    seriesMode: boolean,
+    sNum: number,
+    eNum: number,
+    targetTmdb?: string | null
+  ) => {
+    if (isNaN(curTime) || curTime < 0) return;
+    savedRestoreTimeRef.current = curTime;
+    setProgress(curTime);
+    if (durVal > 0) setDuration(durVal);
+
+    try {
+      const cleanMovieId = String(movieId || "").replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "");
+      const cleanTmdb = targetTmdb ? String(targetTmdb).replace(/(-tv)+$/g, "").replace(/-S\d+E\d+$/, "") : "";
+      const passedTmdb = passedMovieData?.tmdbId || fetchedDetails?.tmdbId ? String(passedMovieData?.tmdbId || fetchedDetails?.tmdbId) : "";
+      
+      const candidateKeys = Array.from(new Set([
+        cleanMovieId,
+        `${cleanMovieId}-tv`,
+        cleanTmdb,
+        cleanTmdb ? `${cleanTmdb}-tv` : "",
+        passedTmdb,
+        passedTmdb ? `${passedTmdb}-tv` : "",
+        String(movieId || "")
+      ])).filter(Boolean);
+
+      const saved = JSON.parse(safeStorage.getItem("classico_progress") || "{}");
+
+      if (seriesMode && sNum && eNum) {
+        candidateKeys.forEach(k => {
+          if (!saved[k] || saved[k].type !== "tv") {
+            saved[k] = {
+              id: k,
+              type: "tv",
+              last_season_watched: sNum,
+              last_episode_watched: eNum,
+              server_index: activeServerIndex,
+              show_progress: {}
+            };
+          }
+          saved[k].last_season_watched = sNum;
+          saved[k].last_episode_watched = eNum;
+          saved[k].server_index = activeServerIndex;
+          if (!saved[k].show_progress) saved[k].show_progress = {};
+          saved[k].show_progress[`s${sNum}e${eNum}`] = {
+            season: sNum,
+            episode: eNum,
+            progress: { watched: curTime, duration: durVal || duration || 0 }
+          };
+        });
+
+        const tvState = JSON.parse(safeStorage.getItem("classico_tv_state") || "{}");
+        candidateKeys.forEach(k => {
+          tvState[k] = { season: sNum, episode: eNum };
+        });
+        safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
+      } else {
+        candidateKeys.forEach(k => {
+          saved[k] = {
+            currentTime: curTime,
+            timestamp: Date.now(),
+            duration: durVal || duration || 0,
+            server_index: activeServerIndex
+          };
+        });
+      }
+
+      safeStorage.setItem("classico_progress", JSON.stringify(saved));
+      try {
+        window.dispatchEvent(new CustomEvent("classico_progress_updated"));
+      } catch(e) {}
+    } catch(e) {}
+  }, [movieId, activeServerIndex, duration, passedMovieData?.tmdbId, fetchedDetails?.tmdbId]);
+
+  // CinemaOS & CineSrc message event tracking
   useEffect(() => {
     if (!playbackInfo?.isIframeEmbed) return;
     
@@ -2521,8 +2605,11 @@ export default function CinemaPlayerView({
       }
       if (!parsedData || typeof parsedData !== 'object') return;
 
+      const origin = event.origin || '';
+      const isCinemaOS = origin.includes('cinemaos') || (typeof parsedData.type === 'string' && parsedData.type === 'PLAYER_EVENT');
+
       // 1. CineSrc events
-      if (event.origin === 'https://cinesrc.st' || (typeof parsedData.type === 'string' && parsedData.type.startsWith('cinesrc:'))) {
+      if (origin === 'https://cinesrc.st' || (typeof parsedData.type === 'string' && parsedData.type.startsWith('cinesrc:'))) {
         switch (parsedData.type) {
           case 'cinesrc:ready':
           case 'cinesrc:play':
@@ -2552,23 +2639,35 @@ export default function CinemaPlayerView({
         }
       }
 
-      // 2. Videasy & Peachify loading / play screen logic
-      if (
-        event.origin === 'https://player.videasy.net' ||
-        event.origin === 'https://player.videasy.to' ||
-        event.origin === 'https://peachify.pro' ||
-        (parsedData.type === 'PLAYER_EVENT' && parsedData.data?.event === 'play') ||
+      // 2. CinemaOS, Videasy & Peachify play/ready/pause state detection
+      if (isCinemaOS) {
+        const payload = parsedData.data || parsedData;
+        const subEvent = payload.event || parsedData.event || parsedData.type;
+        if (subEvent === 'play' || subEvent === 'playing' || payload.playing === true) {
+          setIsIframeLoading(false);
+          setPlaying(true);
+        } else if (subEvent === 'pause' || payload.playing === false) {
+          setPlaying(false);
+        }
+        if (payload.duration && Number(payload.duration) > 0) {
+          setDuration(Number(payload.duration));
+        }
+      } else if (
+        origin === 'https://player.videasy.net' ||
+        origin === 'https://player.videasy.to' ||
+        origin === 'https://peachify.pro' ||
         parsedData.event === 'play'
       ) {
         setIsIframeLoading(false);
+        setPlaying(true);
       }
 
-      // 3. Unified progress tracking logic (Peachify, CineSrc, and others)
+      // 3. Unified progress tracking logic (CinemaOS, CineSrc, Peachify, etc.)
       let currentTime: number | undefined = undefined;
       let durationValue: number | undefined = undefined;
-      let pSeason = season;
-      let pEpisode = episode;
-      let pIsTv = isTv;
+      let pSeason = isSeries ? currentSeason : season;
+      let pEpisode = isSeries ? currentEpisode : episode;
+      let pIsTv = isSeries || isTv;
       let pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
 
       // CineSrc time update events
@@ -2579,16 +2678,16 @@ export default function CinemaPlayerView({
         }
       }
 
-      // Peachify & standard PLAYER_EVENT
-      if (parsedData.type === 'PLAYER_EVENT') {
+      // CinemaOS & Peachify PLAYER_EVENT
+      if (parsedData.type === 'PLAYER_EVENT' || isCinemaOS) {
         const payload = parsedData.data || parsedData;
-        if (payload.currentTime !== undefined) {
-          currentTime = Number(payload.currentTime);
+        if (payload.currentTime !== undefined || payload.time !== undefined) {
+          currentTime = Number(payload.currentTime ?? payload.time);
           durationValue = payload.duration ? Number(payload.duration) : (duration || 0);
-          if (payload.mediaType === 'tv') pIsTv = true;
+          if (payload.mediaType === 'tv' || payload.contentType === 'tv') pIsTv = true;
           if (payload.tmdbId || payload.id) pTmdbId = String(payload.tmdbId || payload.id);
-          if (payload.season) pSeason = payload.season;
-          if (payload.episode) pEpisode = payload.episode;
+          if (payload.season) pSeason = Number(payload.season);
+          if (payload.episode) pEpisode = Number(payload.episode);
         }
       }
 
@@ -2599,8 +2698,8 @@ export default function CinemaPlayerView({
           durationValue = parsedData.data.duration ? Number(parsedData.data.duration) : (duration || 0);
           if (parsedData.data.mediaType === 'tv') pIsTv = true;
           if (parsedData.data.tmdbId || parsedData.data.id) pTmdbId = String(parsedData.data.tmdbId || parsedData.data.id);
-          if (parsedData.data.season) pSeason = parsedData.data.season;
-          if (parsedData.data.episode) pEpisode = parsedData.data.episode;
+          if (parsedData.data.season) pSeason = Number(parsedData.data.season);
+          if (parsedData.data.episode) pEpisode = Number(parsedData.data.episode);
         }
       }
 
@@ -2625,61 +2724,39 @@ export default function CinemaPlayerView({
       }
 
       if (currentTime !== undefined && !isNaN(currentTime) && currentTime >= 0) {
-        try {
-          savedRestoreTimeRef.current = currentTime;
-          setProgress(currentTime);
-          if (durationValue && durationValue > 0) {
-            setDuration(durationValue);
-          }
-
-          const saved = (JSON.parse(safeStorage.getItem("classico_progress") || "{}") || {});
-          if (pIsTv && pSeason && pEpisode && pTmdbId) {
-            if (!saved[pTmdbId] || saved[pTmdbId].type !== "tv") {
-              saved[pTmdbId] = {
-                id: pTmdbId,
-                type: "tv",
-                last_season_watched: pSeason,
-                last_episode_watched: pEpisode,
-                show_progress: {}
-              };
-            }
-            saved[pTmdbId].last_season_watched = pSeason;
-            saved[pTmdbId].last_episode_watched = pEpisode;
-            saved[pTmdbId].server_index = activeServerIndex;
-            if (!saved[pTmdbId].show_progress) saved[pTmdbId].show_progress = {};
-            saved[pTmdbId].show_progress[`s${pSeason}e${pEpisode}`] = {
-              season: pSeason,
-              episode: pEpisode,
-              progress: { watched: currentTime, duration: durationValue || duration || 0 }
-            };
-          } else if (movieId) {
-            saved[movieId] = { 
-              currentTime: currentTime, 
-              timestamp: Date.now(),
-              duration: durationValue || duration || 0,
-              server_index: activeServerIndex
-            };
-          }
-          safeStorage.setItem("classico_progress", JSON.stringify(saved));
-          try {
-            window.dispatchEvent(new CustomEvent("classico_progress_updated"));
-          } catch(e) {}
-          
-          // Also maintain legacy classico_tv_state for App.tsx and MovieDetailView.tsx compatibility
-          if (pIsTv && pSeason && pEpisode && pTmdbId) {
-            try {
-              const tvState = (JSON.parse(safeStorage.getItem("classico_tv_state") || "{}") || {});
-              tvState[pTmdbId] = { season: pSeason, episode: pEpisode };
-              safeStorage.setItem("classico_tv_state", JSON.stringify(tvState));
-            } catch(e) {}
-          }
-        } catch(e) {}
+        persistProgress(currentTime, durationValue || duration || 0, Boolean(pIsTv), pSeason || 1, pEpisode || 1, pTmdbId);
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [playbackInfo, movieId, activeServerIndex, isTv, season, episode, onClose, duration]);
+  }, [playbackInfo, movieId, activeServerIndex, isTv, isSeries, currentSeason, currentEpisode, season, episode, onClose, duration, persistProgress]);
+
+  // Active progress ticker & unmount persistence for CinemaOS and iframe players
+  useEffect(() => {
+    if (!playbackInfo?.isIframeEmbed) return;
+    const isCinemaOSActive = activeServerIndex === 0 || playbackInfo?.iframeSrc?.includes("cinemaos");
+    if (!isCinemaOSActive) return;
+
+    // Periodically update progress if player is actively playing
+    const interval = setInterval(() => {
+      if (playing && !isIframeLoading && isAdGateUnlocked && savedRestoreTimeRef.current > 0) {
+        const newTime = savedRestoreTimeRef.current + 3;
+        savedRestoreTimeRef.current = newTime;
+        setProgress(newTime);
+        const pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+        persistProgress(newTime, duration || 0, Boolean(isSeries || isTv), currentSeason || season || 1, currentEpisode || episode || 1, pTmdbId);
+      }
+    }, 4000);
+
+    return () => {
+      clearInterval(interval);
+      if (savedRestoreTimeRef.current > 0) {
+        const pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
+        persistProgress(savedRestoreTimeRef.current, duration || 0, Boolean(isSeries || isTv), currentSeason || season || 1, currentEpisode || episode || 1, pTmdbId);
+      }
+    };
+  }, [playbackInfo?.isIframeEmbed, playbackInfo?.iframeSrc, activeServerIndex, playing, isIframeLoading, isAdGateUnlocked, movieId, isSeries, isTv, currentSeason, currentEpisode, season, episode, duration, persistProgress]);
 
   // Format second timestamps to MM:SS
   const formatTime = (secs: number) => {
@@ -3042,8 +3119,8 @@ export default function CinemaPlayerView({
                   (fullscreen || isPseudoFullscreen) ? '!fixed !inset-0 !z-[999999] !w-screen !h-[100dvh] !rounded-none !border-none !aspect-auto !max-w-none !bg-black' : ''
                 }`}
               >
-                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden (servers other than Server 1 and CinemaOS) */}
-                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && activeServerIndex !== 0 && activeServerIndex !== 1 && !playbackInfo?.iframeSrc?.includes("cinemaos") && (
+                {/* Full-screen invisible touch/click capture overlay when in fullscreen and button is hidden (servers other than CinemaOS and CineSrc) */}
+                {(fullscreen || isPseudoFullscreen) && !isFullscreenBtnVisible && !playbackInfo?.iframeSrc?.includes("cinemaos") && !playbackInfo?.iframeSrc?.includes("cinesrc") && (
                   <div
                     onClick={(e) => {
                       e.stopPropagation();
@@ -3059,8 +3136,8 @@ export default function CinemaPlayerView({
                   />
                 )}
 
-                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only, hidden for Server 1 and CinemaOS) */}
-                {activeServerIndex !== 0 && activeServerIndex !== 1 && !playbackInfo?.iframeSrc?.includes("cinemaos") && (
+                {/* Floating Fullscreen / Exit Button (Top Left of player - White icon only, hidden for CinemaOS and CineSrc) */}
+                {!playbackInfo?.iframeSrc?.includes("cinemaos") && !playbackInfo?.iframeSrc?.includes("cinesrc") && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -3113,7 +3190,7 @@ export default function CinemaPlayerView({
                         allowFullScreen={true}
                         scrolling="no"
                         sandbox={
-                          activeServerIndex === 0 && (playbackInfo.iframeSrc.includes("cinesrc") || normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc"))
+                          (playbackInfo.iframeSrc.includes("cinesrc") || normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc"))
                             ? "allow-scripts allow-same-origin allow-forms allow-presentation"
                             : undefined
                         }

@@ -1017,6 +1017,7 @@ export default function App() {
     }
 
     const timer = setTimeout(() => {
+      setIsInitialLoadDone(true);
       if (typeof (window as any).dismissClassicoStartup === "function") {
         (window as any).dismissClassicoStartup();
       } else {
@@ -1029,8 +1030,7 @@ export default function App() {
           } catch (e) {}
         }, 700);
       }
-      setIsInitialLoadDone(true);
-    }, 600);
+    }, 700);
 
     return () => clearTimeout(timer);
   }, []);
@@ -2604,7 +2604,7 @@ export default function App() {
   const isHeroView = activeTab === "accueil" && searchQuery.trim() === "";
 
   return (
-    <div className="min-h-screen bg-black text-stone-100 font-sans selection:bg-amber-500 selection:text-black antialiased overflow-x-hidden font-sans">
+    <div className={`min-h-screen bg-black text-stone-100 font-sans selection:bg-amber-500 selection:text-black antialiased overflow-x-hidden font-sans transition-opacity duration-300 ${isInitialLoadDone ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
       
       {/* ========================================================== */}
       {/* 1. FIXED GLASS HEADER BAR                                 */}

@@ -42,7 +42,7 @@ const safeSession = {
 };
 import { 
   Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX, Languages, 
-  Maximize2, Minimize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film, Tv, Server
+  Maximize2, Minimize2, Users, ArrowLeft, Loader2, Sparkles, AlertCircle, Captions, Lock, Menu, Cast, Settings, ChevronRight, ChevronLeft, X, ChevronDown, Film, Tv, Server, Info
 } from "lucide-react";
 import EmbedPlayer from "./EmbedPlayer";
 import { allMoviesData } from "../data/all_movies";
@@ -315,42 +315,42 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
   const cinemaosResume = resumeSec > 0 ? `&startTime=${Math.floor(resumeSec)}` : "";
 
   if (lang === "fr") {
-    // Server 1 is CinemaOS Player (Default)
-    // Server 2 is CineSrc with autoplay, orange color, and auto-resume
+    // Server 1 is CineSrc with autoplay, orange color, and auto-resume (Default)
+    // Server 2 is CinemaOS Player
     // Server 3 is VidLink
     // Server 4 is FrEmbed VF backup
     if (isTv) {
       return [ 
-        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://frembed.bar/embed/serie/${cleanId}?sa=${s}&epi=${e}`, stars: 3 }
       ];
     } else {
       return [ 
-        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://frembed.bar/embed/movie/${cleanId}`, stars: 3 }
       ];
     }
   } else {
     // English servers:
-    // 1: CinemaOS Player (Default)
-    // 2: CineSrc (autoplay=true, orange color FF9900, auto-resume)
+    // 1: CineSrc (autoplay=true, orange color FF9900, auto-resume) (Default)
+    // 2: CinemaOS Player
     // 3: VidLink (fast failover backup)
     // 4: SmashyStream (fast streaming embed)
     if (isTv) {
       return [
-        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
         { name: "Server 4", url: `https://player.smashystream.com/tv/${cleanId}/${s}/${e}`, stars: 3 }
       ];
     } else {
       return [
-        { name: "Server 1", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
-        { name: "Server 2", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
+        { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
         { name: "Server 4", url: `https://player.smashystream.com/movie/${cleanId}`, stars: 3 }
       ];
@@ -422,6 +422,7 @@ export default function CinemaPlayerView({
   const [isMobileServerModalOpen, setIsMobileServerModalOpen] = useState(false);
   const [isSeasonModalOpen, setIsSeasonModalOpen] = useState(false);
   const [isEpisodeModalOpen, setIsEpisodeModalOpen] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Synchronize current TV series season & episode across all storage keys immediately
   useEffect(() => {
@@ -2672,9 +2673,11 @@ export default function CinemaPlayerView({
 
       // CineSrc time update events
       if (parsedData.type === 'cinesrc:timeupdate' || parsedData.type === 'cinesrc:seeking' || parsedData.type === 'cinesrc:seeked') {
-        if (parsedData.currentTime !== undefined) {
-          currentTime = Number(parsedData.currentTime);
-          durationValue = parsedData.duration ? Number(parsedData.duration) : (duration || 0);
+        const cTime = parsedData.currentTime ?? parsedData.data?.currentTime ?? parsedData.time ?? parsedData.data?.time;
+        if (cTime !== undefined) {
+          currentTime = Number(cTime);
+          const cDur = parsedData.duration ?? parsedData.data?.duration;
+          durationValue = cDur ? Number(cDur) : (duration || 0);
         }
       }
 
@@ -2732,16 +2735,24 @@ export default function CinemaPlayerView({
     return () => window.removeEventListener('message', handleMessage);
   }, [playbackInfo, movieId, activeServerIndex, isTv, isSeries, currentSeason, currentEpisode, season, episode, onClose, duration, persistProgress]);
 
-  // Active progress ticker & unmount persistence for CinemaOS and iframe players
+  // Active progress ticker & unmount persistence for all players (CineSrc, CinemaOS, and backup servers)
   useEffect(() => {
     if (!playbackInfo?.isIframeEmbed) return;
-    const isCinemaOSActive = activeServerIndex === 0 || playbackInfo?.iframeSrc?.includes("cinemaos");
-    if (!isCinemaOSActive) return;
 
-    // Periodically update progress if player is actively playing
+    // Seed savedRestoreTimeRef from storage if still 0
+    if (savedRestoreTimeRef.current === 0) {
+      const cleanId = String(movieId || "").replace(/-tv$/, "").replace(/-S\d+E\d+$/, "");
+      const initSec = getResumeSeconds(cleanId, Boolean(isSeries || isTv), currentSeason || season || 1, currentEpisode || episode || 1);
+      if (initSec > 0) {
+        savedRestoreTimeRef.current = initSec;
+        setProgress(initSec);
+      }
+    }
+
+    // Periodically update progress while player is actively playing
     const interval = setInterval(() => {
-      if (playing && !isIframeLoading && isAdGateUnlocked && savedRestoreTimeRef.current > 0) {
-        const newTime = savedRestoreTimeRef.current + 3;
+      if (playing && !isIframeLoading && isAdGateUnlocked) {
+        const newTime = (savedRestoreTimeRef.current || 0) + 4;
         savedRestoreTimeRef.current = newTime;
         setProgress(newTime);
         const pTmdbId = movieId ? String(movieId).replace(/-tv$/, "").replace(/-S\d+E\d+$/, "") : null;
@@ -2999,14 +3010,26 @@ export default function CinemaPlayerView({
       {/* Main Layout Area */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 md:px-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-16">
         
-        {/* Top Bar with Back Button */}
-        <div className="flex items-center gap-4 mb-4">
+        {/* Top Bar with Back Button & "Doesn't work?" Help Badge */}
+        <div className="flex items-center justify-between gap-3 mb-4 w-full">
           <button
             onClick={handleClosePlayer}
-            className="flex items-center gap-2 text-zinc-500 hover:text-amber-500 transition-colors font-sans text-sm uppercase tracking-wider cursor-pointer"
+            className="flex items-center gap-2 text-zinc-400 hover:text-amber-400 transition-colors font-sans text-xs sm:text-sm uppercase tracking-wider cursor-pointer px-2.5 py-1.5 rounded-lg hover:bg-white/5 active:scale-95"
             title="Back"
           >
             <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowHelpModal(true)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-zinc-400 hover:text-zinc-200 transition-all text-[11px] font-sans font-medium cursor-pointer active:scale-95 group"
+            title="Troubleshooting instructions"
+          >
+            <div className="w-3.5 h-3.5 rounded-full bg-white/10 text-zinc-400 group-hover:text-zinc-200 flex items-center justify-center font-bold text-[9px] shrink-0 border border-white/15">
+              i
+            </div>
+            <span>Doesn't work?</span>
           </button>
         </div>
 
@@ -3190,7 +3213,12 @@ export default function CinemaPlayerView({
                         allowFullScreen={true}
                         scrolling="no"
                         sandbox={
-                          (playbackInfo.iframeSrc.includes("cinesrc") || normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc"))
+                          (
+                            playbackInfo.iframeSrc.includes("cinesrc") ||
+                            playbackInfo.iframeSrc.includes("cinemaos") ||
+                            normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc") ||
+                            normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinemaos")
+                          )
                             ? "allow-scripts allow-same-origin allow-forms allow-presentation"
                             : undefined
                         }
@@ -4025,6 +4053,82 @@ export default function CinemaPlayerView({
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* "Doesn't work?" Playback Help Modal (Compact & Subtle) */}
+      {showHelpModal && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => setShowHelpModal(false)}
+        >
+          <div 
+            className="relative w-full max-w-[310px] bg-neutral-950 border border-white/15 rounded-xl p-4 shadow-2xl font-sans select-none text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-2.5 border-b border-white/10 mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center text-zinc-300 font-bold text-[10px]">
+                  i
+                </div>
+                <h3 className="text-xs font-sans font-bold text-zinc-100 uppercase tracking-wider">
+                  Playback Help
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowHelpModal(false)}
+                className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                title="Close"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Instruction Steps */}
+            <div className="space-y-2 mb-3 text-[11px]">
+              <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                <div className="font-semibold text-zinc-200 mb-0.5">
+                  1. Try all 4 servers
+                </div>
+                <p className="text-zinc-400 leading-relaxed text-[10.5px]">
+                  If the video is stuck or buffering, switch to Server 2, 3, or 4 below.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                <div className="font-semibold text-zinc-200 mb-0.5">
+                  2. Still not working?
+                </div>
+                <p className="text-zinc-400 leading-relaxed text-[10.5px]">
+                  Join Discord to report the issue and we'll fix the stream.
+                </p>
+              </div>
+            </div>
+
+            {/* Discord CTA Button */}
+            <a
+              href="https://discord.gg/bzbtZFUpxK"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 px-3 rounded-lg bg-[#5865F2] hover:bg-[#4752C4] text-white font-sans font-semibold text-[11px] tracking-wide flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all active:scale-[0.98] mb-2"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.1,46,96,53,91,65.69,84.69,65.69Z"/>
+              </svg>
+              <span>Go to Discord</span>
+            </a>
+
+            {/* Dismiss button */}
+            <button
+              type="button"
+              onClick={() => setShowHelpModal(false)}
+              className="w-full py-1.5 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-200 font-sans text-[11px] font-medium cursor-pointer transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

@@ -313,46 +313,49 @@ const generateServers = (lang: string, isTv: boolean, tmdbId: any, season?: any,
   const cinesrcResume = resumeSec > 0 ? `&t=${resumeSec}&continueprompt=false` : "&continueprompt=false";
   // CinemaOS params: startTime=${resumeSec}
   const cinemaosResume = resumeSec > 0 ? `&startTime=${Math.floor(resumeSec)}` : "";
+  // VidAPI params: autoplay=1, primaryColor=%23FF9900, resumeAt=${resumeSec}
+  const vidapiResume = resumeSec > 0 ? `&resumeAt=${Math.floor(resumeSec)}` : "";
+  const vidapiLang = lang === "fr" ? "&ds_lang=fr" : "&ds_lang=en";
 
   if (lang === "fr") {
     // Server 1 is CineSrc with autoplay, orange color, and auto-resume (Default)
     // Server 2 is CinemaOS Player
     // Server 3 is VidLink
-    // Server 4 is FrEmbed VF backup
+    // Server 4 is VidAPI (vaplayer.ru)
     if (isTv) {
       return [ 
         { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://frembed.bar/embed/serie/${cleanId}?sa=${s}&epi=${e}`, stars: 3 }
+        { name: "Server 4", url: `https://vaplayer.ru/embed/tv/${cleanId}/${s}/${e}?autoplay=1&primaryColor=%23FF9900${vidapiLang}${vidapiResume}`, stars: 3 }
       ];
     } else {
       return [ 
         { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://frembed.bar/embed/movie/${cleanId}`, stars: 3 }
+        { name: "Server 4", url: `https://vaplayer.ru/embed/movie/${cleanId}?autoplay=1&primaryColor=%23FF9900${vidapiLang}${vidapiResume}`, stars: 3 }
       ];
     }
   } else {
     // English servers:
     // 1: CineSrc (autoplay=true, orange color FF9900, auto-resume) (Default)
     // 2: CinemaOS Player
-    // 3: VidLink (fast failover backup)
-    // 4: SmashyStream (fast streaming embed)
+    // 3: VidLink
+    // 4: VidAPI (vaplayer.ru)
     if (isTv) {
       return [
         { name: "Server 1", url: `https://cinesrc.st/embed/tv/${cleanId}?s=${s}&e=${e}&autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}/${s}/${e}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/tv/${cleanId}/${s}/${e}`, stars: 3 },
-        { name: "Server 4", url: `https://player.smashystream.com/tv/${cleanId}/${s}/${e}`, stars: 3 }
+        { name: "Server 4", url: `https://vaplayer.ru/embed/tv/${cleanId}/${s}/${e}?autoplay=1&primaryColor=%23FF9900${vidapiLang}${vidapiResume}`, stars: 3 }
       ];
     } else {
       return [
         { name: "Server 1", url: `https://cinesrc.st/embed/movie/${cleanId}?autoplay=true&color=FF9900${cinesrcResume}`, stars: 3 },
         { name: "Server 2", url: `https://cinemaos.tech/player/${cleanId}?theme=ffffff&autoPlay=true${cinemaosResume}`, stars: 3 },
         { name: "Server 3", url: `https://vidlink.pro/movie/${cleanId}`, stars: 3 },
-        { name: "Server 4", url: `https://player.smashystream.com/movie/${cleanId}`, stars: 3 }
+        { name: "Server 4", url: `https://vaplayer.ru/embed/movie/${cleanId}?autoplay=1&primaryColor=%23FF9900${vidapiLang}${vidapiResume}`, stars: 3 }
       ];
     }
   }
@@ -696,11 +699,13 @@ export default function CinemaPlayerView({
     const server = serversList[idx];
     if (!server) return;
     const isProxyStream = server.url.startsWith("/api/stream-proxy") || server.url.startsWith("/api/extract-stream-view");
-    let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "").replace(/[&?]startTime=\d+/, "");
+    let targetUrl = isProxyStream ? server.url : server.url.replace(/[&?]t=\d+/, "").replace(/[&?]startTime=\d+/, "").replace(/[&?]resumeAt=\d+/, "");
     if (!isProxyStream && savedRestoreTimeRef.current > 0) {
       const sep = targetUrl.includes("?") ? "&" : "?";
       if (targetUrl.includes("cinemaos")) {
         targetUrl += `${sep}startTime=${Math.floor(savedRestoreTimeRef.current)}`;
+      } else if (targetUrl.includes("vaplayer.ru")) {
+        targetUrl += `${sep}resumeAt=${Math.floor(savedRestoreTimeRef.current)}`;
       } else {
         targetUrl += `${sep}t=${Math.floor(savedRestoreTimeRef.current)}`;
       }
@@ -714,6 +719,14 @@ export default function CinemaPlayerView({
       }
       if (!targetUrl.includes("continueprompt=")) {
         targetUrl += `&continueprompt=false`;
+      }
+    }
+    if (!isProxyStream && targetUrl.includes("vaplayer.ru")) {
+      if (!targetUrl.includes("autoplay=")) {
+        targetUrl += `${targetUrl.includes("?") ? "&" : "?"}autoplay=1`;
+      }
+      if (!targetUrl.includes("primaryColor=") && !targetUrl.includes("color=")) {
+        targetUrl += `&primaryColor=%23FF9900`;
       }
     }
     
@@ -2640,18 +2653,26 @@ export default function CinemaPlayerView({
         }
       }
 
-      // 2. CinemaOS, Videasy & Peachify play/ready/pause state detection
-      if (isCinemaOS) {
+      // 2. CinemaOS, VidAPI, Videasy & Peachify play/ready/pause state detection
+      const isPlayerEvent = parsedData.type === 'PLAYER_EVENT' || isCinemaOS || origin.includes('vaplayer.ru');
+      if (isPlayerEvent) {
         const payload = parsedData.data || parsedData;
-        const subEvent = payload.event || parsedData.event || parsedData.type;
+        const subEvent = payload.player_status || payload.event || parsedData.event || parsedData.type;
         if (subEvent === 'play' || subEvent === 'playing' || payload.playing === true) {
           setIsIframeLoading(false);
           setPlaying(true);
-        } else if (subEvent === 'pause' || payload.playing === false) {
+        } else if (subEvent === 'pause' || subEvent === 'paused' || payload.playing === false) {
           setPlaying(false);
+        } else if (subEvent === 'completed') {
+          if (payload.player_info?.mediaType === 'tv' && payload.player_info?.episode) {
+            const nextEp = Number(payload.player_info.episode) + 1;
+            const seasonNum = Number(payload.player_info.season) || 1;
+            handleEpisodeSelect(seasonNum, nextEp);
+          }
         }
-        if (payload.duration && Number(payload.duration) > 0) {
-          setDuration(Number(payload.duration));
+        const pDur = payload.player_duration ?? payload.duration;
+        if (pDur && Number(pDur) > 0) {
+          setDuration(Number(pDur));
         }
       } else if (
         origin === 'https://player.videasy.net' ||
@@ -2663,7 +2684,7 @@ export default function CinemaPlayerView({
         setPlaying(true);
       }
 
-      // 3. Unified progress tracking logic (CinemaOS, CineSrc, Peachify, etc.)
+      // 3. Unified progress tracking logic (CinemaOS, CineSrc, VidAPI, Peachify, etc.)
       let currentTime: number | undefined = undefined;
       let durationValue: number | undefined = undefined;
       let pSeason = isSeries ? currentSeason : season;
@@ -2681,16 +2702,27 @@ export default function CinemaPlayerView({
         }
       }
 
-      // CinemaOS & Peachify PLAYER_EVENT
-      if (parsedData.type === 'PLAYER_EVENT' || isCinemaOS) {
+      // CinemaOS, Peachify & VidAPI PLAYER_EVENT
+      if (parsedData.type === 'PLAYER_EVENT' || isCinemaOS || origin.includes('vaplayer.ru')) {
         const payload = parsedData.data || parsedData;
-        if (payload.currentTime !== undefined || payload.time !== undefined) {
-          currentTime = Number(payload.currentTime ?? payload.time);
-          durationValue = payload.duration ? Number(payload.duration) : (duration || 0);
-          if (payload.mediaType === 'tv' || payload.contentType === 'tv') pIsTv = true;
-          if (payload.tmdbId || payload.id) pTmdbId = String(payload.tmdbId || payload.id);
-          if (payload.season) pSeason = Number(payload.season);
-          if (payload.episode) pEpisode = Number(payload.episode);
+        const pTime = payload.player_progress ?? payload.currentTime ?? payload.time;
+        if (pTime !== undefined) {
+          currentTime = Number(pTime);
+          const dur = payload.player_duration ?? payload.duration;
+          if (dur) durationValue = Number(dur);
+
+          const pInfo = payload.player_info;
+          if (pInfo) {
+            if (pInfo.mediaType === 'tv') pIsTv = true;
+            if (pInfo.tmdb || pInfo.imdb) pTmdbId = String(pInfo.tmdb || pInfo.imdb);
+            if (pInfo.season) pSeason = Number(pInfo.season);
+            if (pInfo.episode) pEpisode = Number(pInfo.episode);
+          } else {
+            if (payload.mediaType === 'tv' || payload.contentType === 'tv') pIsTv = true;
+            if (payload.tmdbId || payload.id) pTmdbId = String(payload.tmdbId || payload.id);
+            if (payload.season) pSeason = Number(payload.season);
+            if (payload.episode) pEpisode = Number(payload.episode);
+          }
         }
       }
 
@@ -3215,9 +3247,7 @@ export default function CinemaPlayerView({
                         sandbox={
                           (
                             playbackInfo.iframeSrc.includes("cinesrc") ||
-                            playbackInfo.iframeSrc.includes("cinemaos") ||
-                            normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc") ||
-                            normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinemaos")
+                            normalizeEmbedUrl(playbackInfo.iframeSrc.trim()).includes("cinesrc")
                           )
                             ? "allow-scripts allow-same-origin allow-forms allow-presentation"
                             : undefined
